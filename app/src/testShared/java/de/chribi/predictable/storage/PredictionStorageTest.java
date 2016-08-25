@@ -1,4 +1,4 @@
-package de.chribi.predictable.data;
+package de.chribi.predictable.storage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -8,11 +8,15 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.data.PredictionState;
+import de.chribi.predictable.storage.PredictionStorage;
 
 /**
  * Tests for all implementations of {@link PredictionStorage}.
@@ -33,9 +37,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void createTestPredictions(int count) {
         for (int i = 0; i < count; i++) {
             String title = String.format("Test event %d", i);
-            Calendar dueDate = Calendar.getInstance();
-            dueDate.set(2000 + i, Calendar.JANUARY, 1, 12, 0);
-            storage.createPredictionSet(title, null, dueDate, new ArrayList<Prediction>());
+            storage.createPredictedEvent(title, null, new Date(), new ArrayList<Prediction>());
         }
     }
 
@@ -54,40 +56,34 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     @Test
     public void getPredictionByIdForInvalidIdReturnsNull() {
         createTestPredictions(1);
-        int id = storage.getPredictions().get(0).getId();
+        int id = storage.getPredictedEvents().get(0).getId();
         assertThat("getRredictionById for invalid Id should return null",
-                storage.getPredictionById(id + 1), is(nullValue()));
+                storage.getPredictedEventById(id + 1), is(nullValue()));
     }
 
     @Test
     public void getPredictionByIdForValidIdReturnsMatchingPredictionSet() {
         createTestPredictions(5);
-        int id = storage.getPredictions().get(3).getId();
-        assertThat("getPredictionById should return PredictionSet with specified id",
-                storage.getPredictionById(id).getId(), is(id));
+        int id = storage.getPredictedEvents().get(3).getId();
+        assertThat("getPredictedEventById should return PredictedEvent with specified id",
+                storage.getPredictedEventById(id).getId(), is(id));
     }
 
     @Test
     public void createdPredictionSetHasExpectedValues() {
         String title = "TestTitle";
         String description = "TestDescription";
-        Calendar dueDate = Calendar.getInstance();
-        dueDate.set(2000, Calendar.APRIL, 20, 14, 30);
+        Date dueDate = new Date(10000);
 
         List<Prediction> predictions = new ArrayList<>();
-        Calendar predictionDate1 = Calendar.getInstance();
-        predictionDate1.set(2000, Calendar.JANUARY, 15, 12, 15);
-        Prediction prediction1 = new Prediction(0.4, predictionDate1);
-
-        Calendar predictionDate2 = Calendar.getInstance();
-        predictionDate2.set(2000, Calendar.FEBRUARY, 3, 19, 7);
-        Prediction prediction2 = new Prediction(0.8, predictionDate2);
+        Prediction prediction1 = new Prediction(0.4, new Date(1000));
+        Prediction prediction2 = new Prediction(0.8, new Date(2000));
 
         predictions.add(prediction1);
         predictions.add(prediction2);
 
-        PredictionSet createdPrediction =
-                storage.createPredictionSet("TestTitle", "TestDescription", dueDate, predictions);
+        PredictedEvent createdPrediction =
+                storage.createPredictedEvent("TestTitle", "TestDescription", dueDate, predictions);
 
         assertThat("Title should be creation title.",
                 createdPrediction.getTitle(), is(equalTo(title)));
@@ -109,19 +105,16 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void createdPredictionsShouldBeStored() {
         int numberOfPredictions = 5;
         createTestPredictions(numberOfPredictions);
-        assertThat("The number of stored predictions should be the number of created predcitions",
-                storage.getPredictions().size(), is(numberOfPredictions));
+        assertThat("The number of stored predictions should be the number of created predictions",
+                storage.getPredictedEvents().size(), is(numberOfPredictions));
     }
 
     @Test
     public void createdPredictionShouldBeStoredAsReturned() {
-        Calendar dueDate = Calendar.getInstance();
-        dueDate.set(2010, Calendar.JANUARY, 1, 12, 0);
-
-        PredictionSet prediction = storage.createPredictionSet("Some title", "A description",
-                dueDate, new ArrayList<Prediction>());
-        assertThat("Stored prediction should be same as the prediction returned by createPredictionSet",
-                storage.getPredictions().get(0), is(equalTo(prediction)));
+        PredictedEvent prediction = storage.createPredictedEvent("Some title", "A description",
+                new Date(1000), new ArrayList<Prediction>());
+        assertThat("Stored prediction should be same as the prediction returned by createPredictedEvent",
+                storage.getPredictedEvents().get(0), is(equalTo(prediction)));
     }
 
     @Test
@@ -129,8 +122,8 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
         Set<Integer> ids = new HashSet<>();
-        for (PredictionSet predictionSet : storage.getPredictions()) {
-            ids.add(predictionSet.getId());
+        for (PredictedEvent predictedEvent : storage.getPredictedEvents()) {
+            ids.add(predictedEvent.getId());
         }
         assertThat("Ids of created predictions have to be unique",
                 ids.size(), is(numberOfPredictions));
@@ -140,69 +133,69 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void updatePredictionSetDoesNotChangePredictionCount() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictions().get(0).getId();
-        storage.updatePredictionSet(id, new PredictionSet(id, "Some title",
-                "Some description", PredictionState.Incorrect, Calendar.getInstance(),
+        int id = storage.getPredictedEvents().get(0).getId();
+        storage.updatePredictedEvent(id, new PredictedEvent(id, "Some title",
+                "Some description", PredictionState.Incorrect, new Date(5000),
                 new ArrayList<Prediction>()));
         assertThat("Updating predictions should not change prediction count",
-                storage.getPredictions().size(), is(numberOfPredictions));
+                storage.getPredictedEvents().size(), is(numberOfPredictions));
     }
 
     @Test
     public void updatePredictionSetChangesSinglePredictionSet() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        List<PredictionSet> predictions = new ArrayList<>(storage.getPredictions());
+        List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
         int id = predictions.get(2).getId();
-        PredictionSet newPredictionSet = new PredictionSet(id, "Some title",
-                "Some description", PredictionState.Correct, Calendar.getInstance(),
+        PredictedEvent newPredictedEvent = new PredictedEvent(id, "Some title",
+                "Some description", PredictionState.Correct, new Date(3500),
                 new ArrayList<Prediction>());
         predictions.remove(2);
-        storage.updatePredictionSet(id, newPredictionSet);
+        storage.updatePredictedEvent(id, newPredictedEvent);
 
-        for (PredictionSet prediction : predictions) {
+        for (PredictedEvent prediction : predictions) {
             assertThat("Predictions not updated are preserved",
-                    storage.getPredictions(), hasItem(equalTo(prediction)));
+                    storage.getPredictedEvents(), hasItem(equalTo(prediction)));
         }
         assertThat("Updated prediction is stored",
-                storage.getPredictions(), hasItem(equalTo(newPredictionSet)));
+                storage.getPredictedEvents(), hasItem(equalTo(newPredictedEvent)));
     }
 
     @Test
     public void addPredictionAddsPredictionToSinglePredictionSet() {
         createTestPredictions(2);
-        int id1 = storage.getPredictions().get(0).getId();
-        int id2 = storage.getPredictions().get(1).getId();
+        int id1 = storage.getPredictedEvents().get(0).getId();
+        int id2 = storage.getPredictedEvents().get(1).getId();
 
-        storage.addPredictionToPredictionSet(id2, new Prediction(0.5, Calendar.getInstance()));
+        storage.addPredictionToPredictedEvent(id2, new Prediction(0.5, new Date()));
 
-        assertThat("Specified PredictionSet has prediction added",
-                storage.getPredictionById(id2).getPredictions().size(), is(1));
-        assertThat("Other PredictionSets are not affected",
-                storage.getPredictionById(id1).getPredictions().size(), is(0));
+        assertThat("Specified PredictedEvent has prediction added",
+                storage.getPredictedEventById(id2).getPredictions().size(), is(1));
+        assertThat("Other PredictedEvents are not affected",
+                storage.getPredictedEventById(id1).getPredictions().size(), is(0));
     }
 
     @Test
     public void deletePredictionSetReducesPredictionSetCount() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictions().get(5).getId();
+        int id = storage.getPredictedEvents().get(5).getId();
 
-        storage.deletePredictionSet(id);
+        storage.deletePredictedEvent(id);
 
-        assertThat("Deleting a PredictionSet should decrease PredictionSet count by 1",
-                storage.getPredictions().size(), is(numberOfPredictions - 1));
+        assertThat("Deleting a PredictedEvent should decrease PredictedEvent count by 1",
+                storage.getPredictedEvents().size(), is(numberOfPredictions - 1));
     }
 
     @Test
     public void deletePredictionSetShouldInvalidateId() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictions().get(5).getId();
+        int id = storage.getPredictedEvents().get(5).getId();
 
-        storage.deletePredictionSet(id);
+        storage.deletePredictedEvent(id);
 
-        assertThat("After deleting a PredictionSet getPredictionById for that id should return null",
-                storage.getPredictionById(id), is(nullValue()));
+        assertThat("After deleting a PredictedEvent getPredictedEventById for that id should return null",
+                storage.getPredictedEventById(id), is(nullValue()));
     }
 }

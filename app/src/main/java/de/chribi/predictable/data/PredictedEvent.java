@@ -3,31 +3,32 @@ package de.chribi.predictable.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Class for a set of predictions.  This collects multiple predictions for a single event.
+ * Class for a event with predictions.
  */
-public class PredictionSet {
+public class PredictedEvent {
     private int id;
     private final @NonNull String title;
     private final @Nullable String description;
     private final PredictionState state;
-    private final @NonNull Calendar dueDate;
+    private final @NonNull Date dueDate;
     private final @NonNull List<Prediction> predictions;
 
     /**
-     * Create a {@link PredictionSet}.
+     * Create a {@link PredictedEvent}.
      * @param id A unique id.
      * @param title The title of the predicted event.
      * @param description A more detailed description.
      * @param state The state of the predicted event.
-     * @param dueDate The time it should be possible to decide the predictions.
+     * @param dueDate The time it should be possible to decide if the predicted event
+     *                happened or not.
      * @param predictions List of predictions for the predicted event.
      */
-    public PredictionSet(int id, @NonNull String title, String description, PredictionState state,
-                         @NonNull Calendar dueDate, @NonNull List<Prediction> predictions) {
+    public PredictedEvent(int id, @NonNull String title, String description, PredictionState state,
+                          @NonNull Date dueDate, @NonNull List<Prediction> predictions) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -51,7 +52,7 @@ public class PredictionSet {
     }
 
     @NonNull
-    public Calendar getDueDate() {
+    public Date getDueDate() {
         return dueDate;
     }
 
@@ -69,7 +70,7 @@ public class PredictionSet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PredictionSet that = (PredictionSet) o;
+        PredictedEvent that = (PredictedEvent) o;
 
         if (id != that.id) return false;
         if (!title.equals(that.title)) return false;

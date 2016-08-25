@@ -1,4 +1,4 @@
-package de.chribi.predictable.data;
+package de.chribi.predictable.storage;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

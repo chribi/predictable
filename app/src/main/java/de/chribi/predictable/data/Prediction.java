@@ -2,21 +2,21 @@ package de.chribi.predictable.data;
 
 import android.support.annotation.NonNull;
 
-import java.util.Calendar;
+import java.util.Date;
+
 
 /**
- * A single prediction.  A prediction always belongs to a {@link PredictionSet}.
+ * A single prediction.  A prediction always belongs to a {@link PredictedEvent}.
  */
 public class Prediction {
     private final double confidence;
-    private final @NonNull Calendar creationDate;
-
+    private final @NonNull Date creationDate;
     /**
      * Create a {@link Prediction}.
      * @param confidence The subjective confidence that the predicted event happens.
      * @param creationDate The date the prediction was made.
      */
-    public Prediction(double confidence, @NonNull Calendar creationDate) {
+    public Prediction(double confidence, @NonNull Date creationDate) {
         this.confidence = confidence;
         this.creationDate = creationDate;
     }
@@ -26,7 +26,7 @@ public class Prediction {
     }
 
     @NonNull
-    public Calendar getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
