@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -20,14 +22,17 @@ public class NewPredictionViewModel {
     private NewPredictionView view;
     private DateTimeProvider dateTimeProvider;
 
-    public NewPredictionViewModel(NewPredictionView view, PredictionStorage storage,
-                                  DateTimeProvider dateTimeProvider) {
-        this.view = view;
+    @Inject
+    public NewPredictionViewModel(PredictionStorage storage, DateTimeProvider dateTimeProvider) {
         this.storage = storage;
         this.dateTimeProvider = dateTimeProvider;
 
         predictedEvent.set("");
         dueDate.set(dateTimeProvider.getCurrentDateTime()); // TODO set to something more meaningful
+    }
+
+    public void setView(NewPredictionView view) {
+        this.view = view;
     }
 
     public void onSavePrediction() {

@@ -33,7 +33,8 @@ public class NewPredictionViewModelTest {
         Calendar now = new GregorianCalendar(2000, Calendar.JUNE, 10, 10, 20, 30);
         when(mockedDateTimeProvider.getCurrentDateTime())
                 .thenReturn(now.getTime());
-        viewModel = new NewPredictionViewModel(mockedView, fakeStorage, mockedDateTimeProvider);
+        viewModel = new NewPredictionViewModel(fakeStorage, mockedDateTimeProvider);
+        viewModel.setView(mockedView);
     }
 
     @Test

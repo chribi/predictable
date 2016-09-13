@@ -5,4 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="hint_text_event">Predicted event</string>
+    <string name="label_personal_confidence">Your personal confidence</string>
+    <string name="label_due_date">Known by</string>
 </resources>
