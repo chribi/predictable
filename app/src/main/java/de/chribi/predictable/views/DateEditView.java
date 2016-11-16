@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import de.chribi.predictable.R;
+
 public class DateEditView extends TextView
         implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
@@ -27,7 +29,7 @@ public class DateEditView extends TextView
     }
 
     public DateEditView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(context, attrs, R.attr.dialogEditViewStyle);
         setUpView(context);
     }
 

@@ -11,6 +11,8 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import de.chribi.predictable.R;
+
 public class TimeEditView extends TextView
         implements TimePickerDialog.OnTimeSetListener, View.OnClickListener{
 
@@ -26,7 +28,7 @@ public class TimeEditView extends TextView
     }
 
     public TimeEditView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(context, attrs, R.attr.dialogEditViewStyle);
         setUpView(context);
     }
 
