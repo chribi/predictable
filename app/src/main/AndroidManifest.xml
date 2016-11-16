@@ -12,7 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".newprediction.NewPredictionActivity"
-            android:exported="true">
+                  android:parentActivityName=".MainActivity"
+                  android:exported="true">
         </activity>
     </application>
 

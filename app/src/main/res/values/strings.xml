@@ -8,4 +8,6 @@
     <string name="hint_text_event">Predicted event</string>
     <string name="label_personal_confidence">Your personal confidence</string>
     <string name="label_due_date">Known by</string>
+    <string name="menu_save_predicted_event">Save</string>
+    <string name="title_activity_new_prediction">Create prediction</string>
 </resources>
