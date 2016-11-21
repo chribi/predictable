@@ -1,13 +1,9 @@
 package de.chribi.predictable.storage;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +12,13 @@ import java.util.Set;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
-import de.chribi.predictable.storage.PredictionStorage;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for all implementations of {@link PredictionStorage}.
@@ -57,7 +59,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void getPredictionByIdForInvalidIdReturnsNull() {
         createTestPredictions(1);
         int id = storage.getPredictedEvents().get(0).getId();
-        assertThat("getRredictionById for invalid Id should return null",
+        assertThat("getPredictionById for invalid Id should return null",
                 storage.getPredictedEventById(id + 1), is(nullValue()));
     }
 
