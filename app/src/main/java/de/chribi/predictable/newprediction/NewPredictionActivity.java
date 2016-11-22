@@ -31,8 +31,7 @@ public class NewPredictionActivity extends AppCompatActivity
         binding.textDueDate.setDateFormat(android.text.format.DateFormat.getMediumDateFormat(this));
         binding.textDueTime.setTimeFormat(android.text.format.DateFormat.getTimeFormat(this));
 
-        PredictableApp.get(this).getAppComponent().inject(this);
-
+        PredictableApp.get(this).getPredictableComponent().inject(this);
         viewModel.setView(this);
 
         binding.setViewModel(viewModel);

@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class ActivityNavigationTest {
+public class ActivityNavigationTest extends BaseUiTest {
 
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule
