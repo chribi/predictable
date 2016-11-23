@@ -1,5 +1,10 @@
 package de.chribi.predictable.newprediction;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,9 +12,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.chribi.predictable.data.PredictedEvent;
@@ -30,17 +33,24 @@ public class NewPredictionViewModelTest {
     @Mock private NewPredictionView mockedView;
     @Mock private DateTimeProvider mockedDateTimeProvider;
     private PredictionStorage fakeStorage;
-    private Date now;
+    // private Date now;
+    private DateTimeZone timeZone;
+    private DateTime now;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         fakeStorage = new InMemoryPredictionStorage();
-        // Current time is 2000-06-10 10:20:30
-        Calendar nowCalendar = new GregorianCalendar(2000, Calendar.JUNE, 10, 10, 20, 30);
-        now = nowCalendar.getTime();
+        // time zone is UTC-2
+        timeZone = DateTimeZone.forOffsetHours(-2);
+        // Current time is 2000-06-10 10:20:30 in time zone UTC-2
+        now = new DateTime(2000, DateTimeConstants.JUNE, 10, 10, 20, 30, timeZone);
+
         when(mockedDateTimeProvider.getCurrentDateTime())
-                .thenReturn(now);
+                .thenReturn(now.toDate());
+        when(mockedDateTimeProvider.getCurrentTimeZone())
+                .thenReturn(timeZone);
+
         viewModel = new NewPredictionViewModel(fakeStorage, mockedDateTimeProvider);
         viewModel.setView(mockedView);
     }
@@ -80,13 +90,21 @@ public class NewPredictionViewModelTest {
 
     @Test
     public void onSavePredictionSavesPredictionWithCorrectDueDate() {
-        final Date testDueDate = new Date(12345678L);
-        viewModel.setDueDate(testDueDate);
+        LocalDate testDueDate = new LocalDate(1970, DateTimeConstants.JANUARY, 4);
+        LocalTime testDueTime = new LocalTime(16, 23);
+        viewModel.setLocalDueDate(testDueDate);
+        viewModel.setLocalDueTime(testDueTime);
+        long dueDateEpochMilliseconds =
+                3 * DateTimeConstants.MILLIS_PER_DAY // 3 days after 1970-01-01
+                + 16 * DateTimeConstants.MILLIS_PER_HOUR // hour of day = 16
+                + 23 * DateTimeConstants.MILLIS_PER_MINUTE // minute of hour = 23
+                + 2 * DateTimeConstants.MILLIS_PER_HOUR; // time zone = UTC-2
+        Date testDueDateTime = new Date(dueDateEpochMilliseconds);
 
         PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
 
         assertThat("Stored predicted event should have due date as set in the view model",
-                storedEvent.getDueDate(), is(equalTo(testDueDate)));
+                storedEvent.getDueDate(), is(equalTo(testDueDateTime)));
     }
 
     @Test
@@ -114,15 +132,23 @@ public class NewPredictionViewModelTest {
         PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
 
         assertThat("Stored predicted event should have prediction with creation date now",
-                storedEvent.getPredictions().get(0).getCreationDate(), is(equalTo(now)));
+                storedEvent.getPredictions().get(0).getCreationDate(), is(equalTo(now.toDate())));
     }
 
     @Test
-    public void defaultDueDateIsFollowingDayAtNoon() {
+    public void defaultDueDateIsFollowingDay() {
         // current time is defined as 2000-06-10 10:20:30 in setUp()
-        Date tomorrowNoon = new GregorianCalendar(2000, Calendar.JUNE, 11, 12, 0, 0).getTime();
-        assertThat("Due date defaults to 12:00 on the following day",
-                viewModel.getDueDate(), is(tomorrowNoon));
+        LocalDate tomorrow = new LocalDate(2000, DateTimeConstants.JUNE, 11);
+        assertThat("Due date defaults to the following day",
+                viewModel.getLocalDueDate(), is(equalTo(tomorrow)));
+    }
+
+    @Test
+    public void defaultDueTimeIsAtNoon() {
+        LocalTime noon = new LocalTime(12, 0);
+        assertThat("Due time defaults to 12:00",
+                viewModel.getLocalDueTime(), is(equalTo(noon)));
+
     }
 
     @Test

@@ -35,8 +35,6 @@ public class NewPredictionActivity extends AppCompatActivity
         viewModel.setView(this);
 
         binding.setViewModel(viewModel);
-        binding.textDueDate.setDate(viewModel.getDueDate());
-        binding.textDueTime.setTime(viewModel.getDueDate());
     }
 
     private void configureToolbar() {

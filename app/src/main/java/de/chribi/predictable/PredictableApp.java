@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import de.chribi.predictable.di.DaggerAppComponent;
 import de.chribi.predictable.di.PredictableComponent;
 
@@ -13,8 +15,9 @@ public class PredictableApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        predictableComponent = createComponent();
         Log.d("PredictableApp", "onCreate");
+        predictableComponent = createComponent();
+        JodaTimeAndroid.init(this);
     }
 
     protected PredictableComponent createComponent() {

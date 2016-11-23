@@ -3,10 +3,13 @@ package de.chribi.predictable.newprediction;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,7 +21,8 @@ import de.chribi.predictable.util.DateTimeProvider;
 
 public class NewPredictionViewModel extends BaseObservable {
     private String predictedEventTitle = "";
-    private Date dueDate;
+    private LocalDate localDueDate;
+    private LocalTime localDueTime;
     private double confidencePercentage = 50.0;
 
     @Bindable
@@ -31,14 +35,30 @@ public class NewPredictionViewModel extends BaseObservable {
         notifyPropertyChanged(BR.predictedEventTitle);
     }
 
-    @Bindable
-    public Date getDueDate() {
-        return dueDate;
+    private Date getDueDateTime() {
+        DateTime dueDateTime = localDueDate.toDateTime(localDueTime,
+                dateTimeProvider.getCurrentTimeZone());
+        return dueDateTime.toDate();
     }
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-        notifyPropertyChanged(BR.dueDate);
+    @Bindable
+    public LocalDate getLocalDueDate() {
+        return localDueDate;
+    }
+
+    public void setLocalDueDate(LocalDate localDueDate) {
+        this.localDueDate = localDueDate;
+        notifyPropertyChanged(BR.localDueDate);
+    }
+
+    @Bindable
+    public LocalTime getLocalDueTime() {
+        return localDueTime;
+    }
+
+    public void setLocalDueTime(LocalTime localDueTime) {
+        this.localDueTime = localDueTime;
+        notifyPropertyChanged(BR.localDueTime);
     }
 
     @Bindable
@@ -66,15 +86,12 @@ public class NewPredictionViewModel extends BaseObservable {
         this.storage = storage;
         this.dateTimeProvider = dateTimeProvider;
 
-        // Default due date is tomorrow noon
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(dateTimeProvider.getCurrentDateTime());
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 12);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        setDueDate(cal.getTime());
+        // Default due date/time is tomorrow noon
+        Date now = dateTimeProvider.getCurrentDateTime();
+        DateTimeZone timeZone = dateTimeProvider.getCurrentTimeZone();
+
+        this.localDueDate = new LocalDate(now, timeZone).plusDays(1);
+        this.localDueTime = new LocalTime(12, 0);
     }
 
     public void setView(NewPredictionView view) {
@@ -86,7 +103,7 @@ public class NewPredictionViewModel extends BaseObservable {
         List<Prediction> predictions = new ArrayList<>(1);
         predictions.add(new Prediction(confidencePercentage / 100,
                 dateTimeProvider.getCurrentDateTime()));
-        storage.createPredictedEvent(predictedEventTitle, null, dueDate, predictions);
+        storage.createPredictedEvent(predictedEventTitle, null, getDueDateTime(), predictions);
         view.closeView();
     }
 

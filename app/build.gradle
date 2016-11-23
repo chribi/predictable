@@ -67,4 +67,5 @@ dependencies {
     compile "com.android.support:appcompat-v7:$SupportLibVersion"
     compile "com.android.support:design:$SupportLibVersion"
     compile "com.android.support.constraint:constraint-layout:1.0.0-beta4"
+    compile 'net.danlew:android.joda:2.9.5'
 }

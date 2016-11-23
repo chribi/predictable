@@ -4,12 +4,12 @@ package de.chribi.predictable.newprediction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.Date;
 
 import de.chribi.predictable.BaseUiTest;
 import de.chribi.predictable.R;
@@ -113,7 +113,7 @@ public class NewPredictionActivityTest extends BaseUiTest {
         onView(withId(R.id.text_due_date))
                 .perform(click());
         setDatePickerDialogAndConfirm(2005, 10, 7);
-        verify(viewModel).setDueDate(any(Date.class));
+        verify(viewModel).setLocalDueDate(any(LocalDate.class));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class NewPredictionActivityTest extends BaseUiTest {
         onView(withId(R.id.text_due_time))
                 .perform(click());
         setTimePickerDialogAndConfirm(11, 57);
-        verify(viewModel).setDueDate(any(Date.class));
+        verify(viewModel).setLocalDueTime(any(LocalTime.class));
     }
 
     @Test
