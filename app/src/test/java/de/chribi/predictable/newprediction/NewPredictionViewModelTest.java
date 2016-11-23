@@ -70,7 +70,7 @@ public class NewPredictionViewModelTest {
     @Test
     public void onSavePredictionSavesPredictionWithCorrectTitle() {
         final String testTitle = "Test event title";
-        viewModel.predictedEvent.set(testTitle);
+        viewModel.setPredictedEventTitle(testTitle);
 
         PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
 
@@ -81,7 +81,7 @@ public class NewPredictionViewModelTest {
     @Test
     public void onSavePredictionSavesPredictionWithCorrectDueDate() {
         final Date testDueDate = new Date(12345678L);
-        viewModel.dueDate.set(testDueDate);
+        viewModel.setDueDate(testDueDate);
 
         PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
 
@@ -100,7 +100,7 @@ public class NewPredictionViewModelTest {
     @Test
     public void onSavePredictionSavesPredictionWithCorrectConfidence() {
         final double testConfidence = 0.4321;
-        viewModel.confidencePercentage.set(testConfidence * 100);
+        viewModel.setConfidencePercentage(testConfidence * 100);
 
         PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
 
@@ -122,36 +122,36 @@ public class NewPredictionViewModelTest {
         // current time is defined as 2000-06-10 10:20:30 in setUp()
         Date tomorrowNoon = new GregorianCalendar(2000, Calendar.JUNE, 11, 12, 0, 0).getTime();
         assertThat("Due date defaults to 12:00 on the following day",
-                viewModel.dueDate.get(), is(tomorrowNoon));
+                viewModel.getDueDate(), is(tomorrowNoon));
     }
 
     @Test
     public void defaultConfidenceIs50Percent() {
         assertThat("Default confidence is 50 percent",
-                viewModel.confidencePercentage.get(),  closeTo(50, 1e-8));
+                viewModel.getConfidencePercentage(),  closeTo(50, 1e-8));
     }
 
     @Test
     public void confidenceAbove100IsSetTo100() {
-        viewModel.confidencePercentage.set(120);
+        viewModel.setConfidencePercentage(120);
         assertThat("Confidence above 100 is reduced to 100",
-                viewModel.confidencePercentage.get(), closeTo(100, 1e-8));
+                viewModel.getConfidencePercentage(), closeTo(100, 1e-8));
     }
 
     @Test
     public void confidenceBelow0IsSetTo0() {
-        viewModel.confidencePercentage.set(-1.23);
+        viewModel.setConfidencePercentage(-1.23);
         assertThat("Confidence below 0 is set to 0",
-                viewModel.confidencePercentage.get(), closeTo(0, 1e-8));
+                viewModel.getConfidencePercentage(), closeTo(0, 1e-8));
     }
 
     @Test
     public void confidenceBetween0And100IsUnaffected() {
         double[] testValues = new double[] { 23.45, 12.34, 99.999, 0.0001, 0, 100 };
         for (double v : testValues) {
-            viewModel.confidencePercentage.set(v);
+            viewModel.setConfidencePercentage(v);
             assertThat("Confidence between 0 and 100 is unaffected",
-                    viewModel.confidencePercentage.get(), closeTo(v, 1e-8));
+                    viewModel.getConfidencePercentage(), closeTo(v, 1e-8));
         }
     }
 }

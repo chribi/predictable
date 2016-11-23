@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_text_event"
                 android:inputType="textAutoCorrect|textMultiLine"
-                android:text="@={viewModel.predictedEvent}"
+                android:text="@={viewModel.predictedEventTitle}"
                 app:layout_constraintLeft_toLeftOf="@+id/constraintLayout"
                 app:layout_constraintRight_toRightOf="@+id/constraintLayout"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout"
