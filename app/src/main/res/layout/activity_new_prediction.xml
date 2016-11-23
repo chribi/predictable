@@ -31,7 +31,7 @@
             >
 
             <EditText
-                android:id="@+id/text_event"
+                android:id="@+id/text_event_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_text_event"
@@ -61,7 +61,7 @@
                 android:selectAllOnFocus="true"
                 android:text="@={viewModel.confidencePercentage}"
                 app:layout_constraintRight_toLeftOf="@+id/label_percent"
-                app:layout_constraintTop_toBottomOf="@+id/text_event"
+                app:layout_constraintTop_toBottomOf="@+id/text_event_title"
                 tools:text="50"
                 />
 

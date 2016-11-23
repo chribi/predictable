@@ -9,6 +9,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
+
 import de.chribi.predictable.BaseUiTest;
 import de.chribi.predictable.R;
 import de.chribi.predictable.di.PredictableComponent;
@@ -16,6 +18,7 @@ import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.DefaultDateTimeHandler;
+import de.chribi.testutils.EspressoUtils;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -26,9 +29,12 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static de.chribi.testutils.DialogUtils.setDatePickerDialogAndConfirm;
 import static de.chribi.testutils.DialogUtils.setTimePickerDialogAndConfirm;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class NewPredictionActivityTest extends BaseUiTest {
@@ -91,5 +97,64 @@ public class NewPredictionActivityTest extends BaseUiTest {
         // test device has to be set to 24 hour format
         onView(withId(R.id.text_due_time))
                 .check(matches(withText("14:15")));
+    }
+
+    @Test
+    public void textEventTitleSetsEventTitleInViewModel() {
+        final String testEventTitle = "Test string";
+        onView(withId(R.id.text_event_title))
+                .perform(typeText(testEventTitle));
+        assertThat(viewModel.getPredictedEventTitle(),
+                is(equalTo(testEventTitle)));
+    }
+
+    @Test
+    public void textDueDateSetsDueDateInViewModel() {
+        onView(withId(R.id.text_due_date))
+                .perform(click());
+        setDatePickerDialogAndConfirm(2005, 10, 7);
+        verify(viewModel).setDueDate(any(Date.class));
+    }
+
+    @Test
+    public void textDueTimeSetsDueDateInViewModel() {
+        onView(withId(R.id.text_due_time))
+                .perform(click());
+        setTimePickerDialogAndConfirm(11, 57);
+        verify(viewModel).setDueDate(any(Date.class));
+    }
+
+    @Test
+    public void textConfidenceSetsConfidenceInViewModel() {
+        final double confidence = 87.654;
+        onView(withId(R.id.text_confidence))
+                .perform(typeText(String.valueOf(confidence)));
+
+        assertThat(viewModel.getConfidencePercentage(),
+                is(closeTo(confidence, 1e-8)));
+    }
+
+    @Test
+    public void textEventTitleIsRestoredAfterConfigurationChange() {
+        final String testTitle = "Some test title";
+        onView(withId(R.id.text_event_title))
+                .perform(typeText(testTitle));
+
+        EspressoUtils.forceConfigurationChange(activityTestRule.getActivity());
+
+        onView(withId(R.id.text_event_title))
+                .check(matches(withText(testTitle)));
+    }
+
+    @Test
+    public void textDueTimeIsRestoredAfterConfigurationChange() {
+        onView(withId(R.id.text_due_time))
+                .perform(click());
+        setTimePickerDialogAndConfirm(8, 11);
+
+        EspressoUtils.forceConfigurationChange(activityTestRule.getActivity());
+
+        onView(withId(R.id.text_due_time))
+                .check(matches(withText("08:11")));
     }
 }
