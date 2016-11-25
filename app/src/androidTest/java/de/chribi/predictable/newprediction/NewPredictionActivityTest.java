@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -110,10 +111,14 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
     @Test
     public void textDueDateSetsDueDateInViewModel() {
+        final LocalDate testDate = new LocalDate(2005, 10, 7);
         onView(withId(R.id.text_due_date))
                 .perform(click());
-        setDatePickerDialogAndConfirm(2005, 10, 7);
-        verify(viewModel).setLocalDueDate(any(LocalDate.class));
+        reset(viewModel);
+
+        setDatePickerDialogAndConfirm(testDate);
+
+        verify(viewModel).setLocalDueDate(testDate);
     }
 
     @Test

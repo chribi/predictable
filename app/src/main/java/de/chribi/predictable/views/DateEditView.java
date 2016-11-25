@@ -2,26 +2,39 @@ package de.chribi.predictable.views;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.databinding.InverseBindingListener;
+import android.databinding.InverseBindingMethod;
+import android.databinding.InverseBindingMethods;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormatter;
 
 import de.chribi.predictable.R;
 
+@InverseBindingMethods(
+        @InverseBindingMethod(
+                type = DateEditView.class,
+                attribute = "date"
+        )
+)
 public class DateEditView extends TextView
         implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
+    public interface OnDateChangedListener {
+        void OnDateChanged(DateEditView view, LocalDate newDate);
+    }
 
-    private int year, month, dayOfMonth;
-    private DateFormat dateFormat;
+    @NonNull
+    private LocalDate date;
+    private DateTimeFormatter dateFormat;
 
     private DatePickerDialog datePickerDialog;
-    private DatePickerDialog.OnDateSetListener onDateSetListener;
+    private OnDateChangedListener onDateChangedListener;
 
     public DateEditView(Context context) {
         super(context);
@@ -40,73 +53,63 @@ public class DateEditView extends TextView
 
     private void setUpView(Context context) {
         this.setOnClickListener(this);
-        datePickerDialog = new DatePickerDialog(context, this, year, month, dayOfMonth);
+        date = new LocalDate();
+        updateText();
+        datePickerDialog = new DatePickerDialog(context, this, date.getYear(),
+                date.getMonthOfYear() - 1, date.getDayOfMonth());
         datePickerDialog.setCustomTitle(null);
     }
 
     private void updateText() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        setText(dateFormat.format(calendar.getTime()));
+        setText(date.toString(dateFormat));
     }
 
     @Override
     public void onClick(View v) {
-        datePickerDialog.updateDate(year, month, dayOfMonth);
+        datePickerDialog.updateDate(date.getYear(),
+                date.getMonthOfYear() - 1, date.getDayOfMonth());
         datePickerDialog.show();
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        this.year = year;
-        this.month = month;
-        this.dayOfMonth = dayOfMonth;
-        if(onDateSetListener != null) {
-            onDateSetListener.onDateSet(view, year, month, dayOfMonth);
-        }
-        updateText();
+        // XXX DatePicker uses months with values 0..11
+        setDate(new LocalDate(year, month + 1, dayOfMonth));
     }
 
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-        updateText();
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-        updateText();
-    }
-
-    public int getDayOfMonth() {
-        return dayOfMonth;
-    }
-
-    public void setDayOfMonth(int dayOfMonth) {
-        this.dayOfMonth = dayOfMonth;
-        updateText();
-    }
-
-    public void setDateFormat(DateFormat format) {
+    public void setDateFormat(DateTimeFormatter format) {
         this.dateFormat = format;
         updateText();
     }
 
-    public void setDate(Date dateTime) {
-        Calendar dateTimeCal = Calendar.getInstance();
-        dateTimeCal.setTime(dateTime);
-        this.year = dateTimeCal.get(Calendar.YEAR);
-        this.month = dateTimeCal.get(Calendar.MONTH);
-        this.dayOfMonth = dateTimeCal.get(Calendar.DAY_OF_MONTH);
-        updateText();
+    public @NonNull LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(@NonNull LocalDate newDate) {
+        if(!newDate.equals(date)) {
+            date = newDate;
+            updateText();
+            if (onDateChangedListener != null) {
+                onDateChangedListener.OnDateChanged(this, date);
+            }
+        }
+    }
+
+
+    @BindingAdapter("dateAttrChanged")
+    public static void setDateChangeListener(DateEditView dateEditView,
+                                             final InverseBindingListener onAttrChange)
+    {
+        if(onAttrChange != null) {
+            dateEditView.onDateChangedListener = new OnDateChangedListener() {
+                @Override
+                public void OnDateChanged(DateEditView view, LocalDate newDate) {
+                    onAttrChange.onChange();
+                }
+            };
+        } else {
+            dateEditView.onDateChangedListener = null;
+        }
     }
 }

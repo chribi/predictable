@@ -47,8 +47,10 @@ public class NewPredictionViewModel extends BaseObservable {
     }
 
     public void setLocalDueDate(LocalDate localDueDate) {
-        this.localDueDate = localDueDate;
-        notifyPropertyChanged(BR.localDueDate);
+        if(!this.localDueDate.equals(localDueDate)) {
+            this.localDueDate = localDueDate;
+            notifyPropertyChanged(BR.localDueDate);
+        }
     }
 
     @Bindable
@@ -57,8 +59,10 @@ public class NewPredictionViewModel extends BaseObservable {
     }
 
     public void setLocalDueTime(LocalTime localDueTime) {
-        this.localDueTime = localDueTime;
-        notifyPropertyChanged(BR.localDueTime);
+        if(!this.localDueTime.equals(localDueTime)) {
+            this.localDueTime = localDueTime;
+            notifyPropertyChanged(BR.localDueTime);
+        }
     }
 
     @Bindable

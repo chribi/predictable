@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.joda.time.format.DateTimeFormat;
+
 import javax.inject.Inject;
 
 import de.chribi.predictable.PredictableApp;
@@ -28,7 +30,7 @@ public class NewPredictionActivity extends AppCompatActivity
         setSupportActionBar(binding.includedToolbar.toolbar);
         configureToolbar();
 
-        binding.textDueDate.setDateFormat(android.text.format.DateFormat.getMediumDateFormat(this));
+        binding.textDueDate.setDateFormat(DateTimeFormat.mediumDate());
         binding.textDueTime.setTimeFormat(android.text.format.DateFormat.getTimeFormat(this));
 
         PredictableApp.get(this).getPredictableComponent().inject(this);
