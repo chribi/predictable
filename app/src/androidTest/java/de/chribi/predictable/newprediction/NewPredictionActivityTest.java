@@ -142,6 +142,7 @@ public class NewPredictionActivityTest extends BaseUiTest {
                 is(closeTo(confidence, 1e-8)));
     }
 
+    /*
     @Test
     public void textEventTitleIsRestoredAfterConfigurationChange() {
         final String testTitle = "Some test title";
@@ -165,4 +166,5 @@ public class NewPredictionActivityTest extends BaseUiTest {
         onView(withId(R.id.text_due_time))
                 .check(matches(withText("08:11")));
     }
+    */
 }
