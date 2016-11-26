@@ -123,10 +123,13 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
     @Test
     public void textDueTimeSetsDueDateInViewModel() {
+        final LocalTime testTime = new LocalTime(11, 57);
         onView(withId(R.id.text_due_time))
                 .perform(click());
-        setTimePickerDialogAndConfirm(11, 57);
-        verify(viewModel).setLocalDueTime(any(LocalTime.class));
+        reset(viewModel);
+
+        setTimePickerDialogAndConfirm(testTime);
+        verify(viewModel).setLocalDueTime(testTime);
     }
 
     @Test

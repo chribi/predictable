@@ -31,7 +31,7 @@ public class NewPredictionActivity extends AppCompatActivity
         configureToolbar();
 
         binding.textDueDate.setDateFormat(DateTimeFormat.mediumDate());
-        binding.textDueTime.setTimeFormat(android.text.format.DateFormat.getTimeFormat(this));
+        binding.textDueTime.setTimeFormat(DateTimeFormat.shortTime());
 
         PredictableApp.get(this).getPredictableComponent().inject(this);
         viewModel.setView(this);

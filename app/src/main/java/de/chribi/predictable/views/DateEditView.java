@@ -30,7 +30,7 @@ public class DateEditView extends TextView
     }
 
     @NonNull
-    private LocalDate date;
+    private LocalDate date = new LocalDate();
     private DateTimeFormatter dateFormat;
 
     private DatePickerDialog datePickerDialog;
@@ -53,7 +53,6 @@ public class DateEditView extends TextView
 
     private void setUpView(Context context) {
         this.setOnClickListener(this);
-        date = new LocalDate();
         updateText();
         datePickerDialog = new DatePickerDialog(context, this, date.getYear(),
                 date.getMonthOfYear() - 1, date.getDayOfMonth());

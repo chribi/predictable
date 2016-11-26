@@ -2,10 +2,18 @@ package de.chribi.predictable.views;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.databinding.InverseBindingListener;
+import android.databinding.InverseBindingMethod;
+import android.databinding.InverseBindingMethods;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -13,14 +21,24 @@ import java.util.Date;
 
 import de.chribi.predictable.R;
 
+@InverseBindingMethods(
+        @InverseBindingMethod(
+                type = TimeEditView.class,
+                attribute = "time"
+        )
+)
 public class TimeEditView extends TextView
         implements TimePickerDialog.OnTimeSetListener, View.OnClickListener{
+    public interface OnTimeChangedListener {
+        void OnTimeChanged(TimeEditView view, LocalTime newTime);
+    }
 
-    private int hours, minutes;
-    private DateFormat timeFormat;
+    @NonNull
+    private LocalTime time = new LocalTime();
+    private DateTimeFormatter timeFormat;
 
     private TimePickerDialog timePickerDialog;
-    private TimePickerDialog.OnTimeSetListener onTimeSetListener;
+    private OnTimeChangedListener onTimeChangedListener;
 
     public TimeEditView(Context context) {
         super(context);
@@ -39,61 +57,56 @@ public class TimeEditView extends TextView
 
     private void setUpView(Context context) {
         this.setOnClickListener(this);
+        int hours = time.getHourOfDay();
+        int minutes = time.getMinuteOfHour();
         timePickerDialog = new TimePickerDialog(context, this, hours, minutes, true);
         timePickerDialog.setCustomTitle(null);
     }
 
     private void updateText() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hours);
-        calendar.set(Calendar.MINUTE, minutes);
-        setText(timeFormat.format(calendar.getTime()));
+        setText(time.toString(timeFormat));
     }
 
     @Override
     public void onClick(View v) {
-        timePickerDialog.updateTime(hours, minutes);
+        timePickerDialog.updateTime(time.getHourOfDay(), time.getMinuteOfHour());
         timePickerDialog.show();
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        this.hours = hourOfDay;
-        this.minutes = minute;
-        if(onTimeSetListener != null) {
-            onTimeSetListener.onTimeSet(view, hourOfDay, minute);
+        setTime(new LocalTime(hourOfDay, minute));
+    }
+
+    public @NonNull LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(@NonNull LocalTime newTime) {
+        if(!newTime.equals(time)) {
+            time = newTime;
+            updateText();
+            if(onTimeChangedListener != null) {
+                onTimeChangedListener.OnTimeChanged(this, time);
+            }
         }
-        updateText();
     }
 
-    public int getHours() {
-        return hours;
-    }
-
-    public void setHours(int hours) {
-        this.hours = hours;
-        updateText();
-    }
-
-    public int getMinutes() {
-        return minutes;
-    }
-
-    public void setMinutes(int minutes) {
-        this.minutes = minutes;
-        updateText();
-    }
-
-    public void setTimeFormat(DateFormat format) {
+    public void setTimeFormat(DateTimeFormatter format) {
         this.timeFormat = format;
         updateText();
     }
 
-    public void setTime(Date dateTime) {
-        Calendar dateTimeCal = Calendar.getInstance();
-        dateTimeCal.setTime(dateTime);
-        this.hours = dateTimeCal.get(Calendar.HOUR_OF_DAY);
-        this.minutes = dateTimeCal.get(Calendar.MINUTE);
-        updateText();
+    @BindingAdapter("timeAttrChanged")
+    public static void setTimeChangeListener(TimeEditView view,
+                                             final InverseBindingListener onAttrChange) {
+        if(onAttrChange != null) {
+            view.onTimeChangedListener = new OnTimeChangedListener() {
+                @Override
+                public void OnTimeChanged(TimeEditView view, LocalTime newTime) {
+                    onAttrChange.onChange();
+                }
+            };
+        }
     }
 }

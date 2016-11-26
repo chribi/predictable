@@ -5,6 +5,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -31,5 +32,9 @@ public class DialogUtils {
                 .perform(setTime(hour, minute));
         onView(withId(android.R.id.button1))
                 .perform(click());
+    }
+
+    public static void setTimePickerDialogAndConfirm(LocalTime time) {
+        setTimePickerDialogAndConfirm(time.getHourOfDay(), time.getMinuteOfHour());
     }
 }

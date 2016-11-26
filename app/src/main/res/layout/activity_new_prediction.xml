@@ -96,6 +96,7 @@
                 android:id="@+id/text_due_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:time="@={viewModel.localDueTime}"
                 app:layout_constraintBaseline_toBaselineOf="@id/text_due_date"
                 app:layout_constraintRight_toRightOf="@+id/constraintLayout"
                 />
