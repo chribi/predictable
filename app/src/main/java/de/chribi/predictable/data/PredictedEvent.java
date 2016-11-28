@@ -10,7 +10,7 @@ import java.util.List;
  * Class for a event with predictions.
  */
 public class PredictedEvent {
-    private int id;
+    private long id;
     private final @NonNull String title;
     private final @Nullable String description;
     private final PredictionState state;
@@ -27,7 +27,7 @@ public class PredictedEvent {
      *                happened or not.
      * @param predictions List of predictions for the predicted event.
      */
-    public PredictedEvent(int id, @NonNull String title, String description, PredictionState state,
+    public PredictedEvent(long id, @NonNull String title, String description, PredictionState state,
                           @NonNull Date dueDate, @NonNull List<Prediction> predictions) {
         this.id = id;
         this.title = title;
@@ -37,7 +37,7 @@ public class PredictedEvent {
         this.predictions = predictions;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -84,7 +84,7 @@ public class PredictedEvent {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = (int)id;
         result = 31 * result + title.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);

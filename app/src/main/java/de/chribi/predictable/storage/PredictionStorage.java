@@ -27,7 +27,7 @@ public interface PredictionStorage {
      * @return The stored PredictedEvent or null if no PredictedEvent with the id was stored.
      */
     @Nullable
-    PredictedEvent getPredictedEventById(int id);
+    PredictedEvent getPredictedEventById(long id);
 
     /**
      * Create and store a new {@link PredictedEvent}.
@@ -49,18 +49,18 @@ public interface PredictionStorage {
      * @param id  The id of the {@link PredictedEvent} to update.
      * @param newPredictedEvent  The new {@link PredictedEvent}.
      */
-    void updatePredictedEvent(int id, PredictedEvent newPredictedEvent);
+    void updatePredictedEvent(long id, PredictedEvent newPredictedEvent);
 
     /**
      * Delete a {@link PredictedEvent}.
      * @param id  The id of the {@link PredictedEvent} to delete.
      */
-    void deletePredictedEvent(int id);
+    void deletePredictedEvent(long id);
 
     /**
      * Add a {@link Prediction} to a {@link PredictedEvent}.
      * @param id  The id of the {@link PredictedEvent} to update.
      * @param prediction  The {@link Prediction} to add.
      */
-    void addPredictionToPredictedEvent(int id, Prediction prediction);
+    void addPredictionToPredictedEvent(long id, Prediction prediction);
 }

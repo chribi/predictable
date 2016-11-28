@@ -58,7 +58,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     @Test
     public void getPredictionByIdForInvalidIdReturnsNull() {
         createTestPredictions(1);
-        int id = storage.getPredictedEvents().get(0).getId();
+        long id = storage.getPredictedEvents().get(0).getId();
         assertThat("getPredictionById for invalid Id should return null",
                 storage.getPredictedEventById(id + 1), is(nullValue()));
     }
@@ -66,7 +66,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     @Test
     public void getPredictionByIdForValidIdReturnsMatchingPredictionSet() {
         createTestPredictions(5);
-        int id = storage.getPredictedEvents().get(3).getId();
+        long id = storage.getPredictedEvents().get(3).getId();
         assertThat("getPredictedEventById should return PredictedEvent with specified id",
                 storage.getPredictedEventById(id).getId(), is(id));
     }
@@ -123,7 +123,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void createdPredictionsHaveUniqueIds() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        Set<Integer> ids = new HashSet<>();
+        Set<Long> ids = new HashSet<>();
         for (PredictedEvent predictedEvent : storage.getPredictedEvents()) {
             ids.add(predictedEvent.getId());
         }
@@ -135,7 +135,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void updatePredictionSetDoesNotChangePredictionCount() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictedEvents().get(0).getId();
+        long id = storage.getPredictedEvents().get(0).getId();
         storage.updatePredictedEvent(id, new PredictedEvent(id, "Some title",
                 "Some description", PredictionState.Incorrect, new Date(5000),
                 new ArrayList<Prediction>()));
@@ -148,7 +148,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
         List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
-        int id = predictions.get(2).getId();
+        long id = predictions.get(2).getId();
         PredictedEvent newPredictedEvent = new PredictedEvent(id, "Some title",
                 "Some description", PredictionState.Correct, new Date(3500),
                 new ArrayList<Prediction>());
@@ -166,8 +166,8 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     @Test
     public void addPredictionAddsPredictionToSinglePredictionSet() {
         createTestPredictions(2);
-        int id1 = storage.getPredictedEvents().get(0).getId();
-        int id2 = storage.getPredictedEvents().get(1).getId();
+        long id1 = storage.getPredictedEvents().get(0).getId();
+        long id2 = storage.getPredictedEvents().get(1).getId();
 
         storage.addPredictionToPredictedEvent(id2, new Prediction(0.5, new Date()));
 
@@ -181,7 +181,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void deletePredictionSetReducesPredictionSetCount() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictedEvents().get(5).getId();
+        long id = storage.getPredictedEvents().get(5).getId();
 
         storage.deletePredictedEvent(id);
 
@@ -193,7 +193,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void deletePredictionSetShouldInvalidateId() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        int id = storage.getPredictedEvents().get(5).getId();
+        long id = storage.getPredictedEvents().get(5).getId();
 
         storage.deletePredictedEvent(id);
 

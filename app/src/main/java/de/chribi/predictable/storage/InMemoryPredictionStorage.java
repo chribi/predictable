@@ -16,8 +16,8 @@ import de.chribi.predictable.data.PredictionState;
  * An in-memory storage of predictions.
  */
 public class InMemoryPredictionStorage implements PredictionStorage {
-    private @NonNull HashMap<Integer, PredictedEvent> storage;
-    private int nextId;
+    private @NonNull HashMap<Long, PredictedEvent> storage;
+    private long nextId;
 
     /**
      * Create a new empty InMemoryPredictionStorage.
@@ -47,7 +47,7 @@ public class InMemoryPredictionStorage implements PredictionStorage {
 
     @Nullable
     @Override
-    public PredictedEvent getPredictedEventById(int id) {
+    public PredictedEvent getPredictedEventById(long id) {
         return storage.get(id);
     }
 
@@ -64,17 +64,17 @@ public class InMemoryPredictionStorage implements PredictionStorage {
     }
 
     @Override
-    public void updatePredictedEvent(int id, PredictedEvent newPredictedEvent) {
+    public void updatePredictedEvent(long id, PredictedEvent newPredictedEvent) {
         storage.put(id, newPredictedEvent);
     }
 
     @Override
-    public void deletePredictedEvent(int id) {
+    public void deletePredictedEvent(long id) {
         storage.remove(id);
     }
 
     @Override
-    public void addPredictionToPredictedEvent(int id, Prediction prediction) {
+    public void addPredictionToPredictedEvent(long id, Prediction prediction) {
         storage.get(id).getPredictions().add(prediction);
     }
 }
