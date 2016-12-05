@@ -7,7 +7,8 @@ import dagger.Component;
 
 @Component(modules = {
         PredictionStorageModule.class,
-        DateTimeModule.class
+        DateTimeModule.class,
+        ConfigurationModule.class
 })
 @Singleton
 interface AppComponent extends PredictableComponent {

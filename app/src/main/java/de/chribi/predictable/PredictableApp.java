@@ -6,10 +6,13 @@ import android.util.Log;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import de.chribi.predictable.di.ConfigurationModule;
 import de.chribi.predictable.di.DaggerAppComponent;
 import de.chribi.predictable.di.PredictableComponent;
 
 public class PredictableApp extends Application {
+    public static final String DB_NAME = "predictable.db";
+
     private PredictableComponent predictableComponent;
 
     @Override
@@ -21,7 +24,9 @@ public class PredictableApp extends Application {
     }
 
     protected PredictableComponent createComponent() {
+        ConfigurationModule configuration = new ConfigurationModule(this, DB_NAME);
         return DaggerAppComponent.builder()
+                .configurationModule(configuration)
                 .build();
     }
 
