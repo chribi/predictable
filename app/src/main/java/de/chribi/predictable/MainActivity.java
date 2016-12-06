@@ -20,6 +20,8 @@ import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.databinding.ActivityMainBinding;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
+import de.chribi.predictable.util.DateTimeProvider;
+import de.chribi.predictable.util.DefaultDateTimeHandler;
 import me.tatarka.bindingcollectionadapter.ItemView;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,15 +42,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ObservableList<PredictedEvent> events = new ObservableArrayList<PredictedEvent>();
-        for(int i = 0; i < 100; i++) {
-            events.add(new PredictedEvent(i, "Test " + String.valueOf(i), "",
-                    PredictionState.Correct, new Date(i * 24 * 60 * 60 * 1000),
-                    new ArrayList<Prediction>()));
+        ObservableList<PredictionItemViewModel> events = new ObservableArrayList<>();
+        DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
+        DefaultPredictionItemStringProvider strings = new DefaultPredictionItemStringProvider(this);
+        int numTestPredictions = 1000;
+        for(int i = 0; i < numTestPredictions; i++) {
+            ArrayList<Prediction> predictionList = new ArrayList<>();
+            predictionList.add(new Prediction((double)i / numTestPredictions,
+                    new Date(i * 12 * 60 * 60 * 1000L)));
+            PredictedEvent event = new PredictedEvent(i, "Test " + String.valueOf(i), "",
+                    PredictionState.values()[ i % 4 ], new Date(i * 24 * 60 * 60 * 1000L),
+                    predictionList);
+            PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings);
+            vm.setPredictedEvent(event);
+            events.add(vm);
         }
 
         binding.setPredictions(events);
-        binding.setPredictionItemView(ItemView.of(BR.predictedEvent, R.layout.item_prediction));
+        binding.setPredictionItemView(ItemView.of(BR.itemViewModel, R.layout.item_prediction));
 
         // RecyclerView predictions =  (RecyclerView) findViewById(R.id.list_predictions);
     }

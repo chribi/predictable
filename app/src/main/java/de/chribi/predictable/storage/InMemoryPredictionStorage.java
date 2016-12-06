@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +77,14 @@ public class InMemoryPredictionStorage implements PredictionStorage {
 
     @Override
     public void addPredictionToPredictedEvent(long id, Prediction prediction) {
-        storage.get(id).getPredictions().add(prediction);
+        List<Prediction> predictions = storage.get(id).getPredictions();
+        predictions.add(prediction);
+        Collections.sort(predictions, new Comparator<Prediction>() {
+            @Override
+            public int compare(Prediction prediction, Prediction t1) {
+                return prediction.getCreationDate()
+                        .compareTo(t1.getCreationDate());
+            }
+        });
     }
 }

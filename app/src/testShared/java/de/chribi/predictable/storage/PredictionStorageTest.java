@@ -14,6 +14,7 @@ import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -144,7 +145,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     }
 
     @Test
-    public void updatePredictionSetChangesSinglePredictionSet() {
+    public void updatePredictedEventChangesSinglePredictionSet() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
         List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
@@ -175,6 +176,30 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
                 storage.getPredictedEventById(id2).getPredictions().size(), is(1));
         assertThat("Other PredictedEvents are not affected",
                 storage.getPredictedEventById(id1).getPredictions().size(), is(0));
+    }
+
+    @Test
+    public void addPredictionPreservesPredictionOrderConstraint() {
+        // The predictions of a predicted event always have to be in order of creation date
+        long id =   storage.createPredictedEvent("Test", null, new Date(100000L),
+                new ArrayList<Prediction>()).getId();
+
+        Prediction prediction1 = new Prediction(0.1, new Date(1000L));
+        Prediction prediction2 = new Prediction(0.2, new Date(2000L));
+        Prediction prediction3 = new Prediction(0.3, new Date(3000L));
+        Prediction prediction4 = new Prediction(0.4, new Date(4000L));
+
+        storage.addPredictionToPredictedEvent(id, prediction2);
+        storage.addPredictionToPredictedEvent(id, prediction3);
+        storage.addPredictionToPredictedEvent(id, prediction1);
+        storage.addPredictionToPredictedEvent(id, prediction4);
+
+        List<Prediction> predictions = storage.getPredictedEventById(id).getPredictions();
+
+        assertThat("Predictions of a predicted event have to be in order of creation date",
+                predictions, contains(equalTo(prediction1),
+                        equalTo(prediction2), equalTo(prediction3),
+                        equalTo(prediction4)));
     }
 
     @Test

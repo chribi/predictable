@@ -18,7 +18,6 @@ import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.DefaultDateTimeHandler;
-import de.chribi.testutils.EspressoUtils;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -65,14 +64,14 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
     @Test
     public void confidenceGreater100WillBeSetTo100() {
-        onView(withId(R.id.text_confidence))
+        onView(withId(R.id.text_event_last_confidence))
                 .perform(typeText("123.45"))
                 .check(matches(withText("100.0")));
     }
 
     @Test
     public void confidenceBetween0And100WillBeLeftUnchanged() {
-        onView(withId(R.id.text_confidence))
+        onView(withId(R.id.text_event_last_confidence))
                 .perform(typeText("12.345"))
                 .check(matches(withText("12.345")));
     }
@@ -135,7 +134,7 @@ public class NewPredictionActivityTest extends BaseUiTest {
     @Test
     public void textConfidenceSetsConfidenceInViewModel() {
         final double confidence = 87.654;
-        onView(withId(R.id.text_confidence))
+        onView(withId(R.id.text_event_last_confidence))
                 .perform(typeText(String.valueOf(confidence)));
 
         assertThat(viewModel.getConfidencePercentage(),

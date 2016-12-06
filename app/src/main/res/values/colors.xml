@@ -3,4 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="correct_prediction">#33691e</color>
+    <color name="incorrect_prediction">#d50000</color>
+    <color name="invalid_prediction">#616161</color>
+    <color name="open_prediction">#1a237e</color>
 </resources>

@@ -3,6 +3,8 @@ package de.chribi.predictable.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,12 @@ public class PredictedEvent {
         this.state = state;
         this.dueDate = dueDate;
         this.predictions = predictions;
+        Collections.sort(predictions, new Comparator<Prediction>() {
+            @Override
+            public int compare(Prediction prediction, Prediction t1) {
+                return prediction.getCreationDate().compareTo(t1.getCreationDate());
+            }
+        });
     }
 
     public long getId() {
@@ -60,6 +68,10 @@ public class PredictedEvent {
         return state;
     }
 
+    /**
+     * List of predictions for this event.
+     * @return The list of predictions for this event, sorted ascending by creation date.
+     */
     @NonNull
     public List<Prediction> getPredictions() {
         return predictions;
