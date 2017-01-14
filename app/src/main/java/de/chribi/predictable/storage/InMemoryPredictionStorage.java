@@ -59,7 +59,7 @@ public class InMemoryPredictionStorage implements PredictionStorage {
                                                @NonNull Date dueDate,
                                                @NonNull List<Prediction> predictions) {
         PredictedEvent newPredictedEvent = new PredictedEvent(nextId, title, description,
-                PredictionState.Open, dueDate, predictions);
+               null, dueDate, predictions);
         storage.put(nextId, newPredictedEvent);
         nextId++;
         return newPredictedEvent;

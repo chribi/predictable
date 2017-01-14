@@ -4,16 +4,15 @@ package de.chribi.predictable;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.util.Date;
 
 import javax.inject.Inject;
 
+import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
@@ -25,7 +24,7 @@ public class PredictionItemViewModel extends BaseObservable {
         String formatConfidence(double confidencePercent);
         String formatOverDue();
         String formatKnownBy(LocalDateTime dueDateTime);
-        String formatJudged(PredictionState judgedState);
+        String formatJudged(PredictionState judgedState, LocalDateTime judgedDate);
     }
 
     private PredictedEvent predictedEvent;
@@ -75,7 +74,12 @@ public class PredictionItemViewModel extends BaseObservable {
      */
     @Bindable
     public PredictionState getPredictionState() {
-        return predictedEvent.getState();
+        Judgement judgement = predictedEvent.getJudgement();
+        if(judgement != null) {
+            return judgement.getState();
+        } else {
+            return PredictionState.Open;
+        }
     }
 
     /**
@@ -84,16 +88,18 @@ public class PredictionItemViewModel extends BaseObservable {
     @Bindable
     public String getStatusDescription()
     {
-        if(predictedEvent.getState() == PredictionState.Open) {
+        DateTimeZone timezone = dateTimeProvider.getCurrentTimeZone();
+        Judgement judgement = predictedEvent.getJudgement();
+        if(judgement == null) {
             Date dueDate = predictedEvent.getDueDate();
             if(dueDate.after(dateTimeProvider.getCurrentDateTime())) {
-                return strings.formatOverDue();
+                return strings.formatKnownBy(new LocalDateTime(dueDate, timezone));
             } else {
-                return strings.formatKnownBy(new LocalDateTime(dueDate,
-                        dateTimeProvider.getCurrentTimeZone()));
+                return strings.formatOverDue();
             }
         } else {
-            return strings.formatJudged(predictedEvent.getState());
+            LocalDateTime judgedDate = new LocalDateTime(judgement.getDate(), timezone);
+            return strings.formatJudged(judgement.getState(), judgedDate);
         }
     }
 

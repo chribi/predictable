@@ -15,7 +15,7 @@ public class PredictedEvent {
     private long id;
     private final @NonNull String title;
     private final @Nullable String description;
-    private final PredictionState state;
+    private final @Nullable Judgement judgement;
     private final @NonNull Date dueDate;
     private final @NonNull List<Prediction> predictions;
 
@@ -24,17 +24,18 @@ public class PredictedEvent {
      * @param id A unique id.
      * @param title The title of the predicted event.
      * @param description A more detailed description.
-     * @param state The state of the predicted event.
+     * @param judgement How/when the prediction was judged or null if it is open.
      * @param dueDate The time it should be possible to decide if the predicted event
      *                happened or not.
      * @param predictions List of predictions for the predicted event.
      */
-    public PredictedEvent(long id, @NonNull String title, String description, PredictionState state,
-                          @NonNull Date dueDate, @NonNull List<Prediction> predictions) {
+    public PredictedEvent(long id, @NonNull String title, String description,
+                          @Nullable Judgement judgement, @NonNull Date dueDate,
+                          @NonNull List<Prediction> predictions) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.state = state;
+        this.judgement = judgement;
         this.dueDate = dueDate;
         this.predictions = predictions;
         Collections.sort(predictions, new Comparator<Prediction>() {
@@ -64,8 +65,9 @@ public class PredictedEvent {
         return dueDate;
     }
 
-    public PredictionState getState() {
-        return state;
+    @Nullable
+    public Judgement getJudgement() {
+        return judgement;
     }
 
     /**
@@ -88,7 +90,7 @@ public class PredictedEvent {
         if (!title.equals(that.title)) return false;
         if (description != null ? !description.equals(that.description) : that.description != null)
             return false;
-        if (state != that.state) return false;
+        if (!judgement.equals(that.judgement)) return false;
         if (!dueDate.equals(that.dueDate)) return false;
         return predictions.equals(that.predictions);
 
@@ -99,7 +101,7 @@ public class PredictedEvent {
         int result = (int)id;
         result = 31 * result + title.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (judgement != null ? judgement.hashCode() : 0);
         result = 31 * result + dueDate.hashCode();
         result = 31 * result + predictions.hashCode();
         return result;

@@ -51,6 +51,10 @@ public class NewPredictionActivityTest extends BaseUiTest {
             public void inject(NewPredictionActivity activity) {
                 activity.viewModel = viewModel;
             }
+            @Override
+            public PredictionStorage getStorage() {
+                return null;
+            }
         };
     }
 

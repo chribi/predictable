@@ -45,7 +45,9 @@ public class DefaultPredictionItemStringProvider
     }
 
     @Override
-    public String formatJudged(PredictionState judgedState) {
+    public String formatJudged(PredictionState judgedState, LocalDateTime judgedTime) {
+        DateTimeFormatter dateFormat = DateTimeFormat.mediumDate();
+        String dateString = judgedTime.toString(dateFormat);
         @StringRes int stateStringId = 0;
         switch (judgedState) {
             case Open:
@@ -62,6 +64,6 @@ public class DefaultPredictionItemStringProvider
                 break;
         }
         String stateString = context.getString(stateStringId);
-        return context.getString(R.string.status_judged, stateString);
+        return context.getString(R.string.status_judged, stateString, dateString);
     }
 }

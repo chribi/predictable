@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
@@ -40,6 +41,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
             SqliteSchemas.PredictedEvents.COLUMN_TITLE,
             SqliteSchemas.PredictedEvents.COLUMN_DESCRIPTION,
             SqliteSchemas.PredictedEvents.COLUMN_STATE,
+            SqliteSchemas.PredictedEvents.COLUMN_JUDGED_DATE,
             SqliteSchemas.PredictedEvents.COLUMN_DUE_DATE,
             SqliteSchemas.Predictions.COLUMN_CONFIDENCE,
             SqliteSchemas.Predictions.COLUMN_CREATION_DATE
@@ -50,9 +52,10 @@ public class SqlitePredictionStorage implements PredictionStorage {
     private static final int idxEventTitle = 1;
     private static final int idxEventDescription = 2;
     private static final int idxEventState = 3;
-    private static final int idxEventDueDate = 4;
-    private static final int idxConfidence = 5;
-    private static final int idxPredictionDate = 6;
+    private static final int idxEventJudgementDate = 4;
+    private static final int idxEventDueDate = 5;
+    private static final int idxConfidence = 6;
+    private static final int idxPredictionDate = 7;
 
     @NonNull
     @Override
@@ -98,6 +101,13 @@ public class SqlitePredictionStorage implements PredictionStorage {
         String title = cursor.getString(idxEventTitle);
         String description = cursor.getString(idxEventDescription);
         PredictionState state = PredictionState.fromStoredValue(cursor.getInt(idxEventState));
+        Judgement judgement;
+        if(state != PredictionState.Open) {
+            Date judgementDate = new Date(cursor.getLong(idxEventJudgementDate));
+            judgement = new Judgement(state, judgementDate);
+        } else {
+            judgement = null;
+        }
         Date dueDate = new Date(cursor.getLong(idxEventDueDate));
         List<Prediction> predictions = new ArrayList<>();
         long currentId = eventId;
@@ -112,7 +122,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
                 currentId = eventId + 1;
             }
         }
-        return new PredictedEvent(eventId, title, description, state, dueDate, predictions);
+        return new PredictedEvent(eventId, title, description, judgement, dueDate, predictions);
     }
 
     private Prediction getCurrentPrediction(Cursor cursor) {
@@ -160,7 +170,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
         db.beginTransaction();
         try {
             ContentValues values =
-                    createContentValuesForPredictedEvent(title, description, dueDate, defaultState);
+                    createContentValuesForPredictedEvent(title, description, dueDate, null);
             eventId = db.insert(SqliteSchemas.PredictedEvents.TABLE_NAME, null, values);
 
             for (Prediction prediction : predictions) {
@@ -172,7 +182,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
         } finally {
             db.endTransaction();
         }
-        return new PredictedEvent(eventId, title, description, defaultState, dueDate, predictions);
+        return new PredictedEvent(eventId, title, description, null, dueDate, predictions);
     }
 
     @Override
@@ -184,7 +194,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
 
             ContentValues newValues = createContentValuesForPredictedEvent(newPredictedEvent.getTitle(),
                     newPredictedEvent.getDescription(), newPredictedEvent.getDueDate(),
-                    newPredictedEvent.getState());
+                    newPredictedEvent.getJudgement());
             db.update(SqliteSchemas.PredictedEvents.TABLE_NAME, newValues,
                     SqliteSchemas.PredictedEvents._ID + " = ?", argEventId);
 
@@ -221,12 +231,15 @@ public class SqlitePredictionStorage implements PredictionStorage {
 
     private ContentValues
     createContentValuesForPredictedEvent(String title, String description, Date dueDate,
-                                         PredictionState state) {
+                                         Judgement judgement) {
         ContentValues values = new ContentValues();
         values.put(SqliteSchemas.PredictedEvents.COLUMN_TITLE, title);
         values.put(SqliteSchemas.PredictedEvents.COLUMN_DESCRIPTION, description);
         values.put(SqliteSchemas.PredictedEvents.COLUMN_DUE_DATE, dueDate.getTime());
+        PredictionState state = judgement != null ? judgement.getState() : PredictionState.Open;
         values.put(SqliteSchemas.PredictedEvents.COLUMN_STATE, state.getStoredValue());
+        values.put(SqliteSchemas.PredictedEvents.COLUMN_JUDGED_DATE,
+                judgement != null ? judgement.getDate().getTime() : null);
         return values;
     }
 

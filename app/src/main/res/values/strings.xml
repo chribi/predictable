@@ -13,7 +13,7 @@
 
     <string name="status_overdue">Should be known by now</string>
     <string name="status_known_by">Known by %1$s</string>
-    <string name="status_judged">Was judged %1$s</string>
+    <string name="status_judged">Judged %1$s on %2$s</string>
 
     <string name="text_no_confidence">\??</string>
 

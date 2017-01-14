@@ -14,6 +14,7 @@ class SqliteSchemas {
         static final String COLUMN_TITLE = "ev_title";
         static final String COLUMN_DESCRIPTION = "ev_description";
         static final String COLUMN_STATE = "ev_state";
+        static final String COLUMN_JUDGED_DATE = "ev_judged_date";
         static final String COLUMN_DUE_DATE = "ev_due_date";
 
         static final String ID_REF = TABLE_NAME + "(" + _ID + ")";
@@ -24,6 +25,7 @@ class SqliteSchemas {
                         COLUMN_TITLE + " TEXT NOT NULL, " +
                         COLUMN_DESCRIPTION + " TEXT," +
                         COLUMN_STATE + " INTEGER NOT NULL, " +
+                        COLUMN_JUDGED_DATE + " INTEGER, " +
                         COLUMN_DUE_DATE + " INTEGER NOT NULL)";
     }
 

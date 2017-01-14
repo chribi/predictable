@@ -94,8 +94,8 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
                 createdPrediction.getDescription(), is(equalTo(description)));
         assertThat("Due date should be the creation dueDate",
                 createdPrediction.getDueDate(), is(equalTo(dueDate)));
-        assertThat("State of new prediction should be 'Open'",
-                createdPrediction.getState(), is(equalTo(PredictionState.Open)));
+        assertThat("New Prediction should be unjudged",
+                createdPrediction.getJudgement(), is(nullValue()));
         assertThat("Predictions from creation should be contained in the predictions",
                 createdPrediction.getPredictions(), containsInAnyOrder(
                         equalTo(prediction1),
@@ -138,7 +138,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         createTestPredictions(numberOfPredictions);
         long id = storage.getPredictedEvents().get(0).getId();
         storage.updatePredictedEvent(id, new PredictedEvent(id, "Some title",
-                "Some description", PredictionState.Incorrect, new Date(5000),
+                "Some description", null, new Date(5000),
                 new ArrayList<Prediction>()));
         assertThat("Updating predictions should not change prediction count",
                 storage.getPredictedEvents().size(), is(numberOfPredictions));
@@ -151,7 +151,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
         long id = predictions.get(2).getId();
         PredictedEvent newPredictedEvent = new PredictedEvent(id, "Some title",
-                "Some description", PredictionState.Correct, new Date(3500),
+                "Some description", null, new Date(3500),
                 new ArrayList<Prediction>());
         predictions.remove(2);
         storage.updatePredictedEvent(id, newPredictedEvent);
