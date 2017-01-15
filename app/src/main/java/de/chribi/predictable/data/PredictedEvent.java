@@ -12,6 +12,33 @@ import java.util.List;
  * Class for a event with predictions.
  */
 public class PredictedEvent {
+    /**
+     * Interface for modifying a stored {@link PredictedEvent}.
+     */
+    public interface Editor {
+        /**
+         * Commit the changes to the underlying storage.
+         * @return The modified predicted event.
+         */
+        PredictedEvent commit();
+
+        void setTile(@NonNull String newTitle);
+        @NonNull String getTitle();
+
+        void setDescription(@Nullable String newDescription);
+        @Nullable String getDescription();
+
+        void setJudgement(@Nullable Judgement newJudgment);
+        @Nullable Judgement getJudgement();
+
+        void setDueDate(@NonNull Date newDueDate);
+        @NonNull Date getDueDate();
+
+        void addPrediction(@NonNull Prediction newPrediction);
+        void removePrediction(Prediction prediction);
+        @NonNull List<Prediction> getPredictions();
+    }
+
     private long id;
     private final @NonNull String title;
     private final @Nullable String description;
@@ -81,18 +108,24 @@ public class PredictedEvent {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PredictedEvent that = (PredictedEvent) o;
-
-        if (id != that.id) return false;
-        if (!title.equals(that.title)) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null)
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
             return false;
-        if (!judgement.equals(that.judgement)) return false;
-        if (!dueDate.equals(that.dueDate)) return false;
-        return predictions.equals(that.predictions);
+
+        PredictedEvent event = (PredictedEvent) o;
+
+        if (id != event.id)
+            return false;
+        if (!title.equals(event.title))
+            return false;
+        if (description != null ? !description.equals(event.description) : event.description != null)
+            return false;
+        if (judgement != null ? !judgement.equals(event.judgement) : event.judgement != null)
+            return false;
+        if (!dueDate.equals(event.dueDate))
+            return false;
+        return predictions.equals(event.predictions);
 
     }
 

@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 for(int k = 0; k < numPredictions; k++) {
                     predictions.add(new Prediction(r.nextDouble(), randomDateNearNow(r, now)));
                 }
-                long predictionId = storage.createPredictedEvent(title, description, dueDate,
-                        predictions).getId();
+                PredictedEvent event = storage.createPredictedEvent(title, description, dueDate,
+                        predictions);
                 double v = r.nextDouble();
                 if(v > 0.4) {
                     PredictionState state;
@@ -118,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Judgement judgement = new Judgement(state, randomDateNearNow(r, now));
 
-                    storage.updatePredictedEvent(predictionId,
-                            new PredictedEvent(predictionId, title, description, judgement,
-                                    dueDate, predictions ));
+                    PredictedEvent.Editor editor = storage.edit(event);
+                    editor.setJudgement(judgement);
+                    editor.commit();
                 }
             }
         }

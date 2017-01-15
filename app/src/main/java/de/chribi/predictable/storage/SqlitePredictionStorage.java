@@ -4,10 +4,13 @@ package de.chribi.predictable.storage;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -32,12 +35,12 @@ public class SqlitePredictionStorage implements PredictionStorage {
     private static final String joinedPredictedEventTable =
             SqliteSchemas.PredictedEvents.TABLE_NAME +
             " LEFT JOIN " + SqliteSchemas.Predictions.TABLE_NAME +
-            " ON " + SqliteSchemas.PredictedEvents._ID +
+            " ON " + SqliteSchemas.PredictedEvents.COLUMN_ID +
             " = " + SqliteSchemas.Predictions.COLUMN_EVENT;
 
     // columns to use in queries for events
     private static final String[] queryEventColumns = new String[]{
-            SqliteSchemas.PredictedEvents._ID,
+            SqliteSchemas.PredictedEvents.COLUMN_ID,
             SqliteSchemas.PredictedEvents.COLUMN_TITLE,
             SqliteSchemas.PredictedEvents.COLUMN_DESCRIPTION,
             SqliteSchemas.PredictedEvents.COLUMN_STATE,
@@ -62,7 +65,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
     public List<PredictedEvent> getPredictedEvents() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String orderBy = SqliteSchemas.PredictedEvents._ID + " ASC, "
+        String orderBy = SqliteSchemas.PredictedEvents.COLUMN_ID + " ASC, "
                 + SqliteSchemas.Predictions.COLUMN_CREATION_DATE + " ASC";
 
         Cursor dbCursor = db.query(joinedPredictedEventTable,
@@ -141,7 +144,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
     public PredictedEvent getPredictedEventById(long id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String whereClause = SqliteSchemas.PredictedEvents._ID + " = ?";
+        String whereClause = SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?";
         String[] whereArgs = new String[] { String.valueOf(id) };
 
         String orderBy = SqliteSchemas.Predictions.COLUMN_CREATION_DATE + " ASC";
@@ -165,7 +168,6 @@ public class SqlitePredictionStorage implements PredictionStorage {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         long eventId = 0;
-        PredictionState defaultState = PredictionState.Open;
 
         db.beginTransaction();
         try {
@@ -185,51 +187,22 @@ public class SqlitePredictionStorage implements PredictionStorage {
         return new PredictedEvent(eventId, title, description, null, dueDate, predictions);
     }
 
+    @NonNull
     @Override
-    public void updatePredictedEvent(long id, PredictedEvent newPredictedEvent) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            String[] argEventId = new String[]{ String.valueOf(id) };
-
-            ContentValues newValues = createContentValuesForPredictedEvent(newPredictedEvent.getTitle(),
-                    newPredictedEvent.getDescription(), newPredictedEvent.getDueDate(),
-                    newPredictedEvent.getJudgement());
-            db.update(SqliteSchemas.PredictedEvents.TABLE_NAME, newValues,
-                    SqliteSchemas.PredictedEvents._ID + " = ?", argEventId);
-
-            // update predictions by deleting all predictions currently in the db
-            // and then inserting all new ones
-            db.delete(SqliteSchemas.Predictions.TABLE_NAME,
-                    SqliteSchemas.Predictions.COLUMN_EVENT + " = ?", argEventId);
-
-            for (Prediction prediction : newPredictedEvent.getPredictions()) {
-                ContentValues predictionValues = createContentValuesForPrediction(id, prediction);
-                db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, predictionValues);
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+    public PredictedEvent.Editor edit(@NonNull PredictedEvent event) {
+        return new SqliteEventEditor(event, dbHelper);
     }
 
     @Override
     public void deletePredictedEvent(long id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        String whereClause = SqliteSchemas.PredictedEvents._ID + " = ?";
+        String whereClause = SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?";
         String[] whereArgs = new String[] { String.valueOf(id) };
         db.delete(SqliteSchemas.PredictedEvents.TABLE_NAME, whereClause, whereArgs);
         // XXX Don't need to delete predictions from prediction table, as this is handled by sqlite
     }
 
-    @Override
-    public void addPredictionToPredictedEvent(long id, Prediction prediction) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = createContentValuesForPrediction(id, prediction);
-        db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, values);
-    }
-
-    private ContentValues
+    private static ContentValues
     createContentValuesForPredictedEvent(String title, String description, Date dueDate,
                                          Judgement judgement) {
         ContentValues values = new ContentValues();
@@ -243,7 +216,7 @@ public class SqlitePredictionStorage implements PredictionStorage {
         return values;
     }
 
-    private ContentValues
+    private static ContentValues
     createContentValuesForPrediction(long eventId, Prediction prediction) {
         ContentValues predictionValues = new ContentValues();
         predictionValues.put(SqliteSchemas.Predictions.COLUMN_CONFIDENCE,
@@ -252,5 +225,130 @@ public class SqlitePredictionStorage implements PredictionStorage {
                 prediction.getCreationDate().getTime());
         predictionValues.put(SqliteSchemas.Predictions.COLUMN_EVENT, eventId);
         return predictionValues;
+    }
+
+    private static class SqliteEventEditor implements PredictedEvent.Editor {
+        private PredictedEvent editedEvent;
+
+        private @NonNull String currentTitle;
+        private String currentDescription;
+        private Judgement currentJudgement;
+        private Date currentDueDate;
+        private List<Prediction> currentPredictions;
+
+        private SQLiteOpenHelper dbHelper;
+
+        public SqliteEventEditor(PredictedEvent event, SQLiteOpenHelper sqliteHelper) {
+            editedEvent = event;
+            currentTitle = event.getTitle();
+            currentDescription = event.getDescription();
+            currentJudgement = event.getJudgement();
+            currentDueDate = event.getDueDate();
+            currentPredictions = new ArrayList<>(event.getPredictions());
+
+            dbHelper = sqliteHelper;
+        }
+
+        @Override
+        public PredictedEvent commit() {
+            long id = editedEvent.getId();
+            PredictedEvent newPredictedEvent = new PredictedEvent(
+                    id, getTitle(), getDescription(), getJudgement(), getDueDate(),
+                    getPredictions());
+
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            db.beginTransaction();
+            try {
+                String[] argEventId = new String[]{ String.valueOf(id) };
+
+                ContentValues newValues = createContentValuesForPredictedEvent(
+                        newPredictedEvent.getTitle(),
+                        newPredictedEvent.getDescription(), newPredictedEvent.getDueDate(),
+                        newPredictedEvent.getJudgement());
+                db.update(SqliteSchemas.PredictedEvents.TABLE_NAME, newValues,
+                        SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?", argEventId);
+
+                // update predictions by deleting all predictions currently in the db
+                // and then inserting all new ones
+                db.delete(SqliteSchemas.Predictions.TABLE_NAME,
+                        SqliteSchemas.Predictions.COLUMN_EVENT + " = ?", argEventId);
+
+                for (Prediction prediction : newPredictedEvent.getPredictions()) {
+                    ContentValues predictionValues = createContentValuesForPrediction(id, prediction);
+                    db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, predictionValues);
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+            return newPredictedEvent;
+        }
+
+        @Override
+        public void setTile(@NonNull String newTitle) {
+            currentTitle = newTitle;
+        }
+
+        @NonNull
+        @Override
+        public String getTitle() {
+            return currentTitle;
+        }
+
+        @Override
+        public void setDescription(@Nullable String newDescription) {
+            currentDescription = newDescription;
+        }
+
+        @Nullable
+        @Override
+        public String getDescription() {
+            return currentDescription;
+        }
+
+        @Override
+        public void setJudgement(@Nullable Judgement newJudgment) {
+            currentJudgement = newJudgment;
+        }
+
+        @Nullable
+        @Override
+        public Judgement getJudgement() {
+            return currentJudgement;
+        }
+
+        @Override
+        public void setDueDate(@NonNull Date newDueDate) {
+            currentDueDate = newDueDate;
+        }
+
+        @NonNull
+        @Override
+        public Date getDueDate() {
+            return currentDueDate;
+        }
+
+        @Override
+        public void addPrediction(@NonNull Prediction newPrediction) {
+            currentPredictions.add(newPrediction);
+        }
+
+        @Override
+        public void removePrediction(Prediction prediction) {
+            currentPredictions.remove(prediction);
+        }
+
+        @NonNull
+        @Override
+        public List<Prediction> getPredictions() {
+            Collections.sort(currentPredictions, new Comparator<Prediction>() {
+                @Override
+                public int compare(Prediction prediction, Prediction t1) {
+                    return prediction.getCreationDate().compareTo(t1.getCreationDate());
+                }
+            });
+
+            return new ArrayList<>(currentPredictions);
+        }
     }
 }

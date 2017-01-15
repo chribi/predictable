@@ -65,26 +65,15 @@ public class InMemoryPredictionStorage implements PredictionStorage {
         return newPredictedEvent;
     }
 
+    @NonNull
     @Override
-    public void updatePredictedEvent(long id, PredictedEvent newPredictedEvent) {
-        storage.put(id, newPredictedEvent);
+    public PredictedEvent.Editor edit(@NonNull PredictedEvent event) {
+        // TODO
+        return null;
     }
 
     @Override
     public void deletePredictedEvent(long id) {
         storage.remove(id);
-    }
-
-    @Override
-    public void addPredictionToPredictedEvent(long id, Prediction prediction) {
-        List<Prediction> predictions = storage.get(id).getPredictions();
-        predictions.add(prediction);
-        Collections.sort(predictions, new Comparator<Prediction>() {
-            @Override
-            public int compare(Prediction prediction, Prediction t1) {
-                return prediction.getCreationDate()
-                        .compareTo(t1.getCreationDate());
-            }
-        });
     }
 }

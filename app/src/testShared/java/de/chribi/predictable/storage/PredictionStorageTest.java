@@ -136,10 +136,14 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void updatePredictionSetDoesNotChangePredictionCount() {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
-        long id = storage.getPredictedEvents().get(0).getId();
-        storage.updatePredictedEvent(id, new PredictedEvent(id, "Some title",
-                "Some description", null, new Date(5000),
-                new ArrayList<Prediction>()));
+        PredictedEvent event = storage.getPredictedEvents().get(0);
+        PredictedEvent.Editor editor = storage.edit(event);
+
+        editor.setTile("Some title");
+        editor.setDescription("Some description");
+        editor.setDueDate(new Date(5000));
+        editor.commit();
+
         assertThat("Updating predictions should not change prediction count",
                 storage.getPredictedEvents().size(), is(numberOfPredictions));
     }
@@ -149,12 +153,14 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
         List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
-        long id = predictions.get(2).getId();
-        PredictedEvent newPredictedEvent = new PredictedEvent(id, "Some title",
-                "Some description", null, new Date(3500),
-                new ArrayList<Prediction>());
+        PredictedEvent event = predictions.get(2);
         predictions.remove(2);
-        storage.updatePredictedEvent(id, newPredictedEvent);
+        PredictedEvent.Editor editor = storage.edit(event);
+
+        editor.setTile("Some title");
+        editor.setDescription("Some description");
+        editor.setDueDate(new Date(3500));
+        PredictedEvent newPredictedEvent = editor.commit();
 
         for (PredictedEvent prediction : predictions) {
             assertThat("Predictions not updated are preserved",
@@ -168,9 +174,12 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     public void addPredictionAddsPredictionToSinglePredictionSet() {
         createTestPredictions(2);
         long id1 = storage.getPredictedEvents().get(0).getId();
-        long id2 = storage.getPredictedEvents().get(1).getId();
+        PredictedEvent event2 = storage.getPredictedEvents().get(1);
+        long id2 = event2.getId();
 
-        storage.addPredictionToPredictedEvent(id2, new Prediction(0.5, new Date()));
+        PredictedEvent.Editor editor = storage.edit(event2);
+        editor.addPrediction(new Prediction(0.5, new Date()));
+        editor.commit();
 
         assertThat("Specified PredictedEvent has prediction added",
                 storage.getPredictedEventById(id2).getPredictions().size(), is(1));
@@ -181,20 +190,23 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     @Test
     public void addPredictionPreservesPredictionOrderConstraint() {
         // The predictions of a predicted event always have to be in order of creation date
-        long id =   storage.createPredictedEvent("Test", null, new Date(100000L),
-                new ArrayList<Prediction>()).getId();
+        PredictedEvent event = storage.createPredictedEvent("Test", null, new Date(100000L),
+                new ArrayList<Prediction>());
 
         Prediction prediction1 = new Prediction(0.1, new Date(1000L));
         Prediction prediction2 = new Prediction(0.2, new Date(2000L));
         Prediction prediction3 = new Prediction(0.3, new Date(3000L));
         Prediction prediction4 = new Prediction(0.4, new Date(4000L));
 
-        storage.addPredictionToPredictedEvent(id, prediction2);
-        storage.addPredictionToPredictedEvent(id, prediction3);
-        storage.addPredictionToPredictedEvent(id, prediction1);
-        storage.addPredictionToPredictedEvent(id, prediction4);
+        PredictedEvent.Editor editor = storage.edit(event);
 
-        List<Prediction> predictions = storage.getPredictedEventById(id).getPredictions();
+        editor.addPrediction(prediction2);
+        editor.addPrediction(prediction3);
+        editor.addPrediction(prediction1);
+        editor.addPrediction(prediction4);
+        editor.commit();
+
+        List<Prediction> predictions = storage.getPredictedEventById(event.getId()).getPredictions();
 
         assertThat("Predictions of a predicted event have to be in order of creation date",
                 predictions, contains(equalTo(prediction1),
