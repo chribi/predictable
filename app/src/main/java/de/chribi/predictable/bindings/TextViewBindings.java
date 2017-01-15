@@ -1,9 +1,16 @@
 package de.chribi.predictable.bindings;
 
 
+import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
+import android.graphics.Paint;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.widget.TextView;
+
+import de.chribi.predictable.R;
+import de.chribi.predictable.data.PredictionState;
 
 public class TextViewBindings {
 
@@ -37,5 +44,38 @@ public class TextViewBindings {
             result = 0;
         }
         return result;
+    }
+
+    @BindingAdapter(value = "predictionState")
+    public static void setPredictionState(TextView view, PredictionState state) {
+        @ColorRes int colorResource;
+        switch (state) {
+            case Open:
+                colorResource = android.support.design.R.color.abc_primary_text_material_light;
+                break;
+            case Correct:
+                colorResource = R.color.correct_prediction;
+                break;
+            case Incorrect:
+                colorResource = R.color.incorrect_prediction;
+                break;
+            case Invalid:
+                colorResource = R.color.invalid_prediction;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown prediction state.");
+        }
+        Context ctx = view.getContext();
+        @ColorInt int textColor = ctx.getResources().getColor(colorResource);
+
+        view.setTextColor(textColor);
+
+        int newPaintFlags;
+        if(state == PredictionState.Invalid) {
+            newPaintFlags = view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG;
+        } else {
+            newPaintFlags = view.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+        view.setPaintFlags(newPaintFlags);
     }
 }
