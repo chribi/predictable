@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    def SupportLibVersion = '25.0.1'
+    def SupportLibVersion = '25.1.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
@@ -67,7 +67,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$SupportLibVersion"
     compile "com.android.support:design:$SupportLibVersion"
     compile "com.android.support:cardview-v7:$SupportLibVersion"
-    compile "com.android.support.constraint:constraint-layout:1.0.0-beta4"
+    compile "com.android.support.constraint:constraint-layout:1.0.0-beta5"
     compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter:1.3.0'
     compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter-recyclerview:1.3.0'
     compile 'net.danlew:android.joda:2.9.5'
