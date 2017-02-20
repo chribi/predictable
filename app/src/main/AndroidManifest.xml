@@ -19,9 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".newprediction.NewPredictionActivity"
-                  android:parentActivityName=".MainActivity"
-                  android:exported="true">
+        <activity
+            android:name=".newprediction.NewPredictionActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".predictiondetail.PredictionDetailActivity"
+            android:exported="true">
         </activity>
     </application>
 
