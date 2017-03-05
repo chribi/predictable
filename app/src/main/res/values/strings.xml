@@ -27,4 +27,5 @@
     <string name="action_judge_incorrect">Incorrect</string>
     <string name="action_judge_invalid">Invalid</string>
     <string name="label_judge_event">Judge this prediction</string>
+    <string name="label_confidence_graph">Your confidence</string>
 </resources>

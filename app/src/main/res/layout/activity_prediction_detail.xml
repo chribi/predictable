@@ -109,8 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="@{viewModel.open}"
-                    android:text="@string/action_judge_correct"
-                    android:onClick="@{() -> viewModel.judgeCorrect()}"
+                    android:text="@string/action_judge_correct" android:onClick="@{() -> viewModel.judgeCorrect()}"
                     app:layout_constraintTop_toBottomOf="@+id/label_judge"
                     app:layout_constraintStart_toStartOf="@+id/constraint_layout"
                     app:layout_constraintEnd_toStartOf="@+id/button_judge_incorrect"
@@ -150,12 +149,19 @@
                     />
 
                 <TextView
+                    android:id="@+id/label_chart_confidence"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:background="@android:color/holo_orange_light"
-                    android:text="placeholder"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_confidence_graph"
                     android:layout_marginTop="16dp"
+                    android:layout_marginBottom="12dp"
                     app:layout_constraintTop_toBottomOf="@id/button_reopen"
+                    />
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart_confidence"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    app:layout_constraintTop_toBottomOf="@id/label_chart_confidence"
                     />
                 
 
