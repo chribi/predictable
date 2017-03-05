@@ -26,7 +26,7 @@
         </activity>
         <activity
             android:name=".predictiondetail.PredictionDetailActivity"
-            android:exported="true">
+            android:parentActivityName=".MainActivity">
         </activity>
     </application>
 

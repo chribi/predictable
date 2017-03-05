@@ -28,6 +28,7 @@ import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.DefaultDateTimeHandler;
+import de.chribi.predictable.util.DefaultStringsProvider;
 import me.tatarka.bindingcollectionadapter.ItemView;
 
 public class MainActivity extends AppCompatActivity implements PredictionListView {
@@ -50,10 +51,10 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
 
         ObservableList<PredictionItemViewModel> events = new ObservableArrayList<>();
         DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
-        DefaultPredictionItemStringProvider strings = new DefaultPredictionItemStringProvider(this);
+        DefaultStringsProvider strings = new DefaultStringsProvider(this);
         PredictionStorage storage = PredictableApp.get(this).getPredictableComponent().getStorage();
         for (PredictedEvent event : storage.getPredictedEvents()) {
-            PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings);
+            PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings, strings);
             vm.setPredictedEvent(event);
             vm.setView(this);
             events.add(vm);

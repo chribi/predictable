@@ -16,28 +16,26 @@ import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
-import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
+import de.chribi.predictable.util.ConfidenceFormatProvider;
 import de.chribi.predictable.util.DateTimeProvider;
+import de.chribi.predictable.util.PredictionStatusStringProvider;
+import de.chribi.predictable.util.StatusStringUtil;
 
 public class PredictionItemViewModel extends BaseObservable {
-    public interface PredictionItemStringProvider {
-        String formatNoConfidence();
-        String formatConfidence(double confidencePercent);
-        String formatOverDue();
-        String formatKnownBy(LocalDateTime dueDateTime);
-        String formatJudged(PredictionState judgedState, LocalDateTime judgedDate);
-    }
 
     private PredictedEvent predictedEvent;
     private DateTimeProvider dateTimeProvider;
-    private PredictionItemStringProvider strings;
+    private PredictionStatusStringProvider statusStrings;
+    private final ConfidenceFormatProvider confidenceFormatter;
     private PredictionListView view;
 
     @Inject
     public PredictionItemViewModel(DateTimeProvider dateTimeProvider,
-                                   PredictionItemStringProvider strings) {
+                                   PredictionStatusStringProvider statusStrings,
+                                   ConfidenceFormatProvider confidenceFormatter) {
         this.dateTimeProvider = dateTimeProvider;
-        this.strings = strings;
+        this.statusStrings = statusStrings;
+        this.confidenceFormatter = confidenceFormatter;
     }
 
     /**
@@ -69,9 +67,9 @@ public class PredictionItemViewModel extends BaseObservable {
         int numOfPredictions = predictedEvent.getPredictions().size();
         if(numOfPredictions > 0) {
             Prediction lastPrediction = predictedEvent.getPredictions().get(numOfPredictions - 1);
-            return strings.formatConfidence(lastPrediction.getConfidence() * 100);
+            return confidenceFormatter.formatConfidence(lastPrediction.getConfidence() * 100);
         } else {
-            return strings.formatNoConfidence();
+            return confidenceFormatter.formatNoConfidence();
         }
     }
 
@@ -94,19 +92,8 @@ public class PredictionItemViewModel extends BaseObservable {
     @Bindable
     public String getStatusDescription()
     {
-        DateTimeZone timezone = dateTimeProvider.getCurrentTimeZone();
-        Judgement judgement = predictedEvent.getJudgement();
-        if(judgement == null) {
-            Date dueDate = predictedEvent.getDueDate();
-            if(dueDate.after(dateTimeProvider.getCurrentDateTime())) {
-                return strings.formatKnownBy(new LocalDateTime(dueDate, timezone));
-            } else {
-                return strings.formatOverDue();
-            }
-        } else {
-            LocalDateTime judgedDate = new LocalDateTime(judgement.getDate(), timezone);
-            return strings.formatJudged(judgement.getState(), judgedDate);
-        }
+        return StatusStringUtil.formatStatus(predictedEvent.getJudgement(),
+                predictedEvent.getDueDate(), statusStrings, dateTimeProvider);
     }
 
     public void showDetails() {

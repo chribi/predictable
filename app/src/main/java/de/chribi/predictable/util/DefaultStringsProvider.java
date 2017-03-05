@@ -1,4 +1,4 @@
-package de.chribi.predictable;
+package de.chribi.predictable.util;
 
 
 import android.content.Context;
@@ -12,13 +12,14 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import de.chribi.predictable.R;
 import de.chribi.predictable.data.PredictionState;
 
-public class DefaultPredictionItemStringProvider
-        implements PredictionItemViewModel.PredictionItemStringProvider {
+public class DefaultStringsProvider
+        implements PredictionStatusStringProvider, ConfidenceFormatProvider {
     private Context context;
     @Inject
-    public DefaultPredictionItemStringProvider(Context context) {
+    public DefaultStringsProvider(Context context) {
         this.context = context;
     }
 

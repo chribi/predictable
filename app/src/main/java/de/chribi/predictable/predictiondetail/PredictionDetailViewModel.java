@@ -10,14 +10,23 @@ import javax.inject.Inject;
 
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.storage.PredictionStorage;
+import de.chribi.predictable.util.DateTimeProvider;
+import de.chribi.predictable.util.PredictionStatusStringProvider;
+import de.chribi.predictable.util.StatusStringUtil;
 
 public class PredictionDetailViewModel extends BaseObservable {
     private PredictedEvent.Editor event;
-    private PredictionStorage storage;
+    private final PredictionStorage storage;
+    private final PredictionStatusStringProvider statusStrings;
+    private final DateTimeProvider dateTimeProvider;
 
     @Inject
-    public PredictionDetailViewModel(PredictionStorage storage) {
+    public PredictionDetailViewModel(PredictionStorage storage,
+                                     PredictionStatusStringProvider statusStrings,
+                                     DateTimeProvider dateTimeProvider) {
         this.storage = storage;
+        this.statusStrings = statusStrings;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     public void setPredictedEvent(long eventId) {
@@ -45,6 +54,7 @@ public class PredictionDetailViewModel extends BaseObservable {
     @Bindable
     @NonNull
     public String getStatus() {
-        return ""; // TODO
+        return StatusStringUtil.formatStatus(event.getJudgement(), event.getDueDate(),
+                statusStrings, dateTimeProvider);
     }
 }
