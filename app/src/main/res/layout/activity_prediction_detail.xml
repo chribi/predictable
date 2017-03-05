@@ -8,6 +8,7 @@
         <variable
             name="viewModel"
             type="de.chribi.predictable.predictiondetail.PredictionDetailViewModel" />
+        <import type="android.view.View" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -80,36 +81,86 @@
             app:layout_anchor="@id/layout_event_header"
             app:layout_anchorGravity="bottom"
             android:layout_gravity="bottom"
-            android:background="@android:color/holo_orange_light"
-            android:layout_margin="8dp"
+            android:padding="16dp"
             >
             <!-- TODO Fill with views for showing confidences,
                  add controls for judging/giving a new confidence -->
 
-            <LinearLayout
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraint_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
                 >
+
                 <TextView
-                    android:layout_margin="8dp"
+                    android:id="@+id/label_judge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_judge_event"
+                    android:visibility="@{viewModel.open}"
+                    android:layout_marginBottom="12dp"
+                    app:layout_constraintTop_toBottomOf="@+id/constraint_layout"
+                    app:layout_constraintStart_toStartOf="@+id/constraint_layout"
+                    />
+
+                <Button
+                    android:id="@+id/button_judge_correct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some dummy text"
+                    android:visibility="@{viewModel.open}"
+                    android:text="@string/action_judge_correct"
+                    android:onClick="@{() -> viewModel.judgeCorrect()}"
+                    app:layout_constraintTop_toBottomOf="@+id/label_judge"
+                    app:layout_constraintStart_toStartOf="@+id/constraint_layout"
+                    app:layout_constraintEnd_toStartOf="@+id/button_judge_incorrect"
                     />
-                <TextView
-                    android:layout_margin="8dp"
+
+                <Button
+                    android:id="@+id/button_judge_incorrect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some more dummy text"
+                    android:visibility="@{viewModel.open}"
+                    android:text="@string/action_judge_incorrect"
+                    android:onClick="@{() -> viewModel.judgeIncorrect()}"
+                    app:layout_constraintTop_toBottomOf="@+id/label_judge"
+                    app:layout_constraintStart_toEndOf="@+id/button_judge_correct"
+                    app:layout_constraintEnd_toStartOf="@+id/button_judge_invalid"
                     />
-                <TextView
-                    android:layout_margin="8dp"
+
+                <Button
+                    android:id="@+id/button_judge_invalid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some other text"
+                    android:visibility="@{viewModel.open}"
+                    android:text="@string/action_judge_invalid"
+                    android:onClick="@{() -> viewModel.judgeInvalid()}"
+                    app:layout_constraintTop_toBottomOf="@+id/label_judge"
+                    app:layout_constraintStart_toEndOf="@+id/button_judge_incorrect"
                     />
-            </LinearLayout>
+
+                <Button
+                    android:id="@+id/button_reopen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{!viewModel.open}"
+                    android:text="@string/action_reopen"
+                    android:onClick="@{() -> viewModel.reopen()}"
+                    app:layout_constraintTop_toBottomOf="@id/button_judge_correct"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:background="@android:color/holo_orange_light"
+                    android:text="placeholder"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/button_reopen"
+                    />
+                
+
+
+            </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.FloatingActionButton

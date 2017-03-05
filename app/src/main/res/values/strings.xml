@@ -21,4 +21,10 @@
     <string name="string_state_correct">correct</string>
     <string name="string_state_incorrect">incorrect</string>
     <string name="string_state_invalid">invalid</string>
+
+    <string name="action_reopen">Reopen</string>
+    <string name="action_judge_correct">Correct</string>
+    <string name="action_judge_incorrect">Incorrect</string>
+    <string name="action_judge_invalid">Invalid</string>
+    <string name="label_judge_event">Judge this prediction</string>
 </resources>

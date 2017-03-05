@@ -10,6 +10,7 @@ import org.joda.time.LocalDateTime;
 import java.util.Date;
 
 import de.chribi.predictable.data.Judgement;
+import de.chribi.predictable.data.PredictionState;
 
 public class StatusStringUtil {
    private StatusStringUtil() {}
@@ -18,7 +19,7 @@ public class StatusStringUtil {
                        @NonNull Date dueDate, @NonNull PredictionStatusStringProvider stringProvider,
                        @NonNull DateTimeProvider dateTimeProvider) {
       DateTimeZone timezone = dateTimeProvider.getCurrentTimeZone();
-      if (judgement == null) {
+      if (judgement == null || judgement.getState() == PredictionState.Open) {
          if (dueDate.after(dateTimeProvider.getCurrentDateTime())) {
             return stringProvider.formatKnownBy(new LocalDateTime(dueDate, timezone));
          } else {

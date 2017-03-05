@@ -8,14 +8,16 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
+import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.PredictionStatusStringProvider;
 import de.chribi.predictable.util.StatusStringUtil;
 
 public class PredictionDetailViewModel extends BaseObservable {
-    private PredictedEvent.Editor event;
+    private PredictedEvent event;
     private final PredictionStorage storage;
     private final PredictionStatusStringProvider statusStrings;
     private final DateTimeProvider dateTimeProvider;
@@ -30,13 +32,9 @@ public class PredictionDetailViewModel extends BaseObservable {
     }
 
     public void setPredictedEvent(long eventId) {
-        PredictedEvent ev = storage.getPredictedEventById(eventId);
-        if(ev != null) {
-            this.event = storage.edit(ev);
-            notifyChange();
-        } else {
-            // TODO do some proper error handling when getting an invalid id
-        }
+        event = storage.getPredictedEventById(eventId);
+        notifyChange();
+        // TODO handle invalid eventId (i.e. event == null)
     }
 
     @Bindable
@@ -56,5 +54,36 @@ public class PredictionDetailViewModel extends BaseObservable {
     public String getStatus() {
         return StatusStringUtil.formatStatus(event.getJudgement(), event.getDueDate(),
                 statusStrings, dateTimeProvider);
+    }
+
+    @Bindable
+    public boolean isOpen() {
+        return event.getJudgement() == null || event.getJudgement().getState() == PredictionState.Open;
+    }
+
+    public void judgeCorrect() {
+        judge(PredictionState.Correct);
+    }
+
+    public void judgeIncorrect() {
+        judge(PredictionState.Incorrect);
+    }
+
+    public void judgeInvalid() {
+        judge(PredictionState.Invalid);
+    }
+
+    private void judge(PredictionState state) {
+        PredictedEvent.Editor editor = storage.edit(event);
+        editor.setJudgement(new Judgement(state, dateTimeProvider.getCurrentDateTime()));
+        event = editor.commit();
+        notifyChange();
+    }
+
+    public void reopen() {
+        PredictedEvent.Editor editor = storage.edit(event);
+        editor.setJudgement(null);
+        event = editor.commit();
+        notifyChange();
     }
 }
