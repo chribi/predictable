@@ -16,6 +16,7 @@ import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
+import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.util.DateTimeProvider;
 
 public class PredictionItemViewModel extends BaseObservable {
@@ -30,6 +31,7 @@ public class PredictionItemViewModel extends BaseObservable {
     private PredictedEvent predictedEvent;
     private DateTimeProvider dateTimeProvider;
     private PredictionItemStringProvider strings;
+    private PredictionListView view;
 
     @Inject
     public PredictionItemViewModel(DateTimeProvider dateTimeProvider,
@@ -44,6 +46,10 @@ public class PredictionItemViewModel extends BaseObservable {
     public void setPredictedEvent(@NonNull PredictedEvent predictedEvent) {
         this.predictedEvent = predictedEvent;
         notifyChange();
+    }
+
+    public void setView(PredictionListView view) {
+        this.view = view;
     }
 
     /**
@@ -103,4 +109,7 @@ public class PredictionItemViewModel extends BaseObservable {
         }
     }
 
+    public void showDetails() {
+        view.showPredictedEventDetails(predictedEvent.getId());
+    }
 }

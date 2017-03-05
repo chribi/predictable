@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import de.chribi.predictable.BaseUiTest;
 import de.chribi.predictable.R;
 import de.chribi.predictable.di.PredictableComponent;
+import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -51,6 +52,10 @@ public class NewPredictionActivityTest extends BaseUiTest {
             public void inject(NewPredictionActivity activity) {
                 activity.viewModel = viewModel;
             }
+
+            @Override
+            public void inject(PredictionDetailActivity activity) { }
+
             @Override
             public PredictionStorage getStorage() {
                 return null;

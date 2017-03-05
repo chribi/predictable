@@ -24,12 +24,13 @@ import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.databinding.ActivityMainBinding;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
+import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.DefaultDateTimeHandler;
 import me.tatarka.bindingcollectionadapter.ItemView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PredictionListView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         for (PredictedEvent event : storage.getPredictedEvents()) {
             PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings);
             vm.setPredictedEvent(event);
+            vm.setView(this);
             events.add(vm);
         }
 
@@ -133,5 +135,10 @@ public class MainActivity extends AppCompatActivity {
         int minutes = r.nextInt(24 * 60) + days * 24 * 60;
 
         return new Date(now.getTime() + minutes * 60 * 1000);
+    }
+
+    @Override
+    public void showPredictedEventDetails(long id) {
+        PredictionDetailActivity.start(this, id);
     }
 }
