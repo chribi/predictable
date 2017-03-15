@@ -3,4 +3,7 @@
     <declare-styleable name="DialogEditView">
         <attr name="dialogEditViewStyle" format="reference" />
     </declare-styleable>
+    <declare-styleable name="ConfidenceLineChart">
+        <attr name="graphColor" format="color" />
+    </declare-styleable>
 </resources>
