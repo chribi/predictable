@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 25
@@ -37,7 +36,7 @@ android {
 }
 
 dependencies {
-    def SupportLibVersion = '25.1.1'
+    def SupportLibVersion = '25.3.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
@@ -58,11 +57,12 @@ dependencies {
         exclude module: 'appcompat-v7'
         exclude module: 'design'
     }
+    androidTestCompile "com.android.support:support-annotations:$SupportLibVersion"
 
 
     compile 'com.google.dagger:dagger:2.0.2'
-    apt 'com.google.dagger:dagger-compiler:2.0.2'
-    apt 'com.android.databinding:compiler:1.0-rc0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.0.2'
+    annotationProcessor 'com.android.databinding:compiler:1.0-rc0'
     provided 'javax.annotation:javax.annotation-api:1.2'
     compile "com.android.support:appcompat-v7:$SupportLibVersion"
     compile "com.android.support:design:$SupportLibVersion"
