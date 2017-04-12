@@ -2,6 +2,7 @@ package de.chribi.predictable.util;
 
 import com.github.mikephil.charting.components.AxisBase;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,16 @@ public class DateAxisConverterTest {
     private DateAxisConverter dateAxisConverter;
     private @Mock AxisBase axis;
     private DateTimeZone timeZone;
+
+    private Date utcDate(int year, int month, int dayOfMonth, int hour, int min, int second) {
+        DateTime utcDateTime = new DateTime(1900 + year, 1 + month, dayOfMonth, hour, min, second,
+                DateTimeZone.UTC);
+        return utcDateTime.toDate();
+    }
+
+    private Date utcDate(int year, int month, int dayOfMonth) {
+        return utcDate(year, month, dayOfMonth, 0, 0, 0);
+    }
 
     @Before
     public void setUp() {
@@ -99,8 +110,10 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeHalfDay_alignsWithNoon() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 2, 16, 12, 22), new Date(90, 2, 3));
-        Date expectedZeroDate = new Date(90, 2, 2, 14, 0, 0); // time zone offset = -2
+        Date d = new Date();
+
+        dateAxisConverter.setRange(utcDate(90, 2, 2, 16, 12, 22), utcDate(90, 2, 3, 0, 0, 0));
+        Date expectedZeroDate = utcDate(90, 2, 2, 14, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_HALF_DAY)));
 
@@ -111,8 +124,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeHalfDay_alignsWithMidnight() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 2, 13, 12, 22), new Date(90, 2, 3));
-        Date expectedZeroDate = new Date(90, 2, 2, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 2, 2, 13, 12, 22), utcDate(90, 2, 3));
+        Date expectedZeroDate = utcDate(90, 2, 2, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_HALF_DAY)));
 
@@ -123,8 +136,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeDay_alignsWithMidnight() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 2, 16, 12, 22), new Date(90, 2, 8));
-        Date expectedZeroDate = new Date(90, 2, 2, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 2, 2, 16, 12, 22), utcDate(90, 2, 8));
+        Date expectedZeroDate = utcDate(90, 2, 2, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_DAY)));
 
@@ -135,8 +148,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeWeek_alignsWithMondayMidnight() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 10, 16, 12, 22), new Date(90, 3, 3));
-        Date expectedZeroDate = new Date(90, 2, 5, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 2, 10, 16, 12, 22), utcDate(90, 3, 3));
+        Date expectedZeroDate = utcDate(90, 2, 5, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_WEEK)));
 
@@ -147,8 +160,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeMonth_alignsWithFirstOfMonth() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 10, 16, 12, 22), new Date(90, 8, 3));
-        Date expectedZeroDate = new Date(90, 2, 1, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 2, 10, 16, 12, 22), utcDate(90, 8, 3));
+        Date expectedZeroDate = utcDate(90, 2, 1, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_MONTH)));
 
@@ -159,8 +172,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeThreeMonth_alignsWithFirstOfQuarter() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 4, 10, 16, 12, 22), new Date(91, 4, 3));
-        Date expectedZeroDate = new Date(90, 2, 1, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 4, 10, 16, 12, 22), utcDate(91, 4, 3));
+        Date expectedZeroDate = utcDate(90, 3, 1, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_THREE_MONTHS)));
 
@@ -171,8 +184,8 @@ public class DateAxisConverterTest {
     @Test
     public void stepSizeYear_alignsWithFirstOfJanuary() {
         dateAxisConverter.setMaxNumSteps(8);
-        dateAxisConverter.setRange(new Date(90, 2, 10, 16, 12, 22), new Date(98, 8, 3));
-        Date expectedZeroDate = new Date(90, 0, 1, 2, 0, 0); // time zone offset = -2
+        dateAxisConverter.setRange(utcDate(90, 2, 10, 16, 12, 22), utcDate(98, 8, 3));
+        Date expectedZeroDate = utcDate(90, 0, 1, 2, 0, 0); // time zone offset = -2
         // check precondition
         assertThat(dateAxisConverter.getStepSize(), is(equalTo(DateAxisConverter.STEP_SIZE_YEAR)));
 

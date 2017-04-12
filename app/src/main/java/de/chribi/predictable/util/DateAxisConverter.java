@@ -6,7 +6,9 @@ import android.util.Log;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -46,11 +48,9 @@ public class DateAxisConverter implements IAxisValueFormatter {
         return localDateTime.toString(formatter);
     }
 
-    public void setRange(Date minDate, Date maxDate) {
-        // TODO obtain a reasonable step size for axis
-        //Log.d("Chart", String.format("Set range from %d (%s) to %d (%s).",
-        //        minDate.getTime(), minDate.toString(), maxDate.getTime(), maxDate.toString()));
-        long dateRange = maxDate.getTime() - minDate.getTime();
+    /*package*/ static long getStepSizeForRange(Date startDate, Date endDate, int maxNumSteps) {
+        long dateRange = endDate.getTime() - startDate.getTime();
+        long stepSize;
         if (dateRange < maxNumSteps * STEP_SIZE_HALF_DAY) {
             stepSize = STEP_SIZE_HALF_DAY;
         } else if (dateRange < maxNumSteps * STEP_SIZE_DAY) {
@@ -64,12 +64,41 @@ public class DateAxisConverter implements IAxisValueFormatter {
         } else {
             stepSize = STEP_SIZE_YEAR;
         }
-        // TODO align at day/month
-        firstDate = minDate.getTime();
+        return stepSize;
+    }
+
+    /*package*/ static Date alignDateAtStep(Date date, long stepSize, DateTimeZone timeZone) {
+        LocalDateTime localDateTime = new LocalDateTime(date, timeZone);
+        if (stepSize == STEP_SIZE_HALF_DAY) {
+            int hour = localDateTime.getHourOfDay() >= 12 ? 12 : 0;
+            return localDateTime.withTime(hour, 0, 0, 0).toDateTime(timeZone).toDate();
+        }
+        LocalDate localDate = localDateTime.toLocalDate();
+        LocalDate result;
+        if (stepSize == STEP_SIZE_DAY) {
+            result = localDate;
+        } else if (stepSize == STEP_SIZE_WEEK) {
+            result = localDate.withDayOfWeek(DateTimeConstants.MONDAY);
+        } else if (stepSize == STEP_SIZE_MONTH) {
+            result = localDate.withDayOfMonth(1);
+        } else if (stepSize == STEP_SIZE_THREE_MONTHS) {
+            int month = localDate.getMonthOfYear();
+            int january = DateTimeConstants.JANUARY;
+            int alignedMonth = month - (month - january) % 3;
+            result = localDate.withDayOfMonth(1).withMonthOfYear(alignedMonth);
+        } else { // (stepSize == STEP_SIZE_YEAR)
+            result = localDate.withDayOfMonth(1).withMonthOfYear(DateTimeConstants.JANUARY);
+        }
+        return result.toDateTimeAtStartOfDay(timeZone).toDate();
+    }
+
+    public void setRange(Date startDate, Date endDate) {
+        stepSize = getStepSizeForRange(startDate, endDate, maxNumSteps);
+        firstDate = alignDateAtStep(startDate, stepSize, timeZone).getTime();
+        long dateRange = endDate.getTime() - firstDate;
         float range = ((float)dateRange) / stepSize;
         axis.setAxisMinimum(range * -0.03f);
         axis.setAxisMaximum(range * 1.03f);
-        //Log.d("Chart", "Range: " + String.valueOf(range));
     }
 
     public float dateToAxisValue(Date date) {
