@@ -2,6 +2,7 @@ package de.chribi.predictable.util;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import org.joda.time.LocalDateTime;
@@ -24,12 +25,12 @@ public class DefaultStringsProvider
     }
 
     @Override
-    public String formatNoConfidence() {
+    public @NonNull String formatNoConfidence() {
         return context.getString(R.string.text_no_confidence);
     }
 
     @Override
-    public String formatConfidence(double confidencePercent) {
+    public @NonNull String formatConfidence(double confidencePercent) {
         return String.format(Locale.getDefault(), "%.1f", confidencePercent);
     }
 

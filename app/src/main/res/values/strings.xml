@@ -28,4 +28,8 @@
     <string name="action_judge_invalid">Invalid</string>
     <string name="label_judge_event">Judge this prediction</string>
     <string name="label_confidence_graph">Your confidence</string>
+    <string name="action_update_confidence">Save</string>
+    <string name="label_updated_confidence">New confidence</string>
+    <string name="symbol_percent">%</string>
+    <string name="text_no_confidence_long">No confidence given!</string>
 </resources>

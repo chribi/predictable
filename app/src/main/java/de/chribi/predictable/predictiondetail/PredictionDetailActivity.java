@@ -8,18 +8,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.github.mikephil.charting.charts.LineChart;
-
-import java.util.ArrayList;
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.R;
-import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.databinding.ActivityPredictionDetailBinding;
-import de.chribi.predictable.views.ConfidenceLineChart;
 
 public class PredictionDetailActivity extends AppCompatActivity {
     private static final String TAG = "Details";
@@ -46,16 +39,17 @@ public class PredictionDetailActivity extends AppCompatActivity {
         long predictionId = args.getLong(EXTRA_PREDICTION_ID, -1);
 
         viewModel.setPredictedEvent(predictionId);
-        Log.d(TAG, "onCreate: Details for prediction " + String.valueOf(predictionId));
-
         binding.setViewModel(viewModel);
 
         setSupportActionBar(binding.toolbar);
+        Log.d(TAG, "onCreate: Details for prediction " + String.valueOf(predictionId));
+
         configureToolbar();
 
-        configureChart(binding.chartConfidence);
+        // configureChart(binding.chartConfidence);
     }
 
+        /*
     private void configureChart(LineChart chartConfidence) {
         ArrayList<Prediction> predictions = new ArrayList<>();
         predictions.add(new Prediction(0.9, new Date(110, 10, 15,  0, 0)));
@@ -68,6 +62,7 @@ public class PredictionDetailActivity extends AppCompatActivity {
 
         ((ConfidenceLineChart)chartConfidence).setPredictions(predictions);
     }
+        */
 
     private void configureToolbar() {
         ActionBar actionBar = getSupportActionBar();

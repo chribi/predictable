@@ -1,8 +1,6 @@
 package de.chribi.predictable.util;
 
 
-import android.util.Log;
-
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
@@ -31,19 +29,18 @@ public class DateAxisConverter implements IAxisValueFormatter {
     private final AxisBase axis;
 
     // Date time handling, currently hardcoded
-    private DateTimeFormatter formatter = DateTimeFormat.mediumDateTime();
+    private DateTimeFormatter formatter = DateTimeFormat.mediumDate();
     private DateTimeZone timeZone;
 
     public DateAxisConverter(AxisBase axis, DateTimeZone timeZone) {
         this.axis = axis;
         this.timeZone = timeZone;
+        this.firstDate = 0;
+        this.stepSize = STEP_SIZE_DAY;
     }
 
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
-        Date vd = axisValueToDate(value);
-        Log.d("Chart", String.format("Convert value %f to %d. (%s)", value, vd.getTime(), vd.toString()));
-
         LocalDateTime localDateTime = new LocalDateTime(axisValueToDate(value).getTime(), timeZone);
         return localDateTime.toString(formatter);
     }

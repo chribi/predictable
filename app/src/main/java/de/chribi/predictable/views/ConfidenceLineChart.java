@@ -16,6 +16,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.joda.time.DateTimeZone;
 
@@ -35,7 +37,9 @@ public class ConfidenceLineChart extends LineChart {
 
 
     private LineDataSet dataSet;
-    private @ColorInt int graphColor;
+    private
+    @ColorInt
+    int graphColor;
 
     private DateAxisConverter dateAxisConverter;
 
@@ -87,9 +91,17 @@ public class ConfidenceLineChart extends LineChart {
 
         LineData lineData = new LineData(dataSet);
         setData(lineData);
+        lineData.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return format.format(100.f * value) + " %";
+            }
+        });
     }
 
-    public @ColorInt int getGraphColor() {
+    public
+    @ColorInt
+    int getGraphColor() {
         return graphColor;
     }
 
@@ -101,12 +113,13 @@ public class ConfidenceLineChart extends LineChart {
 
     /**
      * Set a list of predictions to show in this line chart.
+     *
      * @param predictions An ordered list of predictions.  The first element should be the earliest
      *                    prediction, the last element should be the latest prediction.
      */
     public void setPredictions(List<Prediction> predictions) {
         dataSet.clear();
-        if(predictions != null && predictions.size() > 0) {
+        if (predictions != null && predictions.size() > 0) {
             Date minDate = predictions.get(0).getCreationDate();
             Date maxDate = predictions.get(predictions.size() - 1).getCreationDate();
             dateAxisConverter.setRange(minDate, maxDate);

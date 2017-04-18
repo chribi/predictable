@@ -5,12 +5,8 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.annotation.NonNull;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
-
-import java.util.Date;
-
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
@@ -19,7 +15,7 @@ import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.util.ConfidenceFormatProvider;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.PredictionStatusStringProvider;
-import de.chribi.predictable.util.StatusStringUtil;
+import de.chribi.predictable.util.StringUtil;
 
 public class PredictionItemViewModel extends BaseObservable {
 
@@ -32,7 +28,7 @@ public class PredictionItemViewModel extends BaseObservable {
     @Inject
     public PredictionItemViewModel(DateTimeProvider dateTimeProvider,
                                    PredictionStatusStringProvider statusStrings,
-                                   ConfidenceFormatProvider confidenceFormatter) {
+                                   @Named("short") ConfidenceFormatProvider confidenceFormatter) {
         this.dateTimeProvider = dateTimeProvider;
         this.statusStrings = statusStrings;
         this.confidenceFormatter = confidenceFormatter;
@@ -63,14 +59,7 @@ public class PredictionItemViewModel extends BaseObservable {
      */
     @Bindable
     public String getConfidence() {
-        // always show the most recent prediction
-        int numOfPredictions = predictedEvent.getPredictions().size();
-        if(numOfPredictions > 0) {
-            Prediction lastPrediction = predictedEvent.getPredictions().get(numOfPredictions - 1);
-            return confidenceFormatter.formatConfidence(lastPrediction.getConfidence() * 100);
-        } else {
-            return confidenceFormatter.formatNoConfidence();
-        }
+        return StringUtil.formatCurrentConfidence(predictedEvent.getPredictions(), confidenceFormatter);
     }
 
     /**
@@ -92,7 +81,7 @@ public class PredictionItemViewModel extends BaseObservable {
     @Bindable
     public String getStatusDescription()
     {
-        return StatusStringUtil.formatStatus(predictedEvent.getJudgement(),
+        return StringUtil.formatStatus(predictedEvent.getJudgement(),
                 predictedEvent.getDueDate(), statusStrings, dateTimeProvider);
     }
 

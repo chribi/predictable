@@ -47,12 +47,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_personal_confidence"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_last_confidence"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_confidence"
                 app:layout_constraintLeft_toLeftOf="@+id/constraintLayout"
                 />
 
             <EditText
-                android:id="@+id/text_event_last_confidence"
+                android:id="@+id/text_event_confidence"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -69,8 +69,8 @@
                 android:id="@+id/label_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="%"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_last_confidence"
+                android:text="@string/symbol_percent"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_confidence"
                 app:layout_constraintRight_toRightOf="@id/constraintLayout"
                 />
 
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_due_date"
                 app:layout_constraintLeft_toLeftOf="@id/constraintLayout"
-                app:layout_constraintTop_toBottomOf="@id/text_event_last_confidence"
+                app:layout_constraintTop_toBottomOf="@id/text_event_confidence"
                 />
 
             <de.chribi.predictable.views.DateEditView

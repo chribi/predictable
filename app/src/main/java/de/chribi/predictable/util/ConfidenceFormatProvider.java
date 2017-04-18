@@ -1,7 +1,9 @@
 package de.chribi.predictable.util;
 
 
+import android.support.annotation.NonNull;
+
 public interface ConfidenceFormatProvider {
-    String formatNoConfidence();
-    String formatConfidence(double confidencePercent);
+    @NonNull String formatNoConfidence();
+    @NonNull String formatConfidence(double confidencePercent);
 }

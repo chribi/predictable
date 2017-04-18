@@ -6,28 +6,38 @@ import android.databinding.Bindable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import javax.inject.Inject;
+import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import de.chribi.predictable.BR;
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.storage.PredictionStorage;
+import de.chribi.predictable.util.ConfidenceFormatProvider;
 import de.chribi.predictable.util.DateTimeProvider;
 import de.chribi.predictable.util.PredictionStatusStringProvider;
-import de.chribi.predictable.util.StatusStringUtil;
+import de.chribi.predictable.util.StringUtil;
 
 public class PredictionDetailViewModel extends BaseObservable {
     private PredictedEvent event;
+    private double newConfidencePercentage = 50.0;
     private final PredictionStorage storage;
     private final PredictionStatusStringProvider statusStrings;
+    private final ConfidenceFormatProvider confidenceFormatter;
     private final DateTimeProvider dateTimeProvider;
 
     @Inject
     public PredictionDetailViewModel(PredictionStorage storage,
                                      PredictionStatusStringProvider statusStrings,
+                                     @Named("long") ConfidenceFormatProvider confidenceFormatter,
                                      DateTimeProvider dateTimeProvider) {
         this.storage = storage;
         this.statusStrings = statusStrings;
+        this.confidenceFormatter = confidenceFormatter;
         this.dateTimeProvider = dateTimeProvider;
     }
 
@@ -52,13 +62,42 @@ public class PredictionDetailViewModel extends BaseObservable {
     @Bindable
     @NonNull
     public String getStatus() {
-        return StatusStringUtil.formatStatus(event.getJudgement(), event.getDueDate(),
+        return StringUtil.formatStatus(event.getJudgement(), event.getDueDate(),
                 statusStrings, dateTimeProvider);
+    }
+
+    @Bindable
+    @NonNull
+    public List<Prediction> getPredictions() {
+        return event.getPredictions();
+    }
+
+    @Bindable
+    @NonNull
+    public String getCurrentConfidence() {
+        return StringUtil.formatCurrentConfidence(event.getPredictions(), confidenceFormatter);
     }
 
     @Bindable
     public boolean isOpen() {
         return event.getJudgement() == null || event.getJudgement().getState() == PredictionState.Open;
+    }
+
+    @Bindable
+    public double getNewConfidencePercentage() {
+        return newConfidencePercentage;
+    }
+
+    public void setNewConfidencePercentage(double percentage) {
+        if(percentage < 0) {
+            newConfidencePercentage = 0;
+        } else if (percentage > 100) {
+            newConfidencePercentage = 100;
+        } else {
+            newConfidencePercentage = percentage;
+        }
+
+        notifyPropertyChanged(BR.newConfidencePercentage);
     }
 
     public void judgeCorrect() {
@@ -83,6 +122,16 @@ public class PredictionDetailViewModel extends BaseObservable {
     public void reopen() {
         PredictedEvent.Editor editor = storage.edit(event);
         editor.setJudgement(null);
+        event = editor.commit();
+        notifyChange();
+    }
+
+    public void updateConfidence() {
+        double newConfidence = newConfidencePercentage / 100.0;
+        Prediction newPrediction = new Prediction(newConfidence,
+                dateTimeProvider.getCurrentDateTime());
+        PredictedEvent.Editor editor = storage.edit(event);
+        editor.addPrediction(newPrediction);
         event = editor.commit();
         notifyChange();
     }
