@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
@@ -27,6 +31,15 @@ android {
         enabled = true
     }
 
+    signingConfigs {
+        config {
+            storeFile file(keystoreProperties['keystoreFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['key']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
@@ -34,7 +47,8 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
+            signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -57,7 +71,7 @@ dependencies {
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
         exclude module: 'support-annotations'
         exclude module: 'recyclerview-v7'
         exclude module: 'support-v4'
