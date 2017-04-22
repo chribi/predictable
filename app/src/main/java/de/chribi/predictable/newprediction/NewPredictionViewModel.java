@@ -100,7 +100,6 @@ public class NewPredictionViewModel extends BaseObservable {
 
     public void setView(NewPredictionView view) {
         this.view = view;
-
     }
 
     public void onSavePrediction() {

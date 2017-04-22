@@ -32,4 +32,6 @@
     <string name="label_updated_confidence">New confidence</string>
     <string name="symbol_percent">%</string>
     <string name="text_no_confidence_long">No confidence given!</string>
+    <string name="action_delete_prediction">Delete</string>
+    <string name="error_invalid_prediction">Prediction not found!</string>
 </resources>

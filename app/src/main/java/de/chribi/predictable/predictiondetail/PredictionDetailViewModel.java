@@ -29,6 +29,7 @@ public class PredictionDetailViewModel extends BaseObservable {
     private final PredictionStatusStringProvider statusStrings;
     private final ConfidenceFormatProvider confidenceFormatter;
     private final DateTimeProvider dateTimeProvider;
+    private PredictionDetailView view;
 
     @Inject
     public PredictionDetailViewModel(PredictionStorage storage,
@@ -41,10 +42,27 @@ public class PredictionDetailViewModel extends BaseObservable {
         this.dateTimeProvider = dateTimeProvider;
     }
 
+
     public void setPredictedEvent(long eventId) {
         event = storage.getPredictedEventById(eventId);
-        notifyChange();
-        // TODO handle invalid eventId (i.e. event == null)
+        if(event == null) {
+            view.onInvalidPrediction();
+        } else {
+            notifyChange();
+        }
+    }
+
+    public void setView(PredictionDetailView view) {
+        this.view = view;
+    }
+
+    /**
+     * Whether the view model holds valid data.  If false, all interactions with
+     * this view model lead to an exception.
+     */
+    @Bindable
+    public boolean isValid() {
+        return event != null;
     }
 
     @Bindable
@@ -134,5 +152,10 @@ public class PredictionDetailViewModel extends BaseObservable {
         editor.addPrediction(newPrediction);
         event = editor.commit();
         notifyChange();
+    }
+
+    public void deletePrediction() {
+        storage.deletePredictedEvent(event.getId());
+        view.closeView();
     }
 }

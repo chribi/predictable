@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -14,7 +18,7 @@ import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.R;
 import de.chribi.predictable.databinding.ActivityPredictionDetailBinding;
 
-public class PredictionDetailActivity extends AppCompatActivity {
+public class PredictionDetailActivity extends AppCompatActivity implements PredictionDetailView {
     private static final String TAG = "Details";
     private static final String EXTRA_PREDICTION_ID = "PredictionId";
 
@@ -30,39 +34,38 @@ public class PredictionDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // get prediction id from extras
+        Bundle args = getIntent().getExtras();
+        long predictionId = args.getLong(EXTRA_PREDICTION_ID, -1);
+        Log.d(TAG, "onCreate: Details for prediction " + String.valueOf(predictionId)); // NON-NLS
+
         ActivityPredictionDetailBinding binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_prediction_detail);
 
         PredictableApp.get(this).getPredictableComponent().inject(this);
-
-        Bundle args = getIntent().getExtras();
-        long predictionId = args.getLong(EXTRA_PREDICTION_ID, -1);
-
+        viewModel.setView(this);
         viewModel.setPredictedEvent(predictionId);
-        binding.setViewModel(viewModel);
-
-        setSupportActionBar(binding.toolbar);
-        Log.d(TAG, "onCreate: Details for prediction " + String.valueOf(predictionId));
-
-        configureToolbar();
-
-        // configureChart(binding.chartConfidence);
+        if(viewModel.isValid()) {
+            binding.setViewModel(viewModel);
+            setSupportActionBar(binding.toolbar);
+            configureToolbar();
+        }
     }
 
-        /*
-    private void configureChart(LineChart chartConfidence) {
-        ArrayList<Prediction> predictions = new ArrayList<>();
-        predictions.add(new Prediction(0.9, new Date(110, 10, 15,  0, 0)));
-        predictions.add(new Prediction(0.83, new Date(110, 10, 16, 12, 0)));
-        predictions.add(new Prediction(0.7, new Date(110, 10, 17, 3, 0)));
-        predictions.add(new Prediction(0.22, new Date(110, 10, 19, 18, 30)));
-        predictions.add(new Prediction(0.55, new Date(110, 10, 20,  22, 0)));
-        predictions.add(new Prediction(0.6, new Date(110, 10, 21, 3, 0)));
-        predictions.add(new Prediction(0.77, new Date(110, 10, 21, 23, 0)));
-
-        ((ConfidenceLineChart)chartConfidence).setPredictions(predictions);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_prediction_detail, menu);
+        return true;
     }
-        */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_delete_prediction) {
+            viewModel.deletePrediction();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void configureToolbar() {
         ActionBar actionBar = getSupportActionBar();
@@ -70,5 +73,16 @@ public class PredictionDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+    }
+
+    @Override
+    public void closeView() {
+        NavUtils.navigateUpFromSameTask(this);
+    }
+
+    @Override
+    public void onInvalidPrediction() {
+        Toast.makeText(getApplicationContext(), R.string.error_invalid_prediction, Toast.LENGTH_LONG).show();
+        closeView();
     }
 }
