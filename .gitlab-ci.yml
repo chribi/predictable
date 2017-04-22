@@ -1,0 +1,41 @@
+# From https://about.gitlab.com/2016/11/30/setting-up-gitlab-ci-for-android-projects/
+image: openjdk:8-jdk
+
+variables:
+    ANDROID_COMPILE_SDK: "25"
+    ANDROID_BUILD_TOOLS: "25.0.0"
+    ANDROID_SDK_TOOLS: "3859397"
+
+before_script:
+    - apt-get --quiet update --yes
+    - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+    - unzip -qq android-sdk.zip -d android-sdk
+    - echo y | android-sdk/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+    - echo y | android-sdk/tools/bin/sdkmanager "platform-tools"
+    - echo y | android-sdk/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+    - echo y | android-sdk/tools/bin/sdkmanager "extras;android;m2repository"
+    - echo y | android-sdk/tools/bin/sdkmanager "extras;google;m2repository"
+    - echo y | android-sdk/tools/bin/sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1"
+    - echo y | android-sdk/tools/bin/sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.1"
+    - export ANDROID_HOME=$PWD/android-sdk
+    - export PATH=$PATH:$PWD/android-sdk/platform-tools/
+    - chmod +x ./gradlew
+    - cp keystore.properties.template keystore.properties
+      
+stages:
+    - build
+    - test
+
+build:
+    stage: build
+    script:
+        - ./gradlew assembleDebug
+    artifacts:
+        paths:
+            - app/build/outputs/
+
+unitTests:
+    stage: test
+    script:
+        - ./gradlew test
