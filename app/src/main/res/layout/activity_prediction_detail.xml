@@ -213,6 +213,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="@{viewModel.open}"
+                    android:enabled="@{viewModel.canUpdateConfidence}"
                     android:text="@string/action_update_confidence"
                     android:onClick="@{() -> viewModel.updateConfidence()}"
                     app:layout_constraintRight_toRightOf="@+id/constraint_layout"

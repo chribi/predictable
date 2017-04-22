@@ -26,10 +26,10 @@ public class TextViewBindings {
             double currentNumber = Double.parseDouble(textView.getText().toString());
             shouldSetText = currentNumber != number;
         } catch (NumberFormatException e) {
-            shouldSetText = true;
+            shouldSetText = !Double.isNaN(number);
         }
         if(shouldSetText) {
-            String newString = String.valueOf(number);
+            String newString = Double.isNaN(number) ? "" : String.valueOf(number); // NON-NLS
             textView.setText(newString);
         }
     }
@@ -41,7 +41,7 @@ public class TextViewBindings {
         try {
             result = Double.parseDouble(textView.getText().toString());
         } catch (NumberFormatException e) {
-            result = 0;
+            result = Double.NaN;
         }
         return result;
     }

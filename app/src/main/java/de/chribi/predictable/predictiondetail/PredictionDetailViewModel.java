@@ -24,7 +24,7 @@ import de.chribi.predictable.util.StringUtil;
 
 public class PredictionDetailViewModel extends BaseObservable {
     private PredictedEvent event;
-    private double newConfidencePercentage = 50.0;
+    private double newConfidencePercentage = Double.NaN;
     private final PredictionStorage storage;
     private final PredictionStatusStringProvider statusStrings;
     private final ConfidenceFormatProvider confidenceFormatter;
@@ -102,6 +102,11 @@ public class PredictionDetailViewModel extends BaseObservable {
     }
 
     @Bindable
+    public boolean getCanUpdateConfidence() {
+        return !Double.isNaN(newConfidencePercentage);
+    }
+
+    @Bindable
     public double getNewConfidencePercentage() {
         return newConfidencePercentage;
     }
@@ -116,6 +121,7 @@ public class PredictionDetailViewModel extends BaseObservable {
         }
 
         notifyPropertyChanged(BR.newConfidencePercentage);
+        notifyPropertyChanged(BR.canUpdateConfidence);
     }
 
     public void judgeCorrect() {
