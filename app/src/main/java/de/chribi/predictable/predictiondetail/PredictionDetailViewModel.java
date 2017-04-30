@@ -157,6 +157,7 @@ public class PredictionDetailViewModel extends BaseObservable {
         PredictedEvent.Editor editor = storage.edit(event);
         editor.addPrediction(newPrediction);
         event = editor.commit();
+        newConfidencePercentage = Double.NaN;
         notifyChange();
     }
 
