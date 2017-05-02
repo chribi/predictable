@@ -224,9 +224,12 @@
             </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>
 
+        <!-- Hide the edit button until editing of
+             event title etc is implemented -->
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_anchor="@id/layout_event_header"
             app:layout_anchorGravity="bottom|end|right"
             android:layout_margin="@dimen/fab_margin"
