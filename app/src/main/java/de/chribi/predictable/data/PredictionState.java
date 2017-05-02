@@ -25,7 +25,7 @@ public enum PredictionState {
      */
     Invalid(3);
 
-    private int storedValue;
+    private final int storedValue;
 
     PredictionState(int value) {
         storedValue = value;

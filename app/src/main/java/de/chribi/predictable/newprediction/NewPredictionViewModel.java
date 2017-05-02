@@ -105,7 +105,7 @@ public class NewPredictionViewModel extends BaseObservable {
     public void onSavePrediction() {
         List<Prediction> predictions = new ArrayList<>(1);
         if(!Double.isNaN(confidencePercentage)) {
-            predictions.add(new Prediction(confidencePercentage / 100,
+            predictions.add(Prediction.create(confidencePercentage / 100,
                     dateTimeProvider.getCurrentDateTime()));
         }
         storage.createPredictedEvent(predictedEventTitle, null, getDueDateTime(), predictions);

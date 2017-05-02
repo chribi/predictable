@@ -3,45 +3,38 @@ package de.chribi.predictable.data;
 
 import android.support.annotation.NonNull;
 
+import com.google.auto.value.AutoValue;
+
 import java.util.Date;
 
-public class Judgement {
-    private PredictionState state;
-    private Date date;
-
-    public Judgement(PredictionState state, @NonNull Date date) {
-        this.state = state;
-        this.date = date;
+@AutoValue
+public abstract class Judgement {
+    /**
+     * Create a new Judgement.  Use {@link #Open} instead of creating a
+     * new Judgement with state {@link PredictionState#Open}
+     * @param state The actual judgement.
+     * @param date When the judgement was made.
+     */
+    public static Judgement create(@NonNull PredictionState state, @NonNull Date date) {
+        if(state == PredictionState.Open) {
+            // Ensure that there is only one true open Judgement
+            return Judgement.Open;
+        } else {
+            return new AutoValue_Judgement(state, date);
+        }
     }
 
-    public PredictionState getState() {
-        return state;
-    }
+    /**
+     * Constant value for any open (i.e. unjudged) Judgements.  You can always compare with this
+     * value for checking if a Judgement is open, instead of checking {@link Judgement#getState()}.
+     */
+    public static final Judgement Open = new AutoValue_Judgement(PredictionState.Open, new Date(0));
 
-    @NonNull
-    public Date getDate() {
-        return date;
-    }
+    public abstract @NonNull PredictionState getState();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        Judgement judgement = (Judgement) o;
-
-        if (state != judgement.state)
-            return false;
-        return date != null ? date.equals(judgement.date) : judgement.date == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = state != null ? state.hashCode() : 0;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        return result;
-    }
+    /**
+     * The date the judgement was made.  This has undefined semantics for an 'Open' judgement.
+     * WARNING: Any modification of the resulting Date might lead to inconsistent behaviour!
+     */
+    public abstract @NonNull Date getDate();
 }

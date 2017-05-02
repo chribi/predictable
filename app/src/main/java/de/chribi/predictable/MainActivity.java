@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
                 int numPredictions = r.nextInt(8);
                 List<Prediction> predictions = new ArrayList<>(numPredictions);
                 for(int k = 0; k < numPredictions; k++) {
-                    predictions.add(new Prediction(r.nextDouble(), randomDateNearNow(r, now)));
+                    predictions.add(Prediction.create(r.nextDouble(), randomDateNearNow(r, now)));
                 }
                 PredictedEvent event = storage.createPredictedEvent(title, description, dueDate,
                         predictions);
@@ -119,11 +119,10 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
                     } else {
                         state = PredictionState.Invalid;
                     }
-                    Judgement judgement = new Judgement(state, randomDateNearNow(r, now));
+                    Judgement judgement = Judgement.create(state, randomDateNearNow(r, now));
+                    event = event.toBuilder().setJudgement(judgement).build();
 
-                    PredictedEvent.Editor editor = storage.edit(event);
-                    editor.setJudgement(judgement);
-                    editor.commit();
+                    storage.updatePredictedEvent(event.getId(), event);
                 }
             }
         }

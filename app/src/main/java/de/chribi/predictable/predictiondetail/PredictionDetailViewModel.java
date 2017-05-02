@@ -98,7 +98,7 @@ public class PredictionDetailViewModel extends BaseObservable {
 
     @Bindable
     public boolean isOpen() {
-        return event.getJudgement() == null || event.getJudgement().getState() == PredictionState.Open;
+        return event.getJudgement().getState() == PredictionState.Open;
     }
 
     @Bindable
@@ -137,26 +137,22 @@ public class PredictionDetailViewModel extends BaseObservable {
     }
 
     private void judge(PredictionState state) {
-        PredictedEvent.Editor editor = storage.edit(event);
-        editor.setJudgement(new Judgement(state, dateTimeProvider.getCurrentDateTime()));
-        event = editor.commit();
+        Judgement newJudgement = Judgement.create(state, dateTimeProvider.getCurrentDateTime());
+        event = event.toBuilder().setJudgement(newJudgement).build();
+        storage.updatePredictedEvent(event.getId(), event);
         notifyChange();
     }
 
     public void reopen() {
-        PredictedEvent.Editor editor = storage.edit(event);
-        editor.setJudgement(null);
-        event = editor.commit();
-        notifyChange();
+        judge(PredictionState.Open);
     }
 
     public void updateConfidence() {
         double newConfidence = newConfidencePercentage / 100.0;
-        Prediction newPrediction = new Prediction(newConfidence,
+        Prediction newPrediction = Prediction.create(newConfidence,
                 dateTimeProvider.getCurrentDateTime());
-        PredictedEvent.Editor editor = storage.edit(event);
-        editor.addPrediction(newPrediction);
-        event = editor.commit();
+        event = event.toBuilder().addPrediction(newPrediction).build();
+        storage.updatePredictedEvent(event.getId(), event);
         newConfidencePercentage = Double.NaN;
         notifyChange();
     }

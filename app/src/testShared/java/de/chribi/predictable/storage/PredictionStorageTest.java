@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
@@ -23,8 +24,10 @@ import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for all implementations of {@link PredictionStorage}.
+ *
  * @param <Storage> The implementation of PredictionStorage under test.
  */
+@SuppressWarnings("ConstantConditions")
 public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
     private Storage storage;
 
@@ -79,8 +82,8 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         Date dueDate = new Date(10000);
 
         List<Prediction> predictions = new ArrayList<>();
-        Prediction prediction1 = new Prediction(0.4, new Date(1000));
-        Prediction prediction2 = new Prediction(0.8, new Date(2000));
+        Prediction prediction1 = Prediction.create(0.4, new Date(1000));
+        Prediction prediction2 = Prediction.create(0.8, new Date(2000));
 
         predictions.add(prediction1);
         predictions.add(prediction2);
@@ -95,7 +98,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         assertThat("Due date should be the creation dueDate",
                 createdPrediction.getDueDate(), is(equalTo(dueDate)));
         assertThat("New Prediction should be unjudged",
-                createdPrediction.getJudgement(), is(nullValue()));
+                createdPrediction.getJudgement(), is(equalTo(Judgement.Open)));
         assertThat("Predictions from creation should be contained in the predictions",
                 createdPrediction.getPredictions(), containsInAnyOrder(
                         equalTo(prediction1),
@@ -137,12 +140,12 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         int numberOfPredictions = 10;
         createTestPredictions(numberOfPredictions);
         PredictedEvent event = storage.getPredictedEvents().get(0);
-        PredictedEvent.Editor editor = storage.edit(event);
-
-        editor.setTile("Some title");
-        editor.setDescription("Some description");
-        editor.setDueDate(new Date(5000));
-        editor.commit();
+        PredictedEvent newEvent = event.toBuilder()
+                .setTitle("Some title")
+                .setDescription("Some description")
+                .setDueDate(new Date(5000))
+                .build();
+        storage.updatePredictedEvent(event.getId(), newEvent);
 
         assertThat("Updating predictions should not change prediction count",
                 storage.getPredictedEvents().size(), is(numberOfPredictions));
@@ -155,19 +158,20 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         List<PredictedEvent> predictions = new ArrayList<>(storage.getPredictedEvents());
         PredictedEvent event = predictions.get(2);
         predictions.remove(2);
-        PredictedEvent.Editor editor = storage.edit(event);
+        PredictedEvent newEvent = event.toBuilder()
+                .setTitle("Some title")
+                .setDescription("Some description")
+                .setDueDate(new Date(3500))
+                .build();
 
-        editor.setTile("Some title");
-        editor.setDescription("Some description");
-        editor.setDueDate(new Date(3500));
-        PredictedEvent newPredictedEvent = editor.commit();
+        storage.updatePredictedEvent(event.getId(), newEvent);
 
         for (PredictedEvent prediction : predictions) {
             assertThat("Predictions not updated are preserved",
                     storage.getPredictedEvents(), hasItem(equalTo(prediction)));
         }
         assertThat("Updated prediction is stored",
-                storage.getPredictedEvents(), hasItem(equalTo(newPredictedEvent)));
+                storage.getPredictedEvents(), hasItem(equalTo(newEvent)));
     }
 
     @Test
@@ -177,41 +181,15 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
         PredictedEvent event2 = storage.getPredictedEvents().get(1);
         long id2 = event2.getId();
 
-        PredictedEvent.Editor editor = storage.edit(event2);
-        editor.addPrediction(new Prediction(0.5, new Date()));
-        editor.commit();
+        PredictedEvent updatedEvent = event2.toBuilder()
+                .addPrediction(Prediction.create(0.5, new Date()))
+                .build();
+        storage.updatePredictedEvent(id2, updatedEvent);
 
         assertThat("Specified PredictedEvent has prediction added",
                 storage.getPredictedEventById(id2).getPredictions().size(), is(1));
         assertThat("Other PredictedEvents are not affected",
                 storage.getPredictedEventById(id1).getPredictions().size(), is(0));
-    }
-
-    @Test
-    public void addPredictionPreservesPredictionOrderConstraint() {
-        // The predictions of a predicted event always have to be in order of creation date
-        PredictedEvent event = storage.createPredictedEvent("Test", null, new Date(100000L),
-                new ArrayList<Prediction>());
-
-        Prediction prediction1 = new Prediction(0.1, new Date(1000L));
-        Prediction prediction2 = new Prediction(0.2, new Date(2000L));
-        Prediction prediction3 = new Prediction(0.3, new Date(3000L));
-        Prediction prediction4 = new Prediction(0.4, new Date(4000L));
-
-        PredictedEvent.Editor editor = storage.edit(event);
-
-        editor.addPrediction(prediction2);
-        editor.addPrediction(prediction3);
-        editor.addPrediction(prediction1);
-        editor.addPrediction(prediction4);
-        editor.commit();
-
-        List<Prediction> predictions = storage.getPredictedEventById(event.getId()).getPredictions();
-
-        assertThat("Predictions of a predicted event have to be in order of creation date",
-                predictions, contains(equalTo(prediction1),
-                        equalTo(prediction2), equalTo(prediction3),
-                        equalTo(prediction4)));
     }
 
     @Test

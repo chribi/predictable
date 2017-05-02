@@ -44,12 +44,14 @@ public interface PredictionStorage {
                                         @NonNull List<Prediction> predictions);
 
     /**
-     * Obtain a {@link PredictedEvent.Editor} for the given event that commits changes to this
-     * storage.
-     * @param event The event to modify.  This should be stored by this storage.
-     * @return {@link PredictedEvent.Editor} for the given event.
+     * Update a predicted event.
+     *
+     * @param id The id of the event to update.  The behaviour is unspecified when
+     *                no event with this id exists.
+     * @param event The new values.  The id property of this event is ignored!
+     *
      */
-    @NonNull PredictedEvent.Editor edit(@NonNull PredictedEvent event);
+    void updatePredictedEvent(long id, @NonNull PredictedEvent event);
 
     /**
      * Delete a {@link PredictedEvent}.

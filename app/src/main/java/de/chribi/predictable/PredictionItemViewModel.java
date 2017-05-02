@@ -10,7 +10,6 @@ import javax.inject.Named;
 
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.PredictedEvent;
-import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.util.ConfidenceFormatProvider;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -18,7 +17,6 @@ import de.chribi.predictable.util.PredictionStatusStringProvider;
 import de.chribi.predictable.util.StringUtil;
 
 public class PredictionItemViewModel extends BaseObservable {
-
     private PredictedEvent predictedEvent;
     private DateTimeProvider dateTimeProvider;
     private PredictionStatusStringProvider statusStrings;
@@ -67,12 +65,7 @@ public class PredictionItemViewModel extends BaseObservable {
      */
     @Bindable
     public PredictionState getPredictionState() {
-        Judgement judgement = predictedEvent.getJudgement();
-        if(judgement != null) {
-            return judgement.getState();
-        } else {
-            return PredictionState.Open;
-        }
+        return predictedEvent.getJudgement().getState();
     }
 
     /**
