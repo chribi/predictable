@@ -28,7 +28,7 @@
                 >
                 
                 <TextView
-                    android:id="@+id/text_event_last_confidence"
+                    android:id="@+id/text_last_confidence"
                     android:layout_width="56dp"
                     android:layout_height="match_parent"
                     android:text="@{itemViewModel.confidence}"
@@ -41,26 +41,26 @@
                     />
 
                 <TextView
-                    android:id="@+id/text_event_title"
+                    android:id="@+id/text_prediction_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{itemViewModel.eventTitle}"
+                    android:text="@{itemViewModel.predictionTitle}"
                     app:predictionState="@{itemViewModel.predictionState}"
                     android:textAppearance="?android:attr/textAppearanceListItem"
                     android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@id/text_event_last_confidence"
-                    android:layout_toEndOf="@id/text_event_last_confidence"
+                    android:layout_toRightOf="@id/text_last_confidence"
+                    android:layout_toEndOf="@id/text_last_confidence"
                     />
 
                 <TextView
-                    android:id="@+id/text_event_status"
+                    android:id="@+id/text_prediction_status"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@{itemViewModel.statusDescription}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_below="@+id/text_event_title"
-                    android:layout_toRightOf="@+id/text_event_last_confidence"
-                    android:layout_toEndOf="@+id/text_event_last_confidence"
+                    android:layout_below="@+id/text_prediction_title"
+                    android:layout_toRightOf="@+id/text_last_confidence"
+                    android:layout_toEndOf="@+id/text_last_confidence"
                     android:layout_toLeftOf="@+id/icon_prediction_state"
                     android:layout_toStartOf="@+id/icon_prediction_state"
                     />

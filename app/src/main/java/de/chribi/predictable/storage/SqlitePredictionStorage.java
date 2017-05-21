@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 
@@ -29,198 +29,198 @@ public class SqlitePredictionStorage implements PredictionStorage {
         this.dbHelper = dbHelper;
     }
 
-    // table of predicted events joined with predictions
-    private static final String joinedPredictedEventTable =
-            SqliteSchemas.PredictedEvents.TABLE_NAME +
-                    " LEFT JOIN " + SqliteSchemas.Predictions.TABLE_NAME +
-                    " ON " + SqliteSchemas.PredictedEvents.COLUMN_ID +
-                    " = " + SqliteSchemas.Predictions.COLUMN_EVENT;
+    // table of predictions joined with confidences
+    private static final String joinedPredictionsTable =
+            SqliteSchemas.Predictions.TABLE_NAME +
+                    " LEFT JOIN " + SqliteSchemas.Confidences.TABLE_NAME +
+                    " ON " + SqliteSchemas.Predictions.COLUMN_ID +
+                    " = " + SqliteSchemas.Confidences.COLUMN_PREDICTION;
 
-    // columns to use in queries for events
-    private static final String[] queryEventColumns = new String[]{
-            SqliteSchemas.PredictedEvents.COLUMN_ID,
-            SqliteSchemas.PredictedEvents.COLUMN_TITLE,
-            SqliteSchemas.PredictedEvents.COLUMN_DESCRIPTION,
-            SqliteSchemas.PredictedEvents.COLUMN_STATE,
-            SqliteSchemas.PredictedEvents.COLUMN_JUDGED_DATE,
-            SqliteSchemas.PredictedEvents.COLUMN_DUE_DATE,
-            SqliteSchemas.Predictions.COLUMN_CONFIDENCE,
-            SqliteSchemas.Predictions.COLUMN_CREATION_DATE
+    // columns to use in queries for predictions
+    private static final String[] queryColumns = new String[]{
+            SqliteSchemas.Predictions.COLUMN_ID,
+            SqliteSchemas.Predictions.COLUMN_TITLE,
+            SqliteSchemas.Predictions.COLUMN_DESCRIPTION,
+            SqliteSchemas.Predictions.COLUMN_STATE,
+            SqliteSchemas.Predictions.COLUMN_JUDGED_DATE,
+            SqliteSchemas.Predictions.COLUMN_DUE_DATE,
+            SqliteSchemas.Confidences.COLUMN_CONFIDENCE,
+            SqliteSchemas.Confidences.COLUMN_CREATION_DATE
     };
 
-    // indices for the columns in an event query
-    private static final int idxEventId = 0;
-    private static final int idxEventTitle = 1;
-    private static final int idxEventDescription = 2;
-    private static final int idxEventState = 3;
-    private static final int idxEventJudgementDate = 4;
-    private static final int idxEventDueDate = 5;
+    // indices for the columns in a prediction query
+    private static final int idxId = 0;
+    private static final int idxTitle = 1;
+    private static final int idxDescription = 2;
+    private static final int idxState = 3;
+    private static final int idxJudgementDate = 4;
+    private static final int idxDueDate = 5;
     private static final int idxConfidence = 6;
-    private static final int idxPredictionDate = 7;
+    private static final int idxConfidenceDate = 7;
 
     @NonNull
     @Override
-    public List<PredictedEvent> getPredictedEvents() {
+    public List<Prediction> getPredictions() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String orderBy = SqliteSchemas.PredictedEvents.COLUMN_ID + " ASC, "
-                + SqliteSchemas.Predictions.COLUMN_CREATION_DATE + " ASC";
+        String orderBy = SqliteSchemas.Predictions.COLUMN_ID + " ASC, "
+                + SqliteSchemas.Confidences.COLUMN_CREATION_DATE + " ASC";
 
-        Cursor dbCursor = db.query(joinedPredictedEventTable,
-                queryEventColumns,
+        Cursor dbCursor = db.query(joinedPredictionsTable,
+                queryColumns,
                 null, null, null, null,
                 orderBy);
-        return getPredictedEventsFromCursor(dbCursor);
+        return getPredictionsFromCursor(dbCursor);
     }
 
     @NonNull
-    private List<PredictedEvent> getPredictedEventsFromCursor(Cursor cursor) {
-        // Most events will probably only have one prediction, so using the cursor
-        // count as result size should not be too far off.
-        List<PredictedEvent> result = new ArrayList<>(cursor.getCount());
+    private List<Prediction> getPredictionsFromCursor(Cursor cursor) {
+        // Most predictions will probably only have one or two confidence statements, so using
+        // the cursor count as result size should not be too far off.
+        List<Prediction> result = new ArrayList<>(cursor.getCount());
 
         cursor.moveToNext();
-        PredictedEvent event = getCurrentEvent(cursor);
-        while (event != null) {
-            result.add(event);
-            event = getCurrentEvent(cursor);
+        Prediction prediction = getCurrentPrediction(cursor);
+        while (prediction != null) {
+            result.add(prediction);
+            prediction = getCurrentPrediction(cursor);
         }
         cursor.close();
         return result;
     }
 
-    // read a single PredictedEvent from the given cursor.
-    // Assumes that the cursor is moved to the first row for the predicted event.
-    // Will move the cursor beyond the current event.
+    // read a single Prediction from the given cursor.
+    // Assumes that the cursor is moved to the first row for the prediction.
+    // Will move the cursor beyond the current prediction.
     // Will return null when cursor.isAfterLast()
-    private PredictedEvent getCurrentEvent(Cursor cursor) {
+    private Prediction getCurrentPrediction(Cursor cursor) {
         if (cursor.isAfterLast()) {
             return null;
         }
 
-        long eventId = cursor.getLong(idxEventId);
-        String title = cursor.getString(idxEventTitle);
-        String description = cursor.getString(idxEventDescription);
-        PredictionState state = PredictionState.fromStoredValue(cursor.getInt(idxEventState));
+        long predictionId = cursor.getLong(idxId);
+        String title = cursor.getString(idxTitle);
+        String description = cursor.getString(idxDescription);
+        PredictionState state = PredictionState.fromStoredValue(cursor.getInt(idxState));
         Judgement judgement;
         if (state != PredictionState.Open) {
-            Date judgementDate = new Date(cursor.getLong(idxEventJudgementDate));
+            Date judgementDate = new Date(cursor.getLong(idxJudgementDate));
             judgement = Judgement.create(state, judgementDate);
         } else {
             judgement = Judgement.Open;
         }
-        Date dueDate = new Date(cursor.getLong(idxEventDueDate));
-        List<Prediction> predictions = new ArrayList<>();
-        long currentId = eventId;
-        while (currentId == eventId) {
-            Prediction prediction = getCurrentPrediction(cursor);
-            if (prediction != null) {
-                predictions.add(prediction);
+        Date dueDate = new Date(cursor.getLong(idxDueDate));
+        List<ConfidenceStatement> confidenceStatements = new ArrayList<>();
+        long currentId = predictionId;
+        while (currentId == predictionId) {
+            ConfidenceStatement confidenceStatement = getCurrentConfidence(cursor);
+            if (confidenceStatement != null) {
+                confidenceStatements.add(confidenceStatement);
             }
             if (cursor.moveToNext()) {
-                currentId = cursor.getLong(idxEventId);
+                currentId = cursor.getLong(idxId);
             } else {
-                currentId = eventId + 1;
+                currentId = predictionId + 1;
             }
         }
-        return PredictedEvent.builder()
-                .setId(eventId)
+        return Prediction.builder()
+                .setId(predictionId)
                 .setTitle(title)
                 .setDescription(description)
                 .setJudgement(judgement)
                 .setDueDate(dueDate)
-                .setPredictions(predictions)
+                .setConfidences(confidenceStatements)
                 .build();
     }
 
-    private Prediction getCurrentPrediction(Cursor cursor) {
-        Prediction prediction = null;
-        if (!cursor.isNull(idxConfidence) && !cursor.isNull(idxPredictionDate)) {
+    private ConfidenceStatement getCurrentConfidence(Cursor cursor) {
+        ConfidenceStatement confidenceStatement = null;
+        if (!cursor.isNull(idxConfidence) && !cursor.isNull(idxConfidenceDate)) {
             double confidence = cursor.getDouble(idxConfidence);
-            Date creation = new Date(cursor.getLong(idxPredictionDate));
-            prediction = Prediction.create(confidence, creation);
+            Date creation = new Date(cursor.getLong(idxConfidenceDate));
+            confidenceStatement = ConfidenceStatement.create(confidence, creation);
         }
-        return prediction;
+        return confidenceStatement;
     }
 
 
     @Nullable
     @Override
-    public PredictedEvent getPredictedEventById(long id) {
+    public Prediction getPredictionById(long id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String whereClause = SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?";
+        String whereClause = SqliteSchemas.Predictions.COLUMN_ID + " = ?";
         String[] whereArgs = new String[]{ String.valueOf(id) };
 
-        String orderBy = SqliteSchemas.Predictions.COLUMN_CREATION_DATE + " ASC";
+        String orderBy = SqliteSchemas.Confidences.COLUMN_CREATION_DATE + " ASC";
 
 
-        Cursor cursor = db.query(joinedPredictedEventTable,
-                queryEventColumns,
+        Cursor cursor = db.query(joinedPredictionsTable,
+                queryColumns,
                 whereClause, whereArgs,
                 null, null,
                 orderBy);
         cursor.moveToNext();
-        PredictedEvent event = getCurrentEvent(cursor);
+        Prediction prediction = getCurrentPrediction(cursor);
         cursor.close();
-        return event;
+        return prediction;
     }
 
     @NonNull
     @Override
-    public PredictedEvent createPredictedEvent(@NonNull String title, @Nullable String description,
-                                               @NonNull Date dueDate, @NonNull List<Prediction> predictions) {
+    public Prediction createPrediction(@NonNull String title, @Nullable String description,
+                                       @NonNull Date dueDate, @NonNull List<ConfidenceStatement> confidenceStatements) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        long eventId = 0;
+        long id = 0;
 
         db.beginTransaction();
         try {
             ContentValues values =
-                    createContentValuesForPredictedEvent(title, description, dueDate, null);
-            eventId = db.insert(SqliteSchemas.PredictedEvents.TABLE_NAME, null, values);
+                    createContentValuesForPrediction(title, description, dueDate, null);
+            id = db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, values);
 
-            for (Prediction prediction : predictions) {
+            for (ConfidenceStatement confidenceStatement : confidenceStatements) {
                 ContentValues predictionValues =
-                        createContentValuesForPrediction(eventId, prediction);
-                db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, predictionValues);
+                        createContentValuesForPrediction(id, confidenceStatement);
+                db.insert(SqliteSchemas.Confidences.TABLE_NAME, null, predictionValues);
             }
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
-        return PredictedEvent.builder()
-                .setId(eventId)
+        return Prediction.builder()
+                .setId(id)
                 .setTitle(title)
                 .setDescription(description)
                 .setDueDate(dueDate)
-                .setPredictions(predictions)
+                .setConfidences(confidenceStatements)
                 .build();
     }
 
-    @Override public void updatePredictedEvent(long id, @NonNull PredictedEvent event) {
+    @Override public void updatePrediction(long id, @NonNull Prediction prediction) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
-            String[] argEventId = new String[]{ String.valueOf(id) };
+            String[] argPredictionId = new String[]{ String.valueOf(id) };
 
-            ContentValues newValues = createContentValuesForPredictedEvent(
-                    event.getTitle(),
-                    event.getDescription(), event.getDueDate(),
-                    event.getJudgement());
-            int rows = db.update(SqliteSchemas.PredictedEvents.TABLE_NAME, newValues,
-                    SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?", argEventId);
+            ContentValues newValues = createContentValuesForPrediction(
+                    prediction.getTitle(),
+                    prediction.getDescription(), prediction.getDueDate(),
+                    prediction.getJudgement());
+            int rows = db.update(SqliteSchemas.Predictions.TABLE_NAME, newValues,
+                    SqliteSchemas.Predictions.COLUMN_ID + " = ?", argPredictionId);
 
-            // only write to the predictions table if the given id exists
+            // only write to the table of confidences if the given id exists
             if (rows > 0) {
-                // update predictions by deleting all predictions currently in the db
+                // update confidences by deleting all confidences currently in the db
                 // and then inserting all new ones
-                db.delete(SqliteSchemas.Predictions.TABLE_NAME,
-                        SqliteSchemas.Predictions.COLUMN_EVENT + " = ?", argEventId);
+                db.delete(SqliteSchemas.Confidences.TABLE_NAME,
+                        SqliteSchemas.Confidences.COLUMN_PREDICTION + " = ?", argPredictionId);
 
-                for (Prediction prediction : event.getPredictions()) {
-                    ContentValues predictionValues = createContentValuesForPrediction(id, prediction);
-                    db.insert(SqliteSchemas.Predictions.TABLE_NAME, null, predictionValues);
+                for (ConfidenceStatement confidenceStatement : prediction.getConfidences()) {
+                    ContentValues predictionValues = createContentValuesForPrediction(id, confidenceStatement);
+                    db.insert(SqliteSchemas.Confidences.TABLE_NAME, null, predictionValues);
                 }
             }
 
@@ -231,36 +231,36 @@ public class SqlitePredictionStorage implements PredictionStorage {
     }
 
     @Override
-    public void deletePredictedEvent(long id) {
+    public void deletePrediction(long id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        String whereClause = SqliteSchemas.PredictedEvents.COLUMN_ID + " = ?";
+        String whereClause = SqliteSchemas.Predictions.COLUMN_ID + " = ?";
         String[] whereArgs = new String[]{ String.valueOf(id) };
-        db.delete(SqliteSchemas.PredictedEvents.TABLE_NAME, whereClause, whereArgs);
-        // XXX Don't need to delete predictions from prediction table, as this is handled by sqlite
+        db.delete(SqliteSchemas.Predictions.TABLE_NAME, whereClause, whereArgs);
+        // XXX Don't need to delete confidences from db, as this is handled by sqlite
     }
 
     private static ContentValues
-    createContentValuesForPredictedEvent(String title, String description, Date dueDate,
-                                         Judgement judgement) {
+    createContentValuesForPrediction(String title, String description, Date dueDate,
+                                     Judgement judgement) {
         ContentValues values = new ContentValues();
-        values.put(SqliteSchemas.PredictedEvents.COLUMN_TITLE, title);
-        values.put(SqliteSchemas.PredictedEvents.COLUMN_DESCRIPTION, description);
-        values.put(SqliteSchemas.PredictedEvents.COLUMN_DUE_DATE, dueDate.getTime());
+        values.put(SqliteSchemas.Predictions.COLUMN_TITLE, title);
+        values.put(SqliteSchemas.Predictions.COLUMN_DESCRIPTION, description);
+        values.put(SqliteSchemas.Predictions.COLUMN_DUE_DATE, dueDate.getTime());
         PredictionState state = judgement != null ? judgement.getState() : PredictionState.Open;
-        values.put(SqliteSchemas.PredictedEvents.COLUMN_STATE, state.getStoredValue());
-        values.put(SqliteSchemas.PredictedEvents.COLUMN_JUDGED_DATE,
+        values.put(SqliteSchemas.Predictions.COLUMN_STATE, state.getStoredValue());
+        values.put(SqliteSchemas.Predictions.COLUMN_JUDGED_DATE,
                 judgement != null ? judgement.getDate().getTime() : null);
         return values;
     }
 
-    private static ContentValues createContentValuesForPrediction(long eventId,
-                                                                  Prediction prediction) {
+    private static ContentValues createContentValuesForPrediction(long id,
+                                                                  ConfidenceStatement confidenceStatement) {
         ContentValues predictionValues = new ContentValues();
-        predictionValues.put(SqliteSchemas.Predictions.COLUMN_CONFIDENCE,
-                prediction.getConfidence());
-        predictionValues.put(SqliteSchemas.Predictions.COLUMN_CREATION_DATE,
-                prediction.getCreationDate().getTime());
-        predictionValues.put(SqliteSchemas.Predictions.COLUMN_EVENT, eventId);
+        predictionValues.put(SqliteSchemas.Confidences.COLUMN_CONFIDENCE,
+                confidenceStatement.getConfidence());
+        predictionValues.put(SqliteSchemas.Confidences.COLUMN_CREATION_DATE,
+                confidenceStatement.getCreationDate().getTime());
+        predictionValues.put(SqliteSchemas.Confidences.COLUMN_PREDICTION, id);
         return predictionValues;
     }
 }

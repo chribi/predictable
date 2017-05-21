@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Date;
 import java.util.List;
 
-import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -60,7 +60,7 @@ public class NewPredictionViewModelTest {
         viewModel.onSavePrediction();
         verify(mockedView).closeView();
         assertThat("A prediction was saved",
-                fakeStorage.getPredictedEvents().size(), is(1));
+                fakeStorage.getPredictions().size(), is(1));
     }
 
     @Test
@@ -68,24 +68,24 @@ public class NewPredictionViewModelTest {
         viewModel.onCancel();
         verify(mockedView).closeView();
         assertThat("No prediction was saved",
-                fakeStorage.getPredictedEvents().size(), is(0));
+                fakeStorage.getPredictions().size(), is(0));
     }
 
-    private PredictedEvent savePredictionAndReturnSavedEvent() {
+    private Prediction savePredictionAndReturn() {
         viewModel.onSavePrediction();
-        List<PredictedEvent> storedEvents = fakeStorage.getPredictedEvents();
-        return storedEvents.get(storedEvents.size() - 1);
+        List<Prediction> storedPredictions = fakeStorage.getPredictions();
+        return storedPredictions.get(storedPredictions.size() - 1);
     }
 
     @Test
     public void onSavePredictionSavesPredictionWithCorrectTitle() {
-        final String testTitle = "Test event title";
-        viewModel.setPredictedEventTitle(testTitle);
+        final String testTitle = "Test prediction title";
+        viewModel.setPredictionTitle(testTitle);
 
-        PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
+        Prediction storedPrediction = savePredictionAndReturn();
 
-        assertThat("Stored predicted event should have title as set in the view model",
-                storedEvent.getTitle(), is(equalTo(testTitle)));
+        assertThat("Stored prediction should have title as set in the view model",
+                storedPrediction.getTitle(), is(equalTo(testTitle)));
     }
 
     @Test
@@ -101,18 +101,18 @@ public class NewPredictionViewModelTest {
                 + 2 * DateTimeConstants.MILLIS_PER_HOUR; // time zone = UTC-2
         Date testDueDateTime = new Date(dueDateEpochMilliseconds);
 
-        PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
+        Prediction storedPrediction = savePredictionAndReturn();
 
-        assertThat("Stored predicted event should have due date as set in the view model",
-                storedEvent.getDueDate(), is(equalTo(testDueDateTime)));
+        assertThat("Stored prediction should have due date as set in the view model",
+                storedPrediction.getDueDate(), is(equalTo(testDueDateTime)));
     }
 
     @Test
     public void onSavePredictionSavesPredictionWithOnePrediction() {
-        PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
+        Prediction storedPrediction = savePredictionAndReturn();
 
-        assertThat("Stored predicted event should have one prediction",
-                storedEvent.getPredictions().size(), is(equalTo(1)));
+        assertThat("Stored prediction should have one prediction",
+                storedPrediction.getConfidences().size(), is(equalTo(1)));
     }
 
     @Test
@@ -120,19 +120,19 @@ public class NewPredictionViewModelTest {
         final double testConfidence = 0.4321;
         viewModel.setConfidencePercentage(testConfidence * 100);
 
-        PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
+        Prediction storedPrediction = savePredictionAndReturn();
 
-        assertThat("Stored predicted event should have prediction with confidence as set in the view model",
-                storedEvent.getPredictions().get(0).getConfidence(),
+        assertThat("Stored prediction should have confidence as set in the view model",
+                storedPrediction.getConfidences().get(0).getConfidence(),
                 is(closeTo(testConfidence, 1e-8)));
     }
 
     @Test
     public void onSavePredictionSavesPredictionWithCreationDateNow() {
-        PredictedEvent storedEvent = savePredictionAndReturnSavedEvent();
+        Prediction storedPrediction = savePredictionAndReturn();
 
-        assertThat("Stored predicted event should have prediction with creation date now",
-                storedEvent.getPredictions().get(0).getCreationDate(), is(equalTo(now.toDate())));
+        assertThat("Stored prediction should have confidence with creation date now",
+                storedPrediction.getConfidences().get(0).getCreationDate(), is(equalTo(now.toDate())));
     }
 
     @Test

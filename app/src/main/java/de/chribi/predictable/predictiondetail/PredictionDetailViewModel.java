@@ -12,8 +12,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import de.chribi.predictable.BR;
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.storage.PredictionStorage;
@@ -23,7 +23,7 @@ import de.chribi.predictable.util.PredictionStatusStringProvider;
 import de.chribi.predictable.util.StringUtil;
 
 public class PredictionDetailViewModel extends BaseObservable {
-    private PredictedEvent event;
+    private Prediction prediction;
     private double newConfidencePercentage = Double.NaN;
     private final PredictionStorage storage;
     private final PredictionStatusStringProvider statusStrings;
@@ -43,9 +43,9 @@ public class PredictionDetailViewModel extends BaseObservable {
     }
 
 
-    public void setPredictedEvent(long eventId) {
-        event = storage.getPredictedEventById(eventId);
-        if(event == null) {
+    public void setPrediction(long predictionId) {
+        prediction = storage.getPredictionById(predictionId);
+        if(prediction == null) {
             view.onInvalidPrediction();
         } else {
             notifyChange();
@@ -62,43 +62,43 @@ public class PredictionDetailViewModel extends BaseObservable {
      */
     @Bindable
     public boolean isValid() {
-        return event != null;
+        return prediction != null;
     }
 
     @Bindable
     @NonNull
     public String getTitle() {
-        return event.getTitle();
+        return prediction.getTitle();
     }
 
     @Bindable
     @Nullable
     public String getDescription() {
-        return event.getDescription();
+        return prediction.getDescription();
     }
 
     @Bindable
     @NonNull
     public String getStatus() {
-        return StringUtil.formatStatus(event.getJudgement(), event.getDueDate(),
+        return StringUtil.formatStatus(prediction.getJudgement(), prediction.getDueDate(),
                 statusStrings, dateTimeProvider);
     }
 
     @Bindable
     @NonNull
-    public List<Prediction> getPredictions() {
-        return event.getPredictions();
+    public List<ConfidenceStatement> getConfidences() {
+        return prediction.getConfidences();
     }
 
     @Bindable
     @NonNull
     public String getCurrentConfidence() {
-        return StringUtil.formatCurrentConfidence(event.getPredictions(), confidenceFormatter);
+        return StringUtil.formatCurrentConfidence(prediction.getConfidences(), confidenceFormatter);
     }
 
     @Bindable
     public boolean isOpen() {
-        return event.getJudgement().getState() == PredictionState.Open;
+        return prediction.getJudgement().getState() == PredictionState.Open;
     }
 
     @Bindable
@@ -138,8 +138,8 @@ public class PredictionDetailViewModel extends BaseObservable {
 
     private void judge(PredictionState state) {
         Judgement newJudgement = Judgement.create(state, dateTimeProvider.getCurrentDateTime());
-        event = event.toBuilder().setJudgement(newJudgement).build();
-        storage.updatePredictedEvent(event.getId(), event);
+        prediction = prediction.toBuilder().setJudgement(newJudgement).build();
+        storage.updatePrediction(prediction.getId(), prediction);
         notifyChange();
     }
 
@@ -149,16 +149,16 @@ public class PredictionDetailViewModel extends BaseObservable {
 
     public void updateConfidence() {
         double newConfidence = newConfidencePercentage / 100.0;
-        Prediction newPrediction = Prediction.create(newConfidence,
+        ConfidenceStatement newConfidenceStatement = ConfidenceStatement.create(newConfidence,
                 dateTimeProvider.getCurrentDateTime());
-        event = event.toBuilder().addPrediction(newPrediction).build();
-        storage.updatePredictedEvent(event.getId(), event);
+        prediction = prediction.toBuilder().addConfidence(newConfidenceStatement).build();
+        storage.updatePrediction(prediction.getId(), prediction);
         newConfidencePercentage = Double.NaN;
         notifyChange();
     }
 
     public void deletePrediction() {
-        storage.deletePredictedEvent(event.getId());
+        storage.deletePrediction(prediction.getId());
         view.closeView();
     }
 }

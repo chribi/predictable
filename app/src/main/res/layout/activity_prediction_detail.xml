@@ -18,7 +18,7 @@
         >
 
         <LinearLayout
-            android:id="@+id/layout_event_header"
+            android:id="@+id/layout_prediction_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -28,7 +28,7 @@
             >
 
             <TextView
-                android:id="@+id/text_event_title"
+                android:id="@+id/text_prediction_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
@@ -78,7 +78,7 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_anchor="@id/layout_event_header"
+            app:layout_anchor="@id/layout_prediction_header"
             app:layout_anchorGravity="bottom"
             android:layout_gravity="bottom"
             android:padding="16dp"
@@ -94,7 +94,7 @@
                     android:id="@+id/label_judge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_judge_event"
+                    android:text="@string/label_judge_prediction"
                     android:visibility="@{viewModel.open}"
                     android:layout_marginBottom="12dp"
                     app:layout_constraintTop_toBottomOf="@+id/constraint_layout"
@@ -156,11 +156,11 @@
                     />
 
                 <TextView
-                    android:id="@+id/text_event_current_confidence"
+                    android:id="@+id/text_current_confidence"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.currentConfidence}"
-                    android:visibility="@{viewModel.predictions.size() &lt;= 1}"
+                    android:visibility="@{viewModel.confidences.size() &lt;= 1}"
                     app:layout_constraintTop_toBottomOf="@+id/label_chart_confidence"
                     app:layout_constraintRight_toRightOf="@id/constraint_layout"
                     />
@@ -169,9 +169,9 @@
                     android:id="@+id/chart_confidence"
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
-                    android:visibility="@{viewModel.predictions.size() > 1}"
-                    app:predictions="@{viewModel.predictions}"
-                    app:layout_constraintTop_toBottomOf="@+id/text_event_current_confidence"
+                    android:visibility="@{viewModel.confidences.size() > 1}"
+                    app:confidences="@{viewModel.confidences}"
+                    app:layout_constraintTop_toBottomOf="@+id/text_current_confidence"
                     app:graphColor="@color/colorPrimaryDark"
                     />
 
@@ -225,12 +225,12 @@
         </android.support.v4.widget.NestedScrollView>
 
         <!-- Hide the edit button until editing of
-             event title etc is implemented -->
+             title etc is implemented -->
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_anchor="@id/layout_event_header"
+            app:layout_anchor="@id/layout_prediction_header"
             app:layout_anchorGravity="bottom|end|right"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_mode_edit_white_24dp"

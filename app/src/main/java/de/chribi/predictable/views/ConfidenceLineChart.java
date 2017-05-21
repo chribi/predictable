@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.chribi.predictable.R;
-import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.util.DateAxisConverter;
 
 /**
@@ -112,21 +112,21 @@ public class ConfidenceLineChart extends LineChart {
     }
 
     /**
-     * Set a list of predictions to show in this line chart.
+     * Set a list of confidence statements to show in this line chart.
      *
-     * @param predictions An ordered list of predictions.  The first element should be the earliest
-     *                    prediction, the last element should be the latest prediction.
+     * @param confidenceStatements An ordered list of confidence statements.  The first element should be the earliest
+     *                    confidence statement, the last element should be the latest.
      */
-    public void setPredictions(List<Prediction> predictions) {
+    public void setConfidences(List<ConfidenceStatement> confidenceStatements) {
         dataSet.clear();
-        if (predictions != null && predictions.size() > 0) {
-            Date minDate = predictions.get(0).getCreationDate();
-            Date maxDate = predictions.get(predictions.size() - 1).getCreationDate();
+        if (confidenceStatements != null && confidenceStatements.size() > 0) {
+            Date minDate = confidenceStatements.get(0).getCreationDate();
+            Date maxDate = confidenceStatements.get(confidenceStatements.size() - 1).getCreationDate();
             dateAxisConverter.setRange(minDate, maxDate);
 
-            for (Prediction prediction : predictions) {
-                final float xValue = dateAxisConverter.dateToAxisValue(prediction.getCreationDate());
-                Entry entry = new Entry(xValue, (float) prediction.getConfidence());
+            for (ConfidenceStatement confidenceStatement : confidenceStatements) {
+                final float xValue = dateAxisConverter.dateToAxisValue(confidenceStatement.getCreationDate());
+                Entry entry = new Entry(xValue, (float) confidenceStatement.getConfidence());
                 Log.d("Chart", "Entry: " + String.valueOf(entry.getX()) + ", " + String.valueOf(entry.getY()));
                 dataSet.addEntry(entry);
             }

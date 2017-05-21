@@ -73,14 +73,14 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
     @Test
     public void confidenceGreater100WillBeSetTo100() {
-        onView(withId(R.id.text_event_confidence))
+        onView(withId(R.id.text_confidence))
                 .perform(typeText("123.45"))
                 .check(matches(withText("100.0")));
     }
 
     @Test
     public void confidenceBetween0And100WillBeLeftUnchanged() {
-        onView(withId(R.id.text_event_confidence))
+        onView(withId(R.id.text_confidence))
                 .perform(typeText("12.345"))
                 .check(matches(withText("12.345")));
     }
@@ -109,12 +109,12 @@ public class NewPredictionActivityTest extends BaseUiTest {
     }
 
     @Test
-    public void textEventTitleSetsEventTitleInViewModel() {
-        final String testEventTitle = "Test string";
-        onView(withId(R.id.text_event_title))
-                .perform(typeText(testEventTitle));
-        assertThat(viewModel.getPredictedEventTitle(),
-                is(equalTo(testEventTitle)));
+    public void textPredictionTitleSetsPredictionTitleInViewModel() {
+        final String testTitle = "Test string";
+        onView(withId(R.id.text_prediction_title))
+                .perform(typeText(testTitle));
+        assertThat(viewModel.getPredictionTitle(),
+                is(equalTo(testTitle)));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class NewPredictionActivityTest extends BaseUiTest {
     @Test
     public void textConfidenceSetsConfidenceInViewModel() {
         final double confidence = 87.654;
-        onView(withId(R.id.text_event_confidence))
+        onView(withId(R.id.text_confidence))
                 .perform(typeText(String.valueOf(confidence)));
 
         assertThat(viewModel.getConfidencePercentage(),

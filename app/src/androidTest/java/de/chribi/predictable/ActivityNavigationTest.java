@@ -38,7 +38,7 @@ public class ActivityNavigationTest extends BaseUiTest {
     {
         onView(withId(R.id.fab_new_prediction))
                 .perform(click());
-        onView(withId(R.id.action_save_event))
+        onView(withId(R.id.action_save_prediction))
                 .perform(click());
         assertThat(EspressoUtils.getCurrentActivity(), is(instanceOf(MainActivity.class)));
     }

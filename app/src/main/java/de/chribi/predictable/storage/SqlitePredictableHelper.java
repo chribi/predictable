@@ -13,8 +13,8 @@ public class SqlitePredictableHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SqliteSchemas.PredictedEvents.SQL_CREATE);
         db.execSQL(SqliteSchemas.Predictions.SQL_CREATE);
+        db.execSQL(SqliteSchemas.Confidences.SQL_CREATE);
     }
 
     @Override

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_save_event"
-        android:title="@string/menu_save_predicted_event"
+        android:id="@+id/action_save_prediction"
+        android:title="@string/menu_save_prediction"
         app:showAsAction="always"
         />
 

@@ -1,7 +1,7 @@
 package de.chribi.predictable.data;
 
 /**
- * The state of a {@link PredictedEvent}.
+ * The state of a {@link Prediction}.
  */
 public enum PredictionState {
     /**

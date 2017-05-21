@@ -15,24 +15,24 @@ import java.util.List;
 import javax.inject.Inject;
 
 import de.chribi.predictable.BR;
-import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 
 public class NewPredictionViewModel extends BaseObservable {
-    private String predictedEventTitle = "";
+    private String predictionTitle = "";
     private LocalDate localDueDate;
     private LocalTime localDueTime;
     private double confidencePercentage = 50.0;
 
     @Bindable
-    public String getPredictedEventTitle() {
-        return predictedEventTitle;
+    public String getPredictionTitle() {
+        return predictionTitle;
     }
 
-    public void setPredictedEventTitle(String predictedEventTitle) {
-        this.predictedEventTitle = predictedEventTitle;
-        notifyPropertyChanged(BR.predictedEventTitle);
+    public void setPredictionTitle(String predictionTitle) {
+        this.predictionTitle = predictionTitle;
+        notifyPropertyChanged(BR.predictionTitle);
     }
 
     private Date getDueDateTime() {
@@ -103,12 +103,12 @@ public class NewPredictionViewModel extends BaseObservable {
     }
 
     public void onSavePrediction() {
-        List<Prediction> predictions = new ArrayList<>(1);
+        List<ConfidenceStatement> confidenceStatements = new ArrayList<>(1);
         if(!Double.isNaN(confidencePercentage)) {
-            predictions.add(Prediction.create(confidencePercentage / 100,
+            confidenceStatements.add(ConfidenceStatement.create(confidencePercentage / 100,
                     dateTimeProvider.getCurrentDateTime()));
         }
-        storage.createPredictedEvent(predictedEventTitle, null, getDueDateTime(), predictions);
+        storage.createPrediction(predictionTitle, null, getDueDateTime(), confidenceStatements);
         view.closeView();
     }
 

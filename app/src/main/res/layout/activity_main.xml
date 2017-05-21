@@ -5,7 +5,7 @@
     >
     <data>
         <variable
-            name="predictions"
+            name="confidenceStatements"
             type="android.databinding.ObservableList"
             />
         <variable
@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:items="@{predictions}"
+            app:items="@{confidenceStatements}"
             app:itemView="@{predictionItemView}"
             app:layoutManager="@{LayoutManagers.linear()}"
             />

@@ -8,8 +8,7 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.util.ConfidenceFormatProvider;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -17,7 +16,7 @@ import de.chribi.predictable.util.PredictionStatusStringProvider;
 import de.chribi.predictable.util.StringUtil;
 
 public class PredictionItemViewModel extends BaseObservable {
-    private PredictedEvent predictedEvent;
+    private Prediction prediction;
     private DateTimeProvider dateTimeProvider;
     private PredictionStatusStringProvider statusStrings;
     private final ConfidenceFormatProvider confidenceFormatter;
@@ -33,10 +32,10 @@ public class PredictionItemViewModel extends BaseObservable {
     }
 
     /**
-     * Set the underlying predicted event for this PredictionItemViewModel.
+     * Set the underlying prediction for this PredictionItemViewModel.
      */
-    public void setPredictedEvent(@NonNull PredictedEvent predictedEvent) {
-        this.predictedEvent = predictedEvent;
+    public void setPrediction(@NonNull Prediction prediction) {
+        this.prediction = prediction;
         notifyChange();
     }
 
@@ -45,11 +44,11 @@ public class PredictionItemViewModel extends BaseObservable {
     }
 
     /**
-     * The event title to show for this event.
+     * The title to show for this prediction.
      */
     @Bindable
-    public String getEventTitle() {
-        return predictedEvent.getTitle();
+    public String getPredictionTitle() {
+        return prediction.getTitle();
     }
 
     /**
@@ -57,15 +56,15 @@ public class PredictionItemViewModel extends BaseObservable {
      */
     @Bindable
     public String getConfidence() {
-        return StringUtil.formatCurrentConfidence(predictedEvent.getPredictions(), confidenceFormatter);
+        return StringUtil.formatCurrentConfidence(prediction.getConfidences(), confidenceFormatter);
     }
 
     /**
-     * The state of the predicted event.
+     * The state of the prediction.
      */
     @Bindable
     public PredictionState getPredictionState() {
-        return predictedEvent.getJudgement().getState();
+        return prediction.getJudgement().getState();
     }
 
     /**
@@ -74,11 +73,11 @@ public class PredictionItemViewModel extends BaseObservable {
     @Bindable
     public String getStatusDescription()
     {
-        return StringUtil.formatStatus(predictedEvent.getJudgement(),
-                predictedEvent.getDueDate(), statusStrings, dateTimeProvider);
+        return StringUtil.formatStatus(prediction.getJudgement(),
+                prediction.getDueDate(), statusStrings, dateTimeProvider);
     }
 
     public void showDetails() {
-        view.showPredictedEventDetails(predictedEvent.getId());
+        view.showPredictionDetails(prediction.getId());
     }
 }

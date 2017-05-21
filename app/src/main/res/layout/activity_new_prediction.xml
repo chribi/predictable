@@ -31,28 +31,28 @@
             >
 
             <EditText
-                android:id="@+id/text_event_title"
+                android:id="@+id/text_prediction_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_text_event"
+                android:hint="@string/hint_text_prediction_title"
                 android:inputType="textAutoCorrect|textMultiLine"
-                android:text="@={viewModel.predictedEventTitle}"
+                android:text="@={viewModel.predictionTitle}"
                 app:layout_constraintLeft_toLeftOf="@+id/constraintLayout"
                 app:layout_constraintRight_toRightOf="@+id/constraintLayout"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-                tools:text="Some event description, maybe too long to fit in a single line."
+                tools:text="Some prediction description, maybe too long to fit in a single line."
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_personal_confidence"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_confidence"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_confidence"
                 app:layout_constraintLeft_toLeftOf="@+id/constraintLayout"
                 />
 
             <EditText
-                android:id="@+id/text_event_confidence"
+                android:id="@+id/text_confidence"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -61,7 +61,7 @@
                 android:selectAllOnFocus="true"
                 android:text="@={viewModel.confidencePercentage}"
                 app:layout_constraintRight_toLeftOf="@+id/label_percent"
-                app:layout_constraintTop_toBottomOf="@+id/text_event_title"
+                app:layout_constraintTop_toBottomOf="@+id/text_prediction_title"
                 tools:text="50"
                 />
 
@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/symbol_percent"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_event_confidence"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_confidence"
                 app:layout_constraintRight_toRightOf="@id/constraintLayout"
                 />
 
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_due_date"
                 app:layout_constraintLeft_toLeftOf="@id/constraintLayout"
-                app:layout_constraintTop_toBottomOf="@id/text_event_confidence"
+                app:layout_constraintTop_toBottomOf="@id/text_confidence"
                 />
 
             <de.chribi.predictable.views.DateEditView

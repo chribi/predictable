@@ -44,7 +44,7 @@ public class PredictionDetailActivity extends AppCompatActivity implements Predi
 
         PredictableApp.get(this).getPredictableComponent().inject(this);
         viewModel.setView(this);
-        viewModel.setPredictedEvent(predictionId);
+        viewModel.setPrediction(predictionId);
         if(viewModel.isValid()) {
             binding.setViewModel(viewModel);
             setSupportActionBar(binding.toolbar);

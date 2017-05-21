@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.PredictionState;
 
 public class StringUtil {
@@ -34,12 +34,12 @@ public class StringUtil {
         }
     }
 
-    public static @NonNull String formatCurrentConfidence(@NonNull List<Prediction> predictions,
+    public static @NonNull String formatCurrentConfidence(@NonNull List<ConfidenceStatement> confidenceStatements,
                                    @NonNull ConfidenceFormatProvider confidenceFormatter) {
-        int numOfPredictions = predictions.size();
-        if(numOfPredictions > 0) {
-            Prediction lastPrediction = predictions.get(numOfPredictions - 1);
-            return confidenceFormatter.formatConfidence(lastPrediction.getConfidence() * 100);
+        int numOfConfidences = confidenceStatements.size();
+        if(numOfConfidences > 0) {
+            ConfidenceStatement lastConfidenceStatement = confidenceStatements.get(numOfConfidences - 1);
+            return confidenceFormatter.formatConfidence(lastConfidenceStatement.getConfidence() * 100);
         } else {
             return confidenceFormatter.formatNoConfidence();
         }

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.PredictedEvent;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.databinding.ActivityMainBinding;
@@ -49,21 +49,19 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
             }
         });
 
-        ObservableList<PredictionItemViewModel> events = new ObservableArrayList<>();
+        ObservableList<PredictionItemViewModel> predictions = new ObservableArrayList<>();
         DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
         DefaultStringsProvider strings = new DefaultStringsProvider(this);
         PredictionStorage storage = PredictableApp.get(this).getPredictableComponent().getStorage();
-        for (PredictedEvent event : storage.getPredictedEvents()) {
+        for (Prediction prediction : storage.getPredictions()) {
             PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings, strings);
-            vm.setPredictedEvent(event);
+            vm.setPrediction(prediction);
             vm.setView(this);
-            events.add(vm);
+            predictions.add(vm);
         }
 
-        binding.setPredictions(events);
+        binding.setConfidenceStatements(predictions);
         binding.setPredictionItemView(ItemView.of(BR.itemViewModel, R.layout.item_prediction));
-
-        // RecyclerView predictions =  (RecyclerView) findViewById(R.id.list_predictions);
     }
 
     @Override
@@ -102,13 +100,13 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
                 }
                 Date dueDate = randomDateNearNow(r, now);
 
-                int numPredictions = r.nextInt(8);
-                List<Prediction> predictions = new ArrayList<>(numPredictions);
-                for(int k = 0; k < numPredictions; k++) {
-                    predictions.add(Prediction.create(r.nextDouble(), randomDateNearNow(r, now)));
+                int numConfidences = r.nextInt(8);
+                List<ConfidenceStatement> confidenceStatements = new ArrayList<>(numConfidences);
+                for(int k = 0; k < numConfidences; k++) {
+                    confidenceStatements.add(ConfidenceStatement.create(r.nextDouble(), randomDateNearNow(r, now)));
                 }
-                PredictedEvent event = storage.createPredictedEvent(title, description, dueDate,
-                        predictions);
+                Prediction prediction = storage.createPrediction(title, description, dueDate,
+                        confidenceStatements);
                 double v = r.nextDouble();
                 if(v > 0.4) {
                     PredictionState state;
@@ -120,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
                         state = PredictionState.Invalid;
                     }
                     Judgement judgement = Judgement.create(state, randomDateNearNow(r, now));
-                    event = event.toBuilder().setJudgement(judgement).build();
+                    prediction = prediction.toBuilder().setJudgement(judgement).build();
 
-                    storage.updatePredictedEvent(event.getId(), event);
+                    storage.updatePrediction(prediction.getId(), prediction);
                 }
             }
         }
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
     }
 
     @Override
-    public void showPredictedEventDetails(long id) {
+    public void showPredictionDetails(long id) {
         PredictionDetailActivity.start(this, id);
     }
 }

@@ -61,7 +61,7 @@ public class NewPredictionActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_save_event)
+        if(item.getItemId() == R.id.action_save_prediction)
         {
             viewModel.onSavePrediction();
             return true;

@@ -4,21 +4,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import de.chribi.predictable.data.Judgement;
-import de.chribi.predictable.data.PredictedEvent;
+import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Prediction;
 
 /**
  * An in-memory storage of predictions.
  */
 public class InMemoryPredictionStorage implements PredictionStorage {
-    private @NonNull HashMap<Long, PredictedEvent> storage;
+    private @NonNull HashMap<Long, Prediction> storage;
     private long nextId;
 
     /**
@@ -34,51 +31,51 @@ public class InMemoryPredictionStorage implements PredictionStorage {
      *
      * @param initialPredictions Some initial predictions.
      */
-    public InMemoryPredictionStorage(List<PredictedEvent> initialPredictions) {
+    public InMemoryPredictionStorage(List<Prediction> initialPredictions) {
         this();
-        for (PredictedEvent prediction : initialPredictions) {
+        for (Prediction prediction : initialPredictions) {
             storage.put(prediction.getId(), prediction);
         }
     }
 
     @NonNull
     @Override
-    public List<PredictedEvent> getPredictedEvents() {
+    public List<Prediction> getPredictions() {
         return new ArrayList<>(storage.values());
     }
 
     @Nullable
     @Override
-    public PredictedEvent getPredictedEventById(long id) {
+    public Prediction getPredictionById(long id) {
         return storage.get(id);
     }
 
     @NonNull
     @Override
-    public PredictedEvent createPredictedEvent(@NonNull String title, @Nullable String description,
-                                               @NonNull Date dueDate,
-                                               @NonNull List<Prediction> predictions) {
-        PredictedEvent newPredictedEvent = PredictedEvent.builder()
+    public Prediction createPrediction(@NonNull String title, @Nullable String description,
+                                       @NonNull Date dueDate,
+                                       @NonNull List<ConfidenceStatement> confidenceStatements) {
+        Prediction newPrediction = Prediction.builder()
                 .setId(nextId)
                 .setTitle(title)
                 .setDescription(description)
                 .setDueDate(dueDate)
-                .setPredictions(predictions)
+                .setConfidences(confidenceStatements)
                 .build();
-        storage.put(nextId, newPredictedEvent);
+        storage.put(nextId, newPrediction);
         nextId++;
-        return newPredictedEvent;
+        return newPrediction;
     }
 
     @Override
-    public void updatePredictedEvent(long id, @NonNull PredictedEvent event) {
+    public void updatePrediction(long id, @NonNull Prediction prediction) {
         if (storage.get(id) != null) {
-            storage.put(id, event);
+            storage.put(id, prediction);
         }
     }
 
     @Override
-    public void deletePredictedEvent(long id) {
+    public void deletePrediction(long id) {
         storage.remove(id);
     }
 }
