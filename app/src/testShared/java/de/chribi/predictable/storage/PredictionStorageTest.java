@@ -39,7 +39,7 @@ public abstract class PredictionStorageTest<Storage extends PredictionStorage> {
      *
      * @param count
      */
-    public void createTestPredictions(int count) {
+    private void createTestPredictions(int count) {
         for (int i = 0; i < count; i++) {
             String title = String.format("Test prediction %d", i);
             storage.createPrediction(title, null, new Date(), new ArrayList<ConfidenceStatement>());

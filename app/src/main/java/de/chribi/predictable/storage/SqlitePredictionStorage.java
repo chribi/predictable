@@ -15,20 +15,9 @@ import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
+import de.chribi.predictable.storage.queries.PredictionQuery;
 
 public class SqlitePredictionStorage implements PredictionStorage {
-    @NonNull
-    private SqlitePredictableHelper dbHelper;
-
-    /**
-     * Create a SqlitePredictionStorage.
-     *
-     * @param dbHelper The {@link SqlitePredictableHelper} handling the database connection.
-     */
-    public SqlitePredictionStorage(@NonNull SqlitePredictableHelper dbHelper) {
-        this.dbHelper = dbHelper;
-    }
-
     // table of predictions joined with confidences
     private static final String joinedPredictionsTable =
             SqliteSchemas.Predictions.TABLE_NAME +
@@ -58,6 +47,19 @@ public class SqlitePredictionStorage implements PredictionStorage {
     private static final int idxConfidence = 6;
     private static final int idxConfidenceDate = 7;
 
+    private final SqlitePredictableHelper dbHelper;
+    private final SqliteConstraintInterpreter queryInterpreter;
+
+    /**
+     * Create a SqlitePredictionStorage.
+     *
+     * @param dbHelper The {@link SqlitePredictableHelper} handling the database connection.
+     */
+    public SqlitePredictionStorage(@NonNull SqlitePredictableHelper dbHelper) {
+        this.dbHelper = dbHelper;
+        queryInterpreter = new SqliteConstraintInterpreter();
+    }
+
     @NonNull
     @Override
     public List<Prediction> getPredictions() {
@@ -70,6 +72,19 @@ public class SqlitePredictionStorage implements PredictionStorage {
                 queryColumns,
                 null, null, null, null,
                 orderBy);
+        return getPredictionsFromCursor(dbCursor);
+    }
+
+    @NonNull
+    @Override
+    public List<Prediction> getPredictions(PredictionQuery query)
+    {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        SqliteWhereClause where = query.getWhereClause().accept(queryInterpreter);
+        Cursor dbCursor = db.query(joinedPredictionsTable, queryColumns,
+                where.getClause(), where.getArgs(),
+                null, null, null, null);
         return getPredictionsFromCursor(dbCursor);
     }
 

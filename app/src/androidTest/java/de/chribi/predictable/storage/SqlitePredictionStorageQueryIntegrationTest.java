@@ -8,12 +8,11 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class SqlitePredictionStorageTest
-        extends PredictionStorageTest<SqlitePredictionStorage> {
+public class SqlitePredictionStorageQueryIntegrationTest
+        extends PredictionStorageQueryIntegrationTest<SqlitePredictionStorage> {
     private static final String testDbName = "__test__predictable.db";
 
-    @Override
-    SqlitePredictionStorage createStorage() {
+    @Override SqlitePredictionStorage createStorage() {
         Context context = InstrumentationRegistry.getTargetContext();
         context.deleteDatabase(testDbName);
         SqlitePredictableHelper dbHelper = new SqlitePredictableHelper(context, testDbName);

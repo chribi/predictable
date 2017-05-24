@@ -10,6 +10,7 @@ import java.util.List;
 
 import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.storage.queries.PredictionQuery;
 
 /**
  * An in-memory storage of predictions.
@@ -17,6 +18,7 @@ import de.chribi.predictable.data.Prediction;
 public class InMemoryPredictionStorage implements PredictionStorage {
     private @NonNull HashMap<Long, Prediction> storage;
     private long nextId;
+    private final PredicateConstraintInterpreter queryInterpreter;
 
     /**
      * Create a new empty InMemoryPredictionStorage.
@@ -24,6 +26,7 @@ public class InMemoryPredictionStorage implements PredictionStorage {
     public InMemoryPredictionStorage() {
         storage = new HashMap<>();
         nextId = 0;
+        queryInterpreter = new PredicateConstraintInterpreter();
     }
 
     /**
@@ -42,6 +45,19 @@ public class InMemoryPredictionStorage implements PredictionStorage {
     @Override
     public List<Prediction> getPredictions() {
         return new ArrayList<>(storage.values());
+    }
+
+    @NonNull
+    @Override
+    public List<Prediction> getPredictions(PredictionQuery query) {
+        List<Prediction> result = new ArrayList<>();
+        Predicate<Prediction> filter = query.getWhereClause().accept(queryInterpreter);
+        for(Prediction prediction : storage.values()) {
+            if(filter.apply(prediction)) {
+                result.add(prediction);
+            }
+        }
+        return result;
     }
 
     @Nullable
@@ -70,7 +86,7 @@ public class InMemoryPredictionStorage implements PredictionStorage {
     @Override
     public void updatePrediction(long id, @NonNull Prediction prediction) {
         if (storage.get(id) != null) {
-            storage.put(id, prediction);
+            storage.put(id, prediction.toBuilder().setId(id).build());
         }
     }
 

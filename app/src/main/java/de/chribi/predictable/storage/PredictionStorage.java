@@ -8,17 +8,25 @@ import java.util.List;
 
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.ConfidenceStatement;
+import de.chribi.predictable.storage.queries.PredictionQuery;
 
 /**
  * Interface for reading and writing {@link Prediction predictions}.
  */
 public interface PredictionStorage {
     /**
-     * Get a list of stored {@link Prediction predictions}.
+     * Get a list of all stored {@link Prediction predictions}.
      *
      * @return A list of {@link Prediction}s.
      */
     @NonNull List<Prediction> getPredictions();
+
+    /**
+     * Get a list of stored {@link Prediction predictions}.
+     * @param query What predictions to get.
+     * @return A list of {@link Prediction}s as specified by the given query.
+     */
+    @NonNull List<Prediction> getPredictions(PredictionQuery query);
 
     /**
      * Get a stored {@link Prediction} by id.
