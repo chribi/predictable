@@ -17,6 +17,7 @@ import de.chribi.predictable.storage.queries.PredictionQuery;
 
 import static de.chribi.predictable.storage.queries.PredictionField.DUE_DATE;
 import static de.chribi.predictable.storage.queries.PredictionField.ID;
+import static de.chribi.predictable.storage.queries.PredictionField.JUDGEMENT_DATE;
 import static de.chribi.predictable.storage.queries.PredictionField.STATE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -170,6 +171,28 @@ abstract class PredictionStorageQueryIntegrationTest<Storage extends PredictionS
     }
 
     @Test
+    public void orderByDueDateAscending_returnsPredictionsInExpectedOrder() {
+        Prediction[] predictions = insertPredictions(dueDateTestPredictions);
+        PredictionQuery query = PredictionQuery.allPredictions().orderBy(DUE_DATE.Ascending);
+
+        List<Prediction> queryResult = storage.getPredictions(query);
+
+        assertThat(queryResult, contains(predictions[0], predictions[2], predictions[5],
+                predictions[3], predictions[1], predictions[6], predictions[4]));
+    }
+
+    @Test
+    public void orderByDueDateDescending_returnsPredictionsInExpectedOrder() {
+        Prediction[] predictions = insertPredictions(dueDateTestPredictions);
+        PredictionQuery query = PredictionQuery.allPredictions().orderBy(DUE_DATE.Descending);
+
+        List<Prediction> queryResult = storage.getPredictions(query);
+
+        assertThat(queryResult, contains(predictions[4], predictions[6], predictions[1],
+                predictions[3], predictions[5], predictions[2], predictions[0]));
+    }
+
+    @Test
     public void whereEmptyConjunction_returnsAllPredictions() {
         Prediction[] predictions = insertPredictions(predictionStateTestPredictions);
         PredictionQuery query = PredictionQuery.where(Combine.and());
@@ -235,5 +258,60 @@ abstract class PredictionStorageQueryIntegrationTest<Storage extends PredictionS
         List<Prediction> queryResult = storage.getPredictions(query);
 
         assertThat(queryResult, contains(predictions[2], predictions[3], predictions[4]));
+    }
+
+    private Prediction complexPrediction(long dueDate, PredictionState state, long judgedDate) {
+        return initializedPredictionBuilder()
+                .setJudgement(Judgement.create(state, new Date(judgedDate)))
+                .setDueDate(new Date(dueDate))
+                .build();
+    }
+    private Prediction[] complexTestPredictions = new Prediction[] {
+            complexPrediction(4000, PredictionState.Invalid, 1000), // 0
+            complexPrediction(2000, PredictionState.Correct, 1000), // 1
+            complexPrediction(3000, PredictionState.Incorrect, 2000), // 2
+            complexPrediction(3000, PredictionState.Incorrect, 1000), // 3
+            complexPrediction(2000, PredictionState.Correct, 3000), // 4
+            complexPrediction(5000, PredictionState.Correct, 1000), // 5
+    };
+
+    @Test
+    public void whereWithNestedLogic_returnsExpectedPredictions() {
+        Prediction[] predictions = insertPredictions(complexTestPredictions);
+        PredictionQuery query = PredictionQuery.where(
+                Combine.or(
+                        STATE.equalTo(PredictionState.Invalid),
+                        Combine.and(
+                                JUDGEMENT_DATE.after(new Date(1000)),
+                                DUE_DATE.before(new Date(2500)))));
+
+        List<Prediction> queryResult = storage.getPredictions(query);
+
+        assertThat(queryResult, contains(predictions[0], predictions[4]));
+    }
+
+    @Test
+    public void orderByMultipleFields_returnsPredictionsInExpectedOrder() {
+        Prediction[] predictions = insertPredictions(complexTestPredictions);
+        PredictionQuery query = PredictionQuery.allPredictions()
+                .orderBy(JUDGEMENT_DATE.Ascending, DUE_DATE.Descending);
+
+        List<Prediction> queryResult = storage.getPredictions(query);
+
+        assertThat(queryResult, contains(predictions[5], predictions[0], predictions[3],
+                predictions[1], predictions[2], predictions[4]));
+    }
+
+    @Test
+    public void queryWithWhereAndOrderBy_returnsExpectedPredictions() {
+        Prediction[] predictions = insertPredictions(complexTestPredictions);
+        PredictionQuery query = PredictionQuery
+                .where(STATE.notEqualTo(PredictionState.Invalid),
+                        DUE_DATE.after(new Date(2000)))
+                .orderBy(DUE_DATE.Descending, JUDGEMENT_DATE.Descending);
+
+        List<Prediction> queryResult = storage.getPredictions(query);
+
+        assertThat(queryResult, contains(predictions[5], predictions[2], predictions[3]));
     }
 }

@@ -15,6 +15,7 @@ public class PredictionField<T> {
     private PredictionField() { }
 
     public final PredictionOrdering Ascending = new PredictionOrdering(this, OrderDirection.ASCENDING);
+    public final PredictionOrdering Descending = new PredictionOrdering(this, OrderDirection.DESCENDING);
 
     public PredictionConstraint equalTo(T value) {
         return PredictionFieldConstraint.onField(this, Constraint.equal(value));

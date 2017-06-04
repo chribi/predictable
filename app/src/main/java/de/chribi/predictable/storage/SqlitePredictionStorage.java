@@ -82,9 +82,11 @@ public class SqlitePredictionStorage implements PredictionStorage {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         SqliteWhereClause where = query.getWhereClause().accept(queryInterpreter);
+        String orderBy = SqliteOrderByClause.toSqlite(query.getOrderByClauses());
+
         Cursor dbCursor = db.query(joinedPredictionsTable, queryColumns,
                 where.getClause(), where.getArgs(),
-                null, null, null, null);
+                null, null, orderBy, null);
         return getPredictionsFromCursor(dbCursor);
     }
 

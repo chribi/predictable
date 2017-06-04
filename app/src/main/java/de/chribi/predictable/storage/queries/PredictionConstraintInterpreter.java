@@ -12,6 +12,8 @@ public interface PredictionConstraintInterpreter<ResultT> {
 
     ResultT interpretDueDateConstraint(Constraint<Date> constraint);
 
+    ResultT interpretJudgementDateConstraint(Constraint<Date> constraint);
+
     ResultT interpretConstraintAll(PredictionConstraint... subConstraints);
 
     ResultT interpretConstraintAny(PredictionConstraint... subConstraints);

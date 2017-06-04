@@ -29,6 +29,8 @@ class PredictionFieldConstraint implements PredictionConstraint {
                     (Constraint<PredictionState>) constraint);
         } else if (field == PredictionField.DUE_DATE) {
             return interpreter.interpretDueDateConstraint((Constraint<Date>) constraint);
+        } else if (field == PredictionField.JUDGEMENT_DATE)  {
+            return interpreter.interpretJudgementDateConstraint((Constraint<Date>) constraint);
         } else {
             throw new AssertionError("Can not filter by field: " + field.toString());
         }

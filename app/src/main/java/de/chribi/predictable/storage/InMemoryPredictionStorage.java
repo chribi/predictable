@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ public class InMemoryPredictionStorage implements PredictionStorage {
                 result.add(prediction);
             }
         }
+        Collections.sort(result, PredictionComparator.fromOrderings(query.getOrderByClauses()));
         return result;
     }
 

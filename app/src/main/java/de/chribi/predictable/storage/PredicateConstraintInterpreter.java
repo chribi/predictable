@@ -13,7 +13,7 @@ import de.chribi.predictable.storage.queries.Constraint;
 import de.chribi.predictable.storage.queries.PredictionConstraint;
 import de.chribi.predictable.storage.queries.PredictionConstraintInterpreter;
 
-public class PredicateConstraintInterpreter
+class PredicateConstraintInterpreter
         implements PredictionConstraintInterpreter<Predicate<Prediction>> {
 
     @Override public Predicate<Prediction> interpretIdConstraint(
@@ -40,6 +40,16 @@ public class PredicateConstraintInterpreter
         return new Predicate<Prediction>() {
             @Override public boolean apply(@NonNull Prediction value) {
                 return fulfillsConstraint(value.getDueDate(), constraint);
+            }
+        };
+    }
+
+    @Override
+    public Predicate<Prediction> interpretJudgementDateConstraint(
+            final Constraint<Date> constraint) {
+        return new Predicate<Prediction>() {
+            @Override public boolean apply(@NonNull Prediction value) {
+                return fulfillsConstraint(value.getJudgement().getDate(), constraint);
             }
         };
     }

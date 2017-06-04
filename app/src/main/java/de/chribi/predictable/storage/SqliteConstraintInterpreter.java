@@ -14,7 +14,7 @@ import de.chribi.predictable.storage.queries.PredictionConstraint;
 import de.chribi.predictable.storage.queries.PredictionConstraintInterpreter;
 import de.chribi.predictable.storage.queries.Relation;
 
-public class SqliteConstraintInterpreter implements PredictionConstraintInterpreter<SqliteWhereClause> {
+class SqliteConstraintInterpreter implements PredictionConstraintInterpreter<SqliteWhereClause> {
     private static final String OP_OR  = " OR ";
     private static final String OP_AND  = " AND ";
     @Override
@@ -34,6 +34,13 @@ public class SqliteConstraintInterpreter implements PredictionConstraintInterpre
     @Override
     public SqliteWhereClause interpretDueDateConstraint(Constraint<Date> constraint) {
         String clause = clause(SqliteSchemas.Predictions.COLUMN_DUE_DATE, constraint.getRelation());
+        String[] args = new String[] { String.valueOf(constraint.getReferenceValue().getTime()) };
+        return new SqliteWhereClause(clause, args);
+    }
+
+    @Override
+    public SqliteWhereClause interpretJudgementDateConstraint(Constraint<Date> constraint) {
+        String clause = clause(SqliteSchemas.Predictions.COLUMN_JUDGED_DATE, constraint.getRelation());
         String[] args = new String[] { String.valueOf(constraint.getReferenceValue().getTime()) };
         return new SqliteWhereClause(clause, args);
     }
