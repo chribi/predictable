@@ -22,6 +22,10 @@
     <string name="string_state_incorrect">incorrect</string>
     <string name="string_state_invalid">invalid</string>
 
+    <string name="title_judged_predictions">Already judged</string>
+    <string name="title_upcoming_predictions">Upcoming</string>
+    <string name="title_overdue_predictions">To be judged</string>
+
     <string name="action_reopen">Reopen</string>
     <string name="action_judge_correct">Correct</string>
     <string name="action_judge_incorrect">Incorrect</string>

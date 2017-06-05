@@ -9,6 +9,7 @@ import dagger.Component;
         PredictionStorageModule.class,
         DateTimeModule.class,
         ConfigurationModule.class,
+        PredictionSetModule.class,
         StringsModule.class
 })
 @Singleton

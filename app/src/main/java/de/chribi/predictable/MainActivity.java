@@ -28,6 +28,7 @@ import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.startscreen.StartScreenView;
 import de.chribi.predictable.startscreen.StartScreenViewModel;
 import de.chribi.predictable.storage.PredictionStorage;
+import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
         binding.setViewModel(viewModel);
         OnItemBind itemBinding = new OnItemBindClass<>()
                 .map(PredictionItemViewModel.class, BR.itemViewModel, R.layout.item_prediction)
-                .map(String.class, BR.title, R.layout.item_prediction_list_header);
+                .map(String.class, BR.title, R.layout.item_prediction_list_header)
+                .map(Boolean.class, ItemBinding.VAR_NONE, R.layout.item_prediction_list_show_more);
         binding.setPredictionItemBinding(itemBinding);
     }
 

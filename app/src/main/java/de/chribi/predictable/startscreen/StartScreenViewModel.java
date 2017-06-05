@@ -9,7 +9,11 @@ import javax.inject.Inject;
 
 import de.chribi.predictable.PredictionItemViewModel;
 import de.chribi.predictable.PredictionItemView;
+import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
+import de.chribi.predictable.predictionsets.PredictionSet;
+import de.chribi.predictable.predictionsets.PredictionSetQueries;
+import de.chribi.predictable.predictionsets.PredictionSetTitles;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.storage.queries.PredictionQuery;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -19,9 +23,8 @@ import static de.chribi.predictable.storage.queries.PredictionField.JUDGEMENT_DA
 import static de.chribi.predictable.storage.queries.PredictionField.STATE;
 
 public class StartScreenViewModel implements PredictionItemView {
-    private List<PredictionItemViewModel> overduePredictions;
-    private List<PredictionItemViewModel> upcomingPredictions;
-    private List<PredictionItemViewModel> resolvedPredictions;
+    private static final int GROUP_LIMIT = 8;
+    private static final int GROUP_LIMIT_EXTENDED = 12;
 
     private List<Object> groupedPredictions = new ArrayList<>();
 
@@ -29,58 +32,41 @@ public class StartScreenViewModel implements PredictionItemView {
 
 
     @Inject
-    public StartScreenViewModel(PredictionStorage storage, DateTimeProvider dateTimeProvider,
+    public StartScreenViewModel(PredictionStorage storage, PredictionSetTitles setTitles,
+                                PredictionSetQueries setQueries,
                                 PredictionItemViewModel.Factory itemViewModelFactory) {
-        Date now = dateTimeProvider.getCurrentDateTime();
 
-        overduePredictions = itemViewModelFactory.createMany(storage.getPredictions(
-                PredictionQuery
-                        .where(
-                                STATE.equalTo(PredictionState.Open),
-                                DUE_DATE.before(now))
-                        .orderBy(
-                                DUE_DATE.Ascending)), this);
-
-        upcomingPredictions = itemViewModelFactory.createMany(storage.getPredictions(
-                PredictionQuery
-                        .where(
-                                STATE.equalTo(PredictionState.Open),
-                                DUE_DATE.after(now))
-                        .orderBy(
-                                DUE_DATE.Ascending)), this);
-
-        resolvedPredictions = itemViewModelFactory.createMany(storage.getPredictions(
-                PredictionQuery
-                        .where(
-                                STATE.notEqualTo(PredictionState.Open))
-                        .orderBy(
-                                JUDGEMENT_DATE.Descending)), this);
+        PredictionSet[] groups = new PredictionSet[]{
+                PredictionSet.OVERDUE_PREDICTIONS,
+                PredictionSet.UPCOMING_PREDICTIONS,
+                PredictionSet.JUDGED_PREDICTIONS
+        };
 
         groupedPredictions = new ArrayList<>();
-        groupedPredictions.add("Overdue");
-        groupedPredictions.addAll(overduePredictions);
-        groupedPredictions.add("Upcoming");
-        groupedPredictions.addAll(upcomingPredictions);
-        groupedPredictions.add("Past");
-        groupedPredictions.addAll(resolvedPredictions);
-    }
-
-    public List<PredictionItemViewModel> getOverduePredictions() {
-        return overduePredictions;
-    }
-
-    public List<PredictionItemViewModel> getUpcomingPredictions() {
-        return upcomingPredictions;
-    }
-
-    public List<PredictionItemViewModel> getResolvedPredictions() {
-        return resolvedPredictions;
+        for (PredictionSet group : groups) {
+            List<Prediction> groupPredictions
+                    = storage.getPredictions(setQueries.getPredictionSetQuery(group));
+            if(groupPredictions.size() == 0) {
+                continue;
+            }
+            groupedPredictions.add(setTitles.getPredictionSetTitle(group));
+            if(groupPredictions.size() <= GROUP_LIMIT_EXTENDED) {
+                groupedPredictions.addAll(itemViewModelFactory.createMany(groupPredictions, this));
+            } else {
+                List<Prediction> predictionsToShow = groupPredictions.subList(0, GROUP_LIMIT);
+                groupedPredictions.addAll(itemViewModelFactory.createMany(predictionsToShow, this));
+                groupedPredictions.add(true);
+            }
+        }
     }
 
     public List<Object> getGroupedPredictions() {
         return groupedPredictions;
     }
 
+    public void ShowFullGroup(PredictionSet set) {
+        // TODO
+    }
 
     public void setView(StartScreenView view) {
         this.view = view;
