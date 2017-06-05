@@ -1,6 +1,6 @@
 package de.chribi.predictable;
 
 
-public interface PredictionListView {
+public interface PredictionItemView {
     void showPredictionDetails(long id);
 }

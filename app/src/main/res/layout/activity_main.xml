@@ -5,14 +5,14 @@
     >
     <data>
         <variable
-            name="confidenceStatements"
-            type="android.databinding.ObservableList"
+            name="viewModel"
+            type="de.chribi.predictable.startscreen.StartScreenViewModel"
             />
         <variable
-            name="predictionItemView"
-            type="me.tatarka.bindingcollectionadapter.ItemView"
+            name="predictionItemBinding"
+            type="me.tatarka.bindingcollectionadapter2.OnItemBind"
             />
-        <import type="me.tatarka.bindingcollectionadapter.LayoutManagers" />
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
     </data>
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -32,10 +32,11 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:items="@{confidenceStatements}"
-            app:itemView="@{predictionItemView}"
+            app:items="@{viewModel.groupedPredictions}"
+            app:itemBinding="@{predictionItemBinding}"
             app:layoutManager="@{LayoutManagers.linear()}"
             />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_new_prediction"
             android:layout_width="wrap_content"
@@ -43,6 +44,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add_white_24dp"
+            android:onClick="@{() -> viewModel.startAddPrediction()}"
             />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

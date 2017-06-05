@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.chribi.predictable.BaseUiTest;
+import de.chribi.predictable.MainActivity;
 import de.chribi.predictable.R;
 import de.chribi.predictable.di.PredictableComponent;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
@@ -55,6 +56,9 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
             @Override
             public void inject(PredictionDetailActivity activity) { }
+
+            @Override
+            public void inject(MainActivity activity) { }
 
             @Override
             public PredictionStorage getStorage() {

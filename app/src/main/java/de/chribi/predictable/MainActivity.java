@@ -2,8 +2,6 @@ package de.chribi.predictable;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.Prediction;
@@ -25,13 +25,15 @@ import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.databinding.ActivityMainBinding;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
+import de.chribi.predictable.startscreen.StartScreenView;
+import de.chribi.predictable.startscreen.StartScreenViewModel;
 import de.chribi.predictable.storage.PredictionStorage;
-import de.chribi.predictable.util.DateTimeProvider;
-import de.chribi.predictable.util.DefaultDateTimeHandler;
-import de.chribi.predictable.util.DefaultStringsProvider;
-import me.tatarka.bindingcollectionadapter.ItemView;
+import me.tatarka.bindingcollectionadapter2.OnItemBind;
+import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
-public class MainActivity extends AppCompatActivity implements PredictionListView {
+public class MainActivity extends AppCompatActivity implements StartScreenView {
+
+    @Inject StartScreenViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +43,14 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_new_prediction);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, NewPredictionActivity.class));
-            }
-        });
+        PredictableApp.get(this).getPredictableComponent().inject(this);
+        viewModel.setView(this);
 
-        ObservableList<PredictionItemViewModel> predictions = new ObservableArrayList<>();
-        DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
-        DefaultStringsProvider strings = new DefaultStringsProvider(this);
-        PredictionStorage storage = PredictableApp.get(this).getPredictableComponent().getStorage();
-        for (Prediction prediction : storage.getPredictions()) {
-            PredictionItemViewModel vm = new PredictionItemViewModel(dateTimeProvider, strings, strings);
-            vm.setPrediction(prediction);
-            vm.setView(this);
-            predictions.add(vm);
-        }
-
-        binding.setConfidenceStatements(predictions);
-        binding.setPredictionItemView(ItemView.of(BR.itemViewModel, R.layout.item_prediction));
+        binding.setViewModel(viewModel);
+        OnItemBind itemBinding = new OnItemBindClass<>()
+                .map(PredictionItemViewModel.class, BR.itemViewModel, R.layout.item_prediction)
+                .map(String.class, BR.title, R.layout.item_prediction_list_header);
+        binding.setPredictionItemBinding(itemBinding);
     }
 
     @Override
@@ -138,5 +127,9 @@ public class MainActivity extends AppCompatActivity implements PredictionListVie
     @Override
     public void showPredictionDetails(long id) {
         PredictionDetailActivity.start(this, id);
+    }
+
+    @Override public void showAddPredictionView() {
+        startActivity(new Intent(MainActivity.this, NewPredictionActivity.class));
     }
 }
