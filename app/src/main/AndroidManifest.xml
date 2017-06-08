@@ -28,6 +28,11 @@
             android:name=".predictiondetail.PredictionDetailActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity
+            android:name=".predictionlist.PredictionListActivity"
+            android:parentActivityName=".MainActivity"
+            />
+
     </application>
 
 </manifest>

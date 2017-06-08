@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <data />
+    <data>
+        <variable
+            name="footerViewModel"
+            type="de.chribi.predictable.startscreen.ShowMoreFooterViewModel" />
+    </data>
 
-    <TextView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show more"
-        android:gravity="right"
-        android:textSize="16dp"
-        android:textAllCaps="true"
-        android:padding="8dp"
-        android:layout_marginRight="8dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:text="@string/action_show_full_prediction_list"
+        android:gravity="end"
+        android:onClick="@{() -> footerViewModel.showFullGroup()}"
         />
 
 </layout>

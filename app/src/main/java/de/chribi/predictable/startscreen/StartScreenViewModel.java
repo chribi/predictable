@@ -2,7 +2,6 @@ package de.chribi.predictable.startscreen;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,19 +9,12 @@ import javax.inject.Inject;
 import de.chribi.predictable.PredictionItemViewModel;
 import de.chribi.predictable.PredictionItemView;
 import de.chribi.predictable.data.Prediction;
-import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.predictionsets.PredictionSet;
 import de.chribi.predictable.predictionsets.PredictionSetQueries;
 import de.chribi.predictable.predictionsets.PredictionSetTitles;
 import de.chribi.predictable.storage.PredictionStorage;
-import de.chribi.predictable.storage.queries.PredictionQuery;
-import de.chribi.predictable.util.DateTimeProvider;
 
-import static de.chribi.predictable.storage.queries.PredictionField.DUE_DATE;
-import static de.chribi.predictable.storage.queries.PredictionField.JUDGEMENT_DATE;
-import static de.chribi.predictable.storage.queries.PredictionField.STATE;
-
-public class StartScreenViewModel implements PredictionItemView {
+public class StartScreenViewModel implements PredictionItemView, ShowMoreFooterView {
     private static final int GROUP_LIMIT = 8;
     private static final int GROUP_LIMIT_EXTENDED = 12;
 
@@ -55,7 +47,7 @@ public class StartScreenViewModel implements PredictionItemView {
             } else {
                 List<Prediction> predictionsToShow = groupPredictions.subList(0, GROUP_LIMIT);
                 groupedPredictions.addAll(itemViewModelFactory.createMany(predictionsToShow, this));
-                groupedPredictions.add(true);
+                groupedPredictions.add(new ShowMoreFooterViewModel(group, this));
             }
         }
     }
@@ -64,8 +56,10 @@ public class StartScreenViewModel implements PredictionItemView {
         return groupedPredictions;
     }
 
-    public void ShowFullGroup(PredictionSet set) {
-        // TODO
+    public void showFullGroup(PredictionSet set) {
+        if(view != null) {
+            view.showFullPredictionSet(set);
+        }
     }
 
     public void setView(StartScreenView view) {
@@ -81,6 +75,12 @@ public class StartScreenViewModel implements PredictionItemView {
     @Override public void showPredictionDetails(long id) {
         if(view != null) {
             view.showPredictionDetails(id);
+        }
+    }
+
+    @Override public void showFullPredictionSet(PredictionSet set) {
+        if(view != null) {
+            view.showFullPredictionSet(set);
         }
     }
 }

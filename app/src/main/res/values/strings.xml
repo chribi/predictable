@@ -38,4 +38,5 @@
     <string name="text_no_confidence_long">No confidence given!</string>
     <string name="action_delete_prediction">Delete</string>
     <string name="error_invalid_prediction">Prediction not found!</string>
+    <string name="action_show_full_prediction_list">Show more</string>
 </resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+        <variable
+            name="viewModel"
+            type="de.chribi.predictable.predictionlist.PredictionListViewModel"
+            />
+        <variable
+            name="predictionItemBinding"
+            type="me.tatarka.bindingcollectionadapter2.ItemBinding"
+            />
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+    </data>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_predictions"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        app:itemBinding="@{predictionItemBinding}"
+        app:items="@{viewModel.predictions}"
+        app:layoutManager="@{LayoutManagers.linear()}"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+</layout>

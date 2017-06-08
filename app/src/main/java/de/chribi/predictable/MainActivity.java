@@ -3,12 +3,10 @@ package de.chribi.predictable;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,10 +23,12 @@ import de.chribi.predictable.data.PredictionState;
 import de.chribi.predictable.databinding.ActivityMainBinding;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
+import de.chribi.predictable.predictionlist.PredictionListActivity;
+import de.chribi.predictable.predictionsets.PredictionSet;
+import de.chribi.predictable.startscreen.ShowMoreFooterViewModel;
 import de.chribi.predictable.startscreen.StartScreenView;
 import de.chribi.predictable.startscreen.StartScreenViewModel;
 import de.chribi.predictable.storage.PredictionStorage;
-import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
         OnItemBind itemBinding = new OnItemBindClass<>()
                 .map(PredictionItemViewModel.class, BR.itemViewModel, R.layout.item_prediction)
                 .map(String.class, BR.title, R.layout.item_prediction_list_header)
-                .map(Boolean.class, ItemBinding.VAR_NONE, R.layout.item_prediction_list_show_more);
+                .map(ShowMoreFooterViewModel.class, BR.footerViewModel, R.layout.item_prediction_list_show_more);
         binding.setPredictionItemBinding(itemBinding);
     }
 
@@ -133,5 +133,9 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
 
     @Override public void showAddPredictionView() {
         startActivity(new Intent(MainActivity.this, NewPredictionActivity.class));
+    }
+
+    @Override public void showFullPredictionSet(PredictionSet set) {
+        PredictionListActivity.start(this, set);
     }
 }

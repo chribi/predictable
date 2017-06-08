@@ -16,6 +16,7 @@ import de.chribi.predictable.MainActivity;
 import de.chribi.predictable.R;
 import de.chribi.predictable.di.PredictableComponent;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
+import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -56,6 +57,8 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
             @Override
             public void inject(PredictionDetailActivity activity) { }
+
+            @Override public void inject(PredictionListActivity activity) { }
 
             @Override
             public void inject(MainActivity activity) { }
