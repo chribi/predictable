@@ -16,14 +16,26 @@
         <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
     </data>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_predictions"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        app:itemBinding="@{predictionItemBinding}"
-        app:items="@{viewModel.predictions}"
-        app:layoutManager="@{LayoutManagers.linear()}"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        android:orientation="vertical"
+        >
+
+        <include
+            android:id="@+id/included_toolbar"
+            layout="@layout/toolbar" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_predictions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            app:itemBinding="@{predictionItemBinding}"
+            app:items="@{viewModel.predictions}"
+            app:layoutManager="@{LayoutManagers.linear()}"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            />
+
+    </LinearLayout>
 </layout>

@@ -20,9 +20,9 @@ public class ImageViewBindings {
         @ColorRes int colorResource;
         switch (state) {
             case Open:
-                iconResource = R.drawable.ic_thumbs_up_down_white_24dp;
-                colorResource = R.color.open_prediction;
-                break;
+                // no icon for open predictions
+                view.setImageDrawable(null);
+                return;
             case Correct:
                 iconResource = R.drawable.ic_check_white_24dp;
                 colorResource = R.color.correct_prediction;

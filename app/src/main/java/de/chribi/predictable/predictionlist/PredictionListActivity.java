@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import de.chribi.predictable.databinding.ActivityPredictionListBinding;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.predictionsets.PredictionSet;
 import de.chribi.predictable.predictionsets.PredictionSetQueries;
+import de.chribi.predictable.predictionsets.PredictionSetTitles;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 public class PredictionListActivity extends AppCompatActivity implements PredictionItemView {
@@ -34,6 +37,7 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
 
     @Inject PredictionListViewModel viewModel;
     @Inject PredictionSetQueries queries;
+    @Inject PredictionSetTitles titles;
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,15 +55,26 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
         ActivityPredictionListBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_prediction_list);
 
+
         PredictableApp.get(this)
                 .getPredictableComponent()
                 .inject(this);
         viewModel.setView(this);
         viewModel.setPredictionQuery(queries.getPredictionSetQuery(set));
-
         binding.setViewModel(viewModel);
         binding.setPredictionItemBinding(
                 ItemBinding.of(BR.itemViewModel, R.layout.item_prediction));
+
+        configureToolbar(binding.includedToolbar.toolbar, titles.getPredictionSetTitle(set));
+    }
+
+    private void configureToolbar(Toolbar toolbar, String predictionSetTitle) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle(predictionSetTitle);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override public void showPredictionDetails(long id) {

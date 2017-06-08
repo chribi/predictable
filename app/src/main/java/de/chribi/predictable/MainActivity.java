@@ -3,7 +3,9 @@ package de.chribi.predictable;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +55,18 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
                 .map(String.class, BR.title, R.layout.item_prediction_list_header)
                 .map(ShowMoreFooterViewModel.class, BR.footerViewModel, R.layout.item_prediction_list_show_more);
         binding.setPredictionItemBinding(itemBinding);
+
+        // from https://stackoverflow.com/a/34789656
+        final FloatingActionButton fab = binding.fabNewPrediction;
+        binding.listPredictions.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    fab.hide();
+                } else if (dy < 0) {
+                    fab.show();
+                }
+            }
+        });
     }
 
     @Override
