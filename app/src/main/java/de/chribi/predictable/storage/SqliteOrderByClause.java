@@ -3,7 +3,6 @@ package de.chribi.predictable.storage;
 
 import android.support.annotation.Nullable;
 
-import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.storage.queries.OrderDirection;
 import de.chribi.predictable.storage.queries.PredictionField;
 import de.chribi.predictable.storage.queries.PredictionOrdering;

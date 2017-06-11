@@ -15,6 +15,7 @@ import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.Prediction;
 import de.chribi.predictable.data.PredictionState;
+import de.chribi.predictable.storage.queries.PredictionField;
 import de.chribi.predictable.storage.queries.PredictionQuery;
 
 public class SqlitePredictionStorage implements PredictionStorage {
@@ -63,16 +64,8 @@ public class SqlitePredictionStorage implements PredictionStorage {
     @NonNull
     @Override
     public List<Prediction> getPredictions() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String orderBy = SqliteSchemas.Predictions.COLUMN_ID + " ASC, "
-                + SqliteSchemas.Confidences.COLUMN_CREATION_DATE + " ASC";
-
-        Cursor dbCursor = db.query(joinedPredictionsTable,
-                queryColumns,
-                null, null, null, null,
-                orderBy);
-        return getPredictionsFromCursor(dbCursor);
+        return getPredictions(
+                PredictionQuery.allPredictions().orderBy(PredictionField.ID.Ascending));
     }
 
     @NonNull

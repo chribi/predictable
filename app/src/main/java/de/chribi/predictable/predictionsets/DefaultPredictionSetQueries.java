@@ -9,8 +9,8 @@ import static de.chribi.predictable.storage.queries.PredictionField.DUE_DATE;
 import static de.chribi.predictable.storage.queries.PredictionField.JUDGEMENT_DATE;
 import static de.chribi.predictable.storage.queries.PredictionField.STATE;
 
-public class DefaultPredictionSetQueries implements PredictionSetQueries{
-    private DateTimeProvider dateTime;
+public class DefaultPredictionSetQueries implements PredictionSetQueries {
+    private final DateTimeProvider dateTime;
 
     public DefaultPredictionSetQueries(DateTimeProvider dateTime) {
         this.dateTime = dateTime;

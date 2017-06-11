@@ -18,7 +18,7 @@ import de.chribi.predictable.data.PredictionState;
 
 public class DefaultStringsProvider
         implements PredictionStatusStringProvider, ConfidenceFormatProvider {
-    private Context context;
+    private final Context context;
     @Inject
     public DefaultStringsProvider(Context context) {
         this.context = context;

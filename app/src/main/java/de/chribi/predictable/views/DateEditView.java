@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,7 +22,7 @@ import de.chribi.predictable.R;
                 attribute = "date"
         )
 )
-public class DateEditView extends TextView
+public class DateEditView extends android.support.v7.widget.AppCompatTextView
         implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
     public interface OnDateChangedListener {
         void OnDateChanged(DateEditView view, LocalDate newDate);

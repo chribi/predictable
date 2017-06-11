@@ -14,8 +14,8 @@ import de.chribi.predictable.storage.queries.PredictionQuery;
 public class PredictionListViewModel implements PredictionItemView {
 
     private PredictionItemView view;
-    private PredictionStorage storage;
-    private PredictionItemViewModel.Factory itemViewModelFactory;
+    private final PredictionStorage storage;
+    private final PredictionItemViewModel.Factory itemViewModelFactory;
     private List<PredictionItemViewModel> predictions;
 
     @Inject

@@ -9,15 +9,10 @@ import android.databinding.InverseBindingMethods;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
-
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import de.chribi.predictable.R;
 
@@ -27,7 +22,7 @@ import de.chribi.predictable.R;
                 attribute = "time"
         )
 )
-public class TimeEditView extends TextView
+public class TimeEditView extends android.support.v7.widget.AppCompatTextView
         implements TimePickerDialog.OnTimeSetListener, View.OnClickListener{
     public interface OnTimeChangedListener {
         void OnTimeChanged(TimeEditView view, LocalTime newTime);

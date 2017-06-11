@@ -3,7 +3,6 @@ package de.chribi.predictable.bindings;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;

@@ -14,7 +14,7 @@ public class PredictionQuery {
         return new PredictionQuery(CombinedPredictionConstraint.alwaysTrue());
     }
 
-    private PredictionConstraint whereClause;
+    private final PredictionConstraint whereClause;
     private PredictionOrdering[] orderings;
     private PredictionQuery(PredictionConstraint whereClause)
     {

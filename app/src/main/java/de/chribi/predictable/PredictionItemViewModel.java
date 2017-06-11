@@ -19,9 +19,9 @@ import de.chribi.predictable.util.StringUtil;
 
 public class PredictionItemViewModel extends BaseObservable {
     public static class Factory {
-        private DateTimeProvider dateTimeProvider;
-        private PredictionStatusStringProvider statusStringProvider;
-        private ConfidenceFormatProvider confidenceFormatProvider;
+        private final DateTimeProvider dateTimeProvider;
+        private final PredictionStatusStringProvider statusStringProvider;
+        private final ConfidenceFormatProvider confidenceFormatProvider;
 
         @Inject
         public Factory(DateTimeProvider dateTimeProvider,
@@ -47,11 +47,11 @@ public class PredictionItemViewModel extends BaseObservable {
         }
     }
 
-    private Prediction prediction;
-    private DateTimeProvider dateTimeProvider;
-    private PredictionStatusStringProvider statusStrings;
+    private final Prediction prediction;
+    private final DateTimeProvider dateTimeProvider;
+    private final PredictionStatusStringProvider statusStrings;
     private final ConfidenceFormatProvider confidenceFormatter;
-    private PredictionItemView view;
+    private final PredictionItemView view;
 
     private PredictionItemViewModel(Prediction prediction, PredictionItemView view,
                                     DateTimeProvider dateTimeProvider,

@@ -11,8 +11,8 @@ import dagger.Provides;
 
 @Module
 public class ConfigurationModule {
-    private Context context;
-    private String dbName;
+    private final Context context;
+    private final String dbName;
 
     public ConfigurationModule(Context context, String dbName) {
         this.context = context;

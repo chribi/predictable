@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import de.chribi.predictable.predictionsets.PredictionSet;
 
 public class ShowMoreFooterViewModel {
-    private PredictionSet set;
-    private ShowMoreFooterView view;
+    private final PredictionSet set;
+    private final ShowMoreFooterView view;
 
     public ShowMoreFooterViewModel(@NonNull PredictionSet set, @NonNull ShowMoreFooterView view)
     {

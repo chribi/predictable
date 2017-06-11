@@ -1,5 +1,6 @@
 package de.chribi.predictable.storage;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -16,8 +17,9 @@ import de.chribi.predictable.storage.queries.PredictionQuery;
 /**
  * An in-memory storage of predictions.
  */
+@SuppressLint("UseSparseArrays")
 public class InMemoryPredictionStorage implements PredictionStorage {
-    private @NonNull HashMap<Long, Prediction> storage;
+    @NonNull private final HashMap<Long, Prediction> storage;
     private long nextId;
     private final PredicateConstraintInterpreter queryInterpreter;
 

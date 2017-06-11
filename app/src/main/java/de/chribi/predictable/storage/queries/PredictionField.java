@@ -6,10 +6,10 @@ import java.util.Date;
 import de.chribi.predictable.data.PredictionState;
 
 public class PredictionField<T> {
-    public static PredictionField<Long> ID = new PredictionField<>();
-    public static PredictionField<PredictionState> STATE = new PredictionField<>();
-    public static PredictionField<Date> DUE_DATE = new PredictionField<>();
-    public static PredictionField<Date> JUDGEMENT_DATE = new PredictionField<>();
+    public static final PredictionField<Long> ID = new PredictionField<>();
+    public static final PredictionField<PredictionState> STATE = new PredictionField<>();
+    public static final PredictionField<Date> DUE_DATE = new PredictionField<>();
+    public static final PredictionField<Date> JUDGEMENT_DATE = new PredictionField<>();
 
 
     private PredictionField() { }

@@ -29,8 +29,8 @@ public class DateAxisConverter implements IAxisValueFormatter {
     private final AxisBase axis;
 
     // Date time handling, currently hardcoded
-    private DateTimeFormatter formatter = DateTimeFormat.mediumDate();
-    private DateTimeZone timeZone;
+    private final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
+    private final DateTimeZone timeZone;
 
     public DateAxisConverter(AxisBase axis, DateTimeZone timeZone) {
         this.axis = axis;
@@ -45,7 +45,7 @@ public class DateAxisConverter implements IAxisValueFormatter {
         return localDateTime.toString(formatter);
     }
 
-    /*package*/ static long getStepSizeForRange(Date startDate, Date endDate, int maxNumSteps) {
+    private static long getStepSizeForRange(Date startDate, Date endDate, int maxNumSteps) {
         long dateRange = endDate.getTime() - startDate.getTime();
         long stepSize;
         if (dateRange < maxNumSteps * STEP_SIZE_HALF_DAY) {
@@ -64,7 +64,7 @@ public class DateAxisConverter implements IAxisValueFormatter {
         return stepSize;
     }
 
-    /*package*/ static Date alignDateAtStep(Date date, long stepSize, DateTimeZone timeZone) {
+    private static Date alignDateAtStep(Date date, long stepSize, DateTimeZone timeZone) {
         LocalDateTime localDateTime = new LocalDateTime(date, timeZone);
         if (stepSize == STEP_SIZE_HALF_DAY) {
             int hour = localDateTime.getHourOfDay() >= 12 ? 12 : 0;
@@ -107,7 +107,7 @@ public class DateAxisConverter implements IAxisValueFormatter {
         }
     }
 
-    public Date axisValueToDate(float value) {
+    private Date axisValueToDate(float value) {
         // TODO handle variable step size
         return new Date((long)(value * stepSize) + firstDate);
     }

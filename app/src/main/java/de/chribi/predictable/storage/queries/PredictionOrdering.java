@@ -2,8 +2,8 @@ package de.chribi.predictable.storage.queries;
 
 
 public class PredictionOrdering {
-    private PredictionField field;
-    private OrderDirection direction;
+    private final PredictionField field;
+    private final OrderDirection direction;
 
     PredictionOrdering(PredictionField field, OrderDirection direction) {
         this.field = field;

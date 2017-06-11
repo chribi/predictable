@@ -50,6 +50,7 @@ public abstract class Prediction {
      */
     public abstract Builder toBuilder();
 
+    @SuppressWarnings("NullableProblems")
     @AutoValue.Builder
     public abstract static class Builder {
         /**

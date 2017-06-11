@@ -51,7 +51,7 @@ public class TextViewBindings {
         @ColorRes int colorResource;
         switch (state) {
             case Open:
-                colorResource = android.support.design.R.color.abc_primary_text_material_light;
+                colorResource = R.color.normal_text;
                 break;
             case Correct:
                 colorResource = R.color.correct_prediction;

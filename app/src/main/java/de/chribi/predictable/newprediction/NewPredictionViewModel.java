@@ -81,9 +81,9 @@ public class NewPredictionViewModel extends BaseObservable {
         notifyPropertyChanged(BR.confidencePercentage);
     }
 
-    private PredictionStorage storage;
+    private final PredictionStorage storage;
     private NewPredictionView view;
-    private DateTimeProvider dateTimeProvider;
+    private final DateTimeProvider dateTimeProvider;
 
     @Inject
     public NewPredictionViewModel(PredictionStorage storage, DateTimeProvider dateTimeProvider) {

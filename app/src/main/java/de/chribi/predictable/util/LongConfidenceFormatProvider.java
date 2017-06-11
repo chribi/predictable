@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import de.chribi.predictable.R;
 
 public class LongConfidenceFormatProvider implements ConfidenceFormatProvider {
-    private Context context;
+    private final Context context;
 
     @Inject
     public LongConfidenceFormatProvider(Context context) {

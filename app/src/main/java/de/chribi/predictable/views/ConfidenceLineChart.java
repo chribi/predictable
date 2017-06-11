@@ -34,12 +34,8 @@ import de.chribi.predictable.util.DateAxisConverter;
  * Class for drawing a confidence time line.
  */
 public class ConfidenceLineChart extends LineChart {
-
-
-    private LineDataSet dataSet;
-    private
-    @ColorInt
-    int graphColor;
+    private final LineDataSet dataSet;
+    private @ColorInt int graphColor;
 
     private DateAxisConverter dateAxisConverter;
 

@@ -2,8 +2,8 @@ package de.chribi.predictable.storage;
 
 
 class SqliteWhereClause {
-    private String clause;
-    private String[] args;
+    private final String clause;
+    private final String[] args;
     SqliteWhereClause(String clause, String[] args)
     {
         this.clause = clause;
