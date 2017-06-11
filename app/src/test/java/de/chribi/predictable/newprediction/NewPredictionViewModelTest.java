@@ -51,8 +51,7 @@ public class NewPredictionViewModelTest {
         when(mockedDateTimeProvider.getCurrentTimeZone())
                 .thenReturn(timeZone);
 
-        viewModel = new NewPredictionViewModel(fakeStorage, mockedDateTimeProvider);
-        viewModel.setView(mockedView);
+        viewModel = new NewPredictionViewModel(fakeStorage, mockedDateTimeProvider, mockedView);
     }
 
     @Test

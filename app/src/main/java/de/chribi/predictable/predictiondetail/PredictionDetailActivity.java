@@ -28,7 +28,12 @@ public class PredictionDetailActivity extends AppCompatActivity implements Predi
         context.startActivity(intent);
     }
 
-    @Inject PredictionDetailViewModel viewModel;
+    private PredictionDetailViewModel viewModel;
+
+    @Inject
+    void setDependencies(PredictionDetailViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,6 @@ public class PredictionDetailActivity extends AppCompatActivity implements Predi
         ActivityPredictionDetailBinding binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_prediction_detail);
 
-        viewModel.setView(this);
         viewModel.setPrediction(predictionId);
         if(viewModel.isValid()) {
             binding.setViewModel(viewModel);

@@ -26,7 +26,13 @@ public class NewPredictionActivity extends AppCompatActivity
         context.startActivity(intent);
     }
 
-    @Inject NewPredictionViewModel viewModel;
+    private NewPredictionViewModel viewModel;
+
+    @Inject
+    void setDependencies(NewPredictionViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +46,6 @@ public class NewPredictionActivity extends AppCompatActivity
 
         binding.textDueDate.setDateFormat(DateTimeFormat.mediumDate());
         binding.textDueTime.setTimeFormat(DateTimeFormat.shortTime());
-
-        viewModel.setView(this);
 
         binding.setViewModel(viewModel);
     }

@@ -46,13 +46,14 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
     @Before
     public void startActivity() {
-        PredictionStorage predictionStorage = new InMemoryPredictionStorage();
-        DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
-        viewModel = spy(new NewPredictionViewModel(predictionStorage, dateTimeProvider));
+        final PredictionStorage predictionStorage = new InMemoryPredictionStorage();
+        final DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
         getApplication().setCustomActivityInjector(NewPredictionActivity.class,
                 new AndroidInjector<NewPredictionActivity>() {
                     @Override public void inject(NewPredictionActivity instance) {
-                        instance.viewModel = viewModel;
+                        viewModel = spy(new NewPredictionViewModel(predictionStorage,
+                                dateTimeProvider, instance));
+                        instance.setDependencies(viewModel);
                     }
                 });
         activityTestRule.launchActivity(null);

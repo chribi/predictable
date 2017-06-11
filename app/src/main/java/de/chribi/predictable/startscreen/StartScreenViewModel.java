@@ -18,15 +18,18 @@ public class StartScreenViewModel implements PredictionItemView, ShowMoreFooterV
     private static final int GROUP_LIMIT = 8;
     private static final int GROUP_LIMIT_EXTENDED = 12;
 
-    private List<Object> groupedPredictions = new ArrayList<>();
+    private final List<Object> groupedPredictions;
 
-    private StartScreenView view;
+    private final StartScreenView view;
 
 
     @Inject
     public StartScreenViewModel(PredictionStorage storage, PredictionSetTitles setTitles,
                                 PredictionSetQueries setQueries,
+                                StartScreenView view,
                                 PredictionItemViewModel.Factory itemViewModelFactory) {
+
+        this.view = view;
 
         PredictionSet[] groups = new PredictionSet[]{
                 PredictionSet.OVERDUE_PREDICTIONS,
@@ -56,25 +59,15 @@ public class StartScreenViewModel implements PredictionItemView, ShowMoreFooterV
         return groupedPredictions;
     }
 
-    public void setView(StartScreenView view) {
-        this.view = view;
-    }
-
     public void startAddPrediction() {
-        if(view != null) {
-            view.showAddPredictionView();
-        }
+        view.showAddPredictionView();
     }
 
     @Override public void showPredictionDetails(long id) {
-        if(view != null) {
-            view.showPredictionDetails(id);
-        }
+        view.showPredictionDetails(id);
     }
 
     @Override public void showFullPredictionSet(PredictionSet set) {
-        if(view != null) {
-            view.showFullPredictionSet(set);
-        }
+        view.showFullPredictionSet(set);
     }
 }

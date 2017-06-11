@@ -32,7 +32,13 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
         context.startActivity(intent);
     }
 
-    @Inject PredictionListViewModel viewModel;
+    private PredictionListViewModel viewModel;
+
+    @Inject
+    void setDependencies(PredictionListViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
     private PredictionSet predictionSet;
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {

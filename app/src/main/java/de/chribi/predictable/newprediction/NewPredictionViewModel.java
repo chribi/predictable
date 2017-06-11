@@ -20,10 +20,29 @@ import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
 
 public class NewPredictionViewModel extends BaseObservable {
+    private final PredictionStorage storage;
+    private final NewPredictionView view;
+    private final DateTimeProvider dateTimeProvider;
+
     private String predictionTitle = "";
     private LocalDate localDueDate;
     private LocalTime localDueTime;
     private double confidencePercentage = 50.0;
+
+    @Inject
+    public NewPredictionViewModel(PredictionStorage storage, DateTimeProvider dateTimeProvider,
+                                  NewPredictionView view) {
+        this.storage = storage;
+        this.dateTimeProvider = dateTimeProvider;
+        this.view = view;
+
+        // Default due date/time is tomorrow noon
+        Date now = dateTimeProvider.getCurrentDateTime();
+        DateTimeZone timeZone = dateTimeProvider.getCurrentTimeZone();
+
+        this.localDueDate = new LocalDate(now, timeZone).plusDays(1);
+        this.localDueTime = new LocalTime(12, 0);
+    }
 
     @Bindable
     public String getPredictionTitle() {
@@ -33,12 +52,6 @@ public class NewPredictionViewModel extends BaseObservable {
     public void setPredictionTitle(String predictionTitle) {
         this.predictionTitle = predictionTitle;
         notifyPropertyChanged(BR.predictionTitle);
-    }
-
-    private Date getDueDateTime() {
-        DateTime dueDateTime = localDueDate.toDateTime(localDueTime,
-                dateTimeProvider.getCurrentTimeZone());
-        return dueDateTime.toDate();
     }
 
     @Bindable
@@ -81,25 +94,10 @@ public class NewPredictionViewModel extends BaseObservable {
         notifyPropertyChanged(BR.confidencePercentage);
     }
 
-    private final PredictionStorage storage;
-    private NewPredictionView view;
-    private final DateTimeProvider dateTimeProvider;
-
-    @Inject
-    public NewPredictionViewModel(PredictionStorage storage, DateTimeProvider dateTimeProvider) {
-        this.storage = storage;
-        this.dateTimeProvider = dateTimeProvider;
-
-        // Default due date/time is tomorrow noon
-        Date now = dateTimeProvider.getCurrentDateTime();
-        DateTimeZone timeZone = dateTimeProvider.getCurrentTimeZone();
-
-        this.localDueDate = new LocalDate(now, timeZone).plusDays(1);
-        this.localDueTime = new LocalTime(12, 0);
-    }
-
-    public void setView(NewPredictionView view) {
-        this.view = view;
+    private Date getDueDateTime() {
+        DateTime dueDateTime = localDueDate.toDateTime(localDueTime,
+                dateTimeProvider.getCurrentTimeZone());
+        return dueDateTime.toDate();
     }
 
     public void onSavePrediction() {

@@ -52,7 +52,12 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
                 .map(ShowMoreFooterViewModel.class, BR.footerViewModel, R.layout.item_prediction_list_show_more);
     }
 
-    @Inject StartScreenViewModel viewModel;
+    private StartScreenViewModel viewModel;
+
+    @Inject
+    void setDependencies(StartScreenViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,6 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
                 = DataBindingUtil.setContentView(this, R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        viewModel.setView(this);
 
         binding.setViewModel(viewModel);
         binding.setPredictionItemBinding(createItemBinding());

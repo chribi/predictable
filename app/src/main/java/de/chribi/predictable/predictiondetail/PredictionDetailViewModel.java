@@ -29,17 +29,19 @@ public class PredictionDetailViewModel extends BaseObservable {
     private final PredictionStatusStringProvider statusStrings;
     private final ConfidenceFormatProvider confidenceFormatter;
     private final DateTimeProvider dateTimeProvider;
-    private PredictionDetailView view;
+    private final PredictionDetailView view;
 
     @Inject
     public PredictionDetailViewModel(PredictionStorage storage,
                                      PredictionStatusStringProvider statusStrings,
                                      @Named("long") ConfidenceFormatProvider confidenceFormatter,
-                                     DateTimeProvider dateTimeProvider) {
+                                     DateTimeProvider dateTimeProvider,
+                                     PredictionDetailView view) {
         this.storage = storage;
         this.statusStrings = statusStrings;
         this.confidenceFormatter = confidenceFormatter;
         this.dateTimeProvider = dateTimeProvider;
+        this.view = view;
     }
 
 
@@ -50,10 +52,6 @@ public class PredictionDetailViewModel extends BaseObservable {
         } else {
             notifyChange();
         }
-    }
-
-    public void setView(PredictionDetailView view) {
-        this.view = view;
     }
 
     /**
