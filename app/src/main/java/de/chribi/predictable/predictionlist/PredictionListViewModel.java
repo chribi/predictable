@@ -8,39 +8,39 @@ import javax.inject.Inject;
 import de.chribi.predictable.PredictionItemView;
 import de.chribi.predictable.PredictionItemViewModel;
 import de.chribi.predictable.data.Prediction;
+import de.chribi.predictable.predictionsets.PredictionSet;
+import de.chribi.predictable.predictionsets.PredictionSetQueries;
+import de.chribi.predictable.predictionsets.PredictionSetTitles;
 import de.chribi.predictable.storage.PredictionStorage;
-import de.chribi.predictable.storage.queries.PredictionQuery;
 
 public class PredictionListViewModel implements PredictionItemView {
 
-    private PredictionItemView view;
-    private final PredictionStorage storage;
-    private final PredictionItemViewModel.Factory itemViewModelFactory;
-    private List<PredictionItemViewModel> predictions;
+    private final PredictionItemView view;
+    private final List<PredictionItemViewModel> predictions;
+    private final String title;
 
     @Inject
     public PredictionListViewModel(PredictionStorage storage,
-                                   PredictionItemViewModel.Factory itemViewModelFactory) {
-        this.storage = storage;
-        this.itemViewModelFactory = itemViewModelFactory;
-    }
-
-    public void setPredictionQuery(PredictionQuery query) {
-        List<Prediction> queryResult = storage.getPredictions(query);
+                                   PredictionItemViewModel.Factory itemViewModelFactory,
+                                   PredictionSet set,
+                                   PredictionSetTitles titles,
+                                   PredictionSetQueries queries,
+                                   PredictionItemView view) {
+        this.view = view;
+        List<Prediction> queryResult = storage.getPredictions(queries.getPredictionSetQuery(set));
         predictions = itemViewModelFactory.createMany(queryResult, this);
+        title = titles.getPredictionSetTitle(set);
     }
 
     public List<PredictionItemViewModel> getPredictions() {
         return predictions;
     }
 
-    public void setView(PredictionItemView view) {
-        this.view = view;
+    public String getTitle() {
+        return title;
     }
 
     @Override public void showPredictionDetails(long id) {
-        if(view != null) {
-            view.showPredictionDetails(id);
-        }
+        view.showPredictionDetails(id);
     }
 }

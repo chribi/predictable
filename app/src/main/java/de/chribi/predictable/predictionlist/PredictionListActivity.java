@@ -13,15 +13,13 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import de.chribi.predictable.BR;
-import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.PredictionItemView;
 import de.chribi.predictable.R;
 import de.chribi.predictable.databinding.ActivityPredictionListBinding;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.predictionsets.PredictionSet;
-import de.chribi.predictable.predictionsets.PredictionSetQueries;
-import de.chribi.predictable.predictionsets.PredictionSetTitles;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 public class PredictionListActivity extends AppCompatActivity implements PredictionItemView {
@@ -35,36 +33,28 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
     }
 
     @Inject PredictionListViewModel viewModel;
-    @Inject PredictionSetQueries queries;
-    @Inject PredictionSetTitles titles;
+    private PredictionSet predictionSet;
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         Bundle args = getIntent().getExtras();
-        PredictionSet set;
         try {
-            set = PredictionSet.valueOf(args.getString(EXTRA_PREDICTION_SET_NAME));
+            predictionSet = PredictionSet.valueOf(args.getString(EXTRA_PREDICTION_SET_NAME));
         } catch (IllegalArgumentException | NullPointerException e) {
             Log.e(TAG, e.getMessage());
             finish();
             return;
         }
+        AndroidInjection.inject(this);
+        super.onCreate(savedInstanceState);
 
         ActivityPredictionListBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_prediction_list);
 
-
-        PredictableApp.get(this)
-                .getPredictableComponent()
-                .inject(this);
-        viewModel.setView(this);
-        viewModel.setPredictionQuery(queries.getPredictionSetQuery(set));
         binding.setViewModel(viewModel);
         binding.setPredictionItemBinding(
                 ItemBinding.of(BR.itemViewModel, R.layout.item_prediction));
 
-        configureToolbar(binding.includedToolbar.toolbar, titles.getPredictionSetTitle(set));
+        configureToolbar(binding.includedToolbar.toolbar, viewModel.getTitle());
     }
 
     private void configureToolbar(Toolbar toolbar, String predictionSetTitle) {
@@ -78,5 +68,9 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
 
     @Override public void showPredictionDetails(long id) {
         PredictionDetailActivity.start(this, id);
+    }
+
+    public PredictionSet getPredictionSet() {
+        return predictionSet;
     }
 }

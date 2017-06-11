@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import de.chribi.predictable.BaseUiTest;
 import de.chribi.predictable.MainActivity;
+import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.R;
 import de.chribi.predictable.di.PredictableComponent;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
@@ -50,6 +51,8 @@ public class NewPredictionActivityTest extends BaseUiTest {
     @Override
     protected PredictableComponent createTestComponent() {
         return new PredictableComponent() {
+            @Override public void inject(PredictableApp app) { }
+
             @Override
             public void inject(NewPredictionActivity activity) {
                 activity.viewModel = viewModel;
@@ -57,8 +60,6 @@ public class NewPredictionActivityTest extends BaseUiTest {
 
             @Override
             public void inject(PredictionDetailActivity activity) { }
-
-            @Override public void inject(PredictionListActivity activity) { }
 
             @Override
             public void inject(MainActivity activity) { }

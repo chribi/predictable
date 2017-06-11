@@ -1,15 +1,15 @@
 package de.chribi.predictable.di;
 
 import de.chribi.predictable.MainActivity;
+import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
-import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.storage.PredictionStorage;
 
 public interface PredictableComponent {
     void inject(NewPredictionActivity activity);
     void inject(PredictionDetailActivity activity);
     void inject(MainActivity activity);
-    void inject(PredictionListActivity activity);
+    void inject(PredictableApp app);
     PredictionStorage getStorage();
 }
