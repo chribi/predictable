@@ -56,12 +56,6 @@ public class StartScreenViewModel implements PredictionItemView, ShowMoreFooterV
         return groupedPredictions;
     }
 
-    public void showFullGroup(PredictionSet set) {
-        if(view != null) {
-            view.showFullPredictionSet(set);
-        }
-    }
-
     public void setView(StartScreenView view) {
         this.view = view;
     }

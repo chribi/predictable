@@ -1,4 +1,4 @@
-package de.chribi.predictable;
+package de.chribi.predictable.startscreen;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,12 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+import de.chribi.predictable.BR;
+import de.chribi.predictable.BuildConfig;
+import de.chribi.predictable.PredictableApp;
+import de.chribi.predictable.PredictionItemViewModel;
+import de.chribi.predictable.R;
 import de.chribi.predictable.data.ConfidenceStatement;
 import de.chribi.predictable.data.Judgement;
 import de.chribi.predictable.data.Prediction;
@@ -28,39 +34,40 @@ import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.predictionsets.PredictionSet;
-import de.chribi.predictable.startscreen.ShowMoreFooterViewModel;
-import de.chribi.predictable.startscreen.StartScreenView;
-import de.chribi.predictable.startscreen.StartScreenViewModel;
 import de.chribi.predictable.storage.PredictionStorage;
 import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
-public class MainActivity extends AppCompatActivity implements StartScreenView {
+public class StartScreenActivity extends AppCompatActivity implements StartScreenView {
 
     public static void start(Context context) {
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, StartScreenActivity.class);
         context.startActivity(intent);
+    }
+
+    private static OnItemBind createItemBinding() {
+        return new OnItemBindClass<>()
+                .map(PredictionItemViewModel.class, BR.itemViewModel, R.layout.item_prediction)
+                .map(String.class, BR.title, R.layout.item_prediction_list_header)
+                .map(ShowMoreFooterViewModel.class, BR.footerViewModel, R.layout.item_prediction_list_show_more);
     }
 
     @Inject StartScreenViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+
         ActivityMainBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        PredictableApp.get(this).getPredictableComponent().inject(this);
         viewModel.setView(this);
 
         binding.setViewModel(viewModel);
-        OnItemBind itemBinding = new OnItemBindClass<>()
-                .map(PredictionItemViewModel.class, BR.itemViewModel, R.layout.item_prediction)
-                .map(String.class, BR.title, R.layout.item_prediction_list_header)
-                .map(ShowMoreFooterViewModel.class, BR.footerViewModel, R.layout.item_prediction_list_show_more);
-        binding.setPredictionItemBinding(itemBinding);
+        binding.setPredictionItemBinding(createItemBinding());
 
         // from https://stackoverflow.com/a/34789656
         final FloatingActionButton fab = binding.fabNewPrediction;
@@ -75,11 +82,12 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             menu.add(0, 1234, Menu.NONE, "Create random test data");
         }
         return true;
@@ -104,24 +112,24 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
             for (int i = 0; i < 1000; i++) {
                 String title = String.format(Locale.getDefault(), "Test prediction %1$d", i);
                 String description = null;
-                if(r.nextFloat() > 0.7) {
+                if (r.nextFloat() > 0.7) {
                     description = String.format(Locale.getDefault(),
                             "Some long test description full of random boring text" +
-                            "and so on, %1$d.", i);
+                                    "and so on, %1$d.", i);
                 }
                 Date dueDate = randomDateNearNow(r, now);
 
                 int numConfidences = r.nextInt(8);
                 List<ConfidenceStatement> confidenceStatements = new ArrayList<>(numConfidences);
-                for(int k = 0; k < numConfidences; k++) {
+                for (int k = 0; k < numConfidences; k++) {
                     confidenceStatements.add(ConfidenceStatement.create(r.nextDouble(), randomDateNearNow(r, now)));
                 }
                 Prediction prediction = storage.createPrediction(title, description, dueDate,
                         confidenceStatements);
                 double v = r.nextDouble();
-                if(v > 0.4) {
+                if (v > 0.4) {
                     PredictionState state;
-                    if(v < 0.7) {
+                    if (v < 0.7) {
                         state = PredictionState.Correct;
                     } else if (v < 0.9) {
                         state = PredictionState.Incorrect;

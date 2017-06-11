@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.chribi.predictable.newprediction.NewPredictionActivity;
+import de.chribi.predictable.startscreen.StartScreenActivity;
 import de.chribi.testutils.EspressoUtils;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -22,8 +23,8 @@ import static org.junit.Assert.assertThat;
 public class ActivityNavigationTest extends BaseUiTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> activityTestRule
-            = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<StartScreenActivity> activityTestRule
+            = new ActivityTestRule<>(StartScreenActivity.class);
 
     @Test
     public void fabNewPredictionNavigatesToNewPredictionActivity()
@@ -40,7 +41,7 @@ public class ActivityNavigationTest extends BaseUiTest {
                 .perform(click());
         onView(withId(R.id.action_save_prediction))
                 .perform(click());
-        assertThat(EspressoUtils.getCurrentActivity(), is(instanceOf(MainActivity.class)));
+        assertThat(EspressoUtils.getCurrentActivity(), is(instanceOf(StartScreenActivity.class)));
     }
 
     @Test
@@ -50,6 +51,6 @@ public class ActivityNavigationTest extends BaseUiTest {
                 .perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description))
                 .perform(click());
-        assertThat(EspressoUtils.getCurrentActivity(), is(instanceOf(MainActivity.class)));
+        assertThat(EspressoUtils.getCurrentActivity(), is(instanceOf(StartScreenActivity.class)));
     }
 }
