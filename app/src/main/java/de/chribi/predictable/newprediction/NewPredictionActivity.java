@@ -14,7 +14,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import javax.inject.Inject;
 
-import de.chribi.predictable.PredictableApp;
+import dagger.android.AndroidInjection;
 import de.chribi.predictable.R;
 import de.chribi.predictable.databinding.ActivityNewPredictionBinding;
 
@@ -30,6 +30,7 @@ public class NewPredictionActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         ActivityNewPredictionBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_new_prediction);
@@ -40,7 +41,6 @@ public class NewPredictionActivity extends AppCompatActivity
         binding.textDueDate.setDateFormat(DateTimeFormat.mediumDate());
         binding.textDueTime.setTimeFormat(DateTimeFormat.shortTime());
 
-        PredictableApp.get(this).getPredictableComponent().inject(this);
         viewModel.setView(this);
 
         binding.setViewModel(viewModel);

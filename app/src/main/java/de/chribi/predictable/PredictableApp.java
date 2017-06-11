@@ -17,7 +17,7 @@ import de.chribi.predictable.di.DaggerAppComponent;
 import de.chribi.predictable.di.PredictableComponent;
 
 public class PredictableApp extends Application implements HasActivityInjector {
-    public static final String DB_NAME = "predictable.db";
+    private static final String DB_NAME = "predictable.db";
 
     private PredictableComponent predictableComponent;
     @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
@@ -42,12 +42,8 @@ public class PredictableApp extends Application implements HasActivityInjector {
                 .build();
     }
 
-    public PredictableComponent getPredictableComponent() {
+    final public PredictableComponent getPredictableComponent() {
         return predictableComponent;
-    }
-
-    public void setPredictableComponent(PredictableComponent predictableComponent) {
-        this.predictableComponent = predictableComponent;
     }
 
     public static PredictableApp get(Context context) {

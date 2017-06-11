@@ -11,13 +11,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import dagger.android.AndroidInjector;
 import de.chribi.predictable.BaseUiTest;
-import de.chribi.predictable.MainActivity;
-import de.chribi.predictable.PredictableApp;
 import de.chribi.predictable.R;
-import de.chribi.predictable.di.PredictableComponent;
-import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
-import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.storage.InMemoryPredictionStorage;
 import de.chribi.predictable.storage.PredictionStorage;
 import de.chribi.predictable.util.DateTimeProvider;
@@ -48,34 +44,17 @@ public class NewPredictionActivityTest extends BaseUiTest {
     public ActivityTestRule<NewPredictionActivity> activityTestRule
             = new ActivityTestRule<>(NewPredictionActivity.class, false, false);
 
-    @Override
-    protected PredictableComponent createTestComponent() {
-        return new PredictableComponent() {
-            @Override public void inject(PredictableApp app) { }
-
-            @Override
-            public void inject(NewPredictionActivity activity) {
-                activity.viewModel = viewModel;
-            }
-
-            @Override
-            public void inject(PredictionDetailActivity activity) { }
-
-            @Override
-            public void inject(MainActivity activity) { }
-
-            @Override
-            public PredictionStorage getStorage() {
-                return null;
-            }
-        };
-    }
-
     @Before
     public void startActivity() {
         PredictionStorage predictionStorage = new InMemoryPredictionStorage();
         DateTimeProvider dateTimeProvider = new DefaultDateTimeHandler();
         viewModel = spy(new NewPredictionViewModel(predictionStorage, dateTimeProvider));
+        getApplication().setCustomActivityInjector(NewPredictionActivity.class,
+                new AndroidInjector<NewPredictionActivity>() {
+                    @Override public void inject(NewPredictionActivity instance) {
+                        instance.viewModel = viewModel;
+                    }
+                });
         activityTestRule.launchActivity(null);
     }
 
