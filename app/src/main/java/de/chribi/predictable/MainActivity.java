@@ -1,5 +1,6 @@
 package de.chribi.predictable;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -35,6 +36,11 @@ import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
 
 public class MainActivity extends AppCompatActivity implements StartScreenView {
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
+    }
 
     @Inject StartScreenViewModel viewModel;
 
@@ -146,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements StartScreenView {
     }
 
     @Override public void showAddPredictionView() {
-        startActivity(new Intent(MainActivity.this, NewPredictionActivity.class));
+        NewPredictionActivity.start(this);
     }
 
     @Override public void showFullPredictionSet(PredictionSet set) {

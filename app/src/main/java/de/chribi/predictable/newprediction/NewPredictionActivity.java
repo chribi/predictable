@@ -1,5 +1,7 @@
 package de.chribi.predictable.newprediction;
 
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -18,6 +20,11 @@ import de.chribi.predictable.databinding.ActivityNewPredictionBinding;
 
 public class NewPredictionActivity extends AppCompatActivity
     implements NewPredictionView {
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, NewPredictionActivity.class);
+        context.startActivity(intent);
+    }
 
     @Inject NewPredictionViewModel viewModel;
 
