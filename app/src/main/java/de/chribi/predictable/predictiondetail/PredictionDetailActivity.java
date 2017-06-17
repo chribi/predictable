@@ -64,11 +64,16 @@ public class PredictionDetailActivity extends AppCompatActivity implements Predi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_delete_prediction) {
-            viewModel.deletePrediction();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_delete_prediction:
+                viewModel.deletePrediction();
+                return true;
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void configureToolbar() {

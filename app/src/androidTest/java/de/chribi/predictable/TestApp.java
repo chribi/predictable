@@ -11,6 +11,7 @@ import dagger.android.AndroidInjector;
 import de.chribi.predictable.di.ConfigurationModule;
 import de.chribi.predictable.di.DaggerAppComponent;
 import de.chribi.predictable.di.PredictableComponent;
+import de.chribi.predictable.storage.SqlitePredictionStorage;
 
 public class TestApp extends PredictableApp implements AndroidInjector<Activity> {
     private static final String TEST_DB_NAME = "test_predictable.db";
@@ -64,5 +65,15 @@ public class TestApp extends PredictableApp implements AndroidInjector<Activity>
         return DaggerAppComponent.builder()
                 .configurationModule(configuration)
                 .build();
+    }
+
+    private void resetComponent() {
+        this.predictableComponent = createComponent();
+        predictableComponent.inject(this);
+    }
+
+    public void clearSqliteDatabase() {
+        InstrumentationRegistry.getTargetContext().deleteDatabase(TEST_DB_NAME);
+        resetComponent();
     }
 }

@@ -19,7 +19,7 @@ import de.chribi.predictable.di.PredictableComponent;
 public class PredictableApp extends Application implements HasActivityInjector {
     private static final String DB_NAME = "predictable.db";
 
-    private PredictableComponent predictableComponent;
+    protected PredictableComponent predictableComponent;
     @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override public AndroidInjector<Activity> activityInjector() {

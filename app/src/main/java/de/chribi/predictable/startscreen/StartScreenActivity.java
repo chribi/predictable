@@ -69,8 +69,8 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        binding.setViewModel(viewModel);
         binding.setPredictionItemBinding(createItemBinding());
+        binding.setViewModel(viewModel);
 
         // from https://stackoverflow.com/a/34789656
         final FloatingActionButton fab = binding.fabNewPrediction;
