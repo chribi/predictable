@@ -6,7 +6,7 @@
     <string name="label_personal_confidence">Your personal confidence</string>
     <string name="label_due_date">Known by</string>
     <string name="menu_save_prediction">Save</string>
-    <string name="title_activity_new_prediction">Create confidenceStatement</string>
+    <string name="title_activity_new_prediction">Create prediction</string>
 
     <string name="status_overdue">Should be known by now</string>
     <string name="status_known_by">Known by %1$s</string>
