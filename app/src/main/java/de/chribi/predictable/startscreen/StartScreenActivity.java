@@ -34,6 +34,7 @@ import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.predictionsets.PredictionSet;
+import de.chribi.predictable.statistics.StatisticsActivity;
 import de.chribi.predictable.storage.PredictionStorage;
 import me.tatarka.bindingcollectionadapter2.OnItemBind;
 import me.tatarka.bindingcollectionadapter2.itembindings.OnItemBindClass;
@@ -66,8 +67,8 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
 
         ActivityMainBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        setSupportActionBar(binding.includedToolbar.toolbar);
 
         binding.setPredictionItemBinding(createItemBinding());
         binding.setViewModel(viewModel);
@@ -105,6 +106,9 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        } else if (id == R.id.action_statistics) {
+            StatisticsActivity.start(this);
             return true;
         } else if (id == 1234) {
             // TODO better debug option implementation

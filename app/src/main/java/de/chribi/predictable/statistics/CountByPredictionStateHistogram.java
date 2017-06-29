@@ -10,7 +10,7 @@ import de.chribi.predictable.data.Prediction;
  * {@link de.chribi.predictable.data.PredictionState prediction state}
  */
 @AutoValue
-abstract class CountByPredictionStateHistogram {
+public abstract class CountByPredictionStateHistogram {
     static CountByPredictionStateHistogram create(int open, int invalid, int correct, int incorrect) {
         int total = open + invalid + correct + incorrect;
         return new AutoValue_CountByPredictionStateHistogram(total, open, invalid, correct, incorrect);

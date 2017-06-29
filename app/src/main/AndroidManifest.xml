@@ -8,21 +8,18 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".startscreen.StartScreenActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".newprediction.NewPredictionActivity"
-            android:exported="true"
             android:parentActivityName=".startscreen.StartScreenActivity">
         </activity>
         <activity
@@ -31,9 +28,10 @@
         </activity>
         <activity
             android:name=".predictionlist.PredictionListActivity"
-            android:parentActivityName=".startscreen.StartScreenActivity"
-            />
-
+            android:parentActivityName=".startscreen.StartScreenActivity"/>
+        <activity
+            android:name=".statistics.StatisticsActivity"
+            android:parentActivityName=".startscreen.StartScreenActivity" />
     </application>
 
 </manifest>

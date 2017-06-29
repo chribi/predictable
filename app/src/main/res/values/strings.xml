@@ -36,4 +36,8 @@
     <string name="action_delete_prediction">Delete</string>
     <string name="error_invalid_prediction">Prediction not found!</string>
     <string name="action_show_full_prediction_list">Show more</string>
+    <string name="action_show_statistics">Statistics</string>
+    <string name="label_statistic_total_prediction_count">Total predictions</string>
+    <string name="label_statistic_average_cross_entropy">Average cross entropy</string>
+    <string name="title_activity_statistics">Statistics</string>
 </resources>
