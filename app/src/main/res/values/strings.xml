@@ -14,10 +14,10 @@
 
     <string name="text_no_confidence">\??</string>
 
-    <string name="string_state_open">open</string>
-    <string name="string_state_correct">correct</string>
-    <string name="string_state_incorrect">incorrect</string>
-    <string name="string_state_invalid">invalid</string>
+    <string name="state_open">open</string>
+    <string name="state_correct">correct</string>
+    <string name="state_incorrect">incorrect</string>
+    <string name="state_invalid">invalid</string>
 
     <string name="title_judged_predictions">Already judged</string>
     <string name="title_upcoming_predictions">Upcoming</string>
@@ -40,4 +40,8 @@
     <string name="label_statistic_total_prediction_count">Total predictions</string>
     <string name="label_statistic_average_cross_entropy">Average cross entropy</string>
     <string name="title_activity_statistics">Statistics</string>
+    <string name="piechart_state_open">Open</string>
+    <string name="piechart_state_correct">Correct</string>
+    <string name="piechart_state_incorrect">Incorrect</string>
+    <string name="piechart_state_invalid">Invalid</string>
 </resources>

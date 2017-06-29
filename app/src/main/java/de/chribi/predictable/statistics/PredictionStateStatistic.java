@@ -5,14 +5,14 @@ import de.chribi.predictable.data.Prediction;
 
 /**
  * Statistic that counts {@link Prediction predictions} grouped by their state and returns
- * the result as a CountByPredictionStateHistogram
+ * the result as a PredictionStateCounts
  */
-class CountByPredictionStateStatistic implements Statistic<CountByPredictionStateHistogram> {
-    public static Statistic<CountByPredictionStateHistogram> create() {
-        return new CountByPredictionStateStatistic();
+class PredictionStateStatistic implements Statistic<PredictionStateCounts> {
+    public static Statistic<PredictionStateCounts> create() {
+        return new PredictionStateStatistic();
     }
 
-    private CountByPredictionStateStatistic() {}
+    private PredictionStateStatistic() {}
 
     private int open = 0;
     private int invalid = 0;
@@ -39,7 +39,7 @@ class CountByPredictionStateStatistic implements Statistic<CountByPredictionStat
         }
     }
 
-    @Override public CountByPredictionStateHistogram value() {
-        return CountByPredictionStateHistogram.create(open, invalid, correct, incorrect);
+    @Override public PredictionStateCounts value() {
+        return PredictionStateCounts.create(open, invalid, correct, incorrect);
     }
 }

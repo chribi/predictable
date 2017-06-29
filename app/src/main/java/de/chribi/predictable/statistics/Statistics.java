@@ -10,8 +10,8 @@ import de.chribi.predictable.data.Prediction;
 @AutoValue
 public abstract class Statistics {
     public static Statistics of(List<Prediction> predictions) {
-        Statistic<CountByPredictionStateHistogram> countStatistic
-                = CountByPredictionStateStatistic.create();
+        Statistic<PredictionStateCounts> countStatistic
+                = PredictionStateStatistic.create();
         Statistic<Double> avgCrossEntropy = AverageCrossEntropyStatistic.create();
 
         for (Prediction prediction : predictions) {
@@ -23,6 +23,6 @@ public abstract class Statistics {
                 avgCrossEntropy.value());
     }
 
-    public abstract CountByPredictionStateHistogram getCountStatistic();
+    public abstract PredictionStateCounts getCountStatistic();
     public abstract double getAverageCrossEntropy();
 }

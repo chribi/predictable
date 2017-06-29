@@ -3,17 +3,15 @@ package de.chribi.predictable.statistics;
 
 import com.google.auto.value.AutoValue;
 
-import de.chribi.predictable.data.Prediction;
-
 /**
- * Histogram of the count of predictions by
+ * Count of predictions by
  * {@link de.chribi.predictable.data.PredictionState prediction state}
  */
 @AutoValue
-public abstract class CountByPredictionStateHistogram {
-    static CountByPredictionStateHistogram create(int open, int invalid, int correct, int incorrect) {
+public abstract class PredictionStateCounts {
+    static PredictionStateCounts create(int open, int invalid, int correct, int incorrect) {
         int total = open + invalid + correct + incorrect;
-        return new AutoValue_CountByPredictionStateHistogram(total, open, invalid, correct, incorrect);
+        return new AutoValue_PredictionStateCounts(total, open, invalid, correct, incorrect);
     }
 
     /**

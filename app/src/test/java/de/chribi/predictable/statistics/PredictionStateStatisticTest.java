@@ -11,11 +11,11 @@ import de.chribi.predictable.data.PredictionState;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
-public class CountByPredictionStateStatisticTest {
+public class PredictionStateStatisticTest {
 
-    private CountByPredictionStateHistogram calculateStatistic(Prediction... predictions) {
-        Statistic<CountByPredictionStateHistogram> countStatistic =
-                CountByPredictionStateStatistic.create();
+    private PredictionStateCounts calculateStatistic(Prediction... predictions) {
+        Statistic<PredictionStateCounts> countStatistic =
+                PredictionStateStatistic.create();
         for (Prediction prediction : predictions) {
             countStatistic.collect(prediction);
         }
@@ -34,7 +34,7 @@ public class CountByPredictionStateStatisticTest {
 
     @Test
     public void multiplePredictions_valueIsCorrect() {
-        CountByPredictionStateHistogram value = calculateStatistic(
+        PredictionStateCounts value = calculateStatistic(
                 newPrediction(PredictionState.Correct),
                 newPrediction(PredictionState.Invalid),
                 newPrediction(PredictionState.Correct),

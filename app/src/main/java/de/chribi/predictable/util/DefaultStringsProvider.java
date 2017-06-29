@@ -53,16 +53,16 @@ public class DefaultStringsProvider
         @StringRes int stateStringId = 0;
         switch (judgedState) {
             case Open:
-                stateStringId = R.string.string_state_open;
+                stateStringId = R.string.state_open;
                 break;
             case Correct:
-                stateStringId = R.string.string_state_correct;
+                stateStringId = R.string.state_correct;
                 break;
             case Incorrect:
-                stateStringId = R.string.string_state_incorrect;
+                stateStringId = R.string.state_incorrect;
                 break;
             case Invalid:
-                stateStringId = R.string.string_state_invalid;
+                stateStringId = R.string.state_invalid;
                 break;
         }
         String stateString = context.getString(stateStringId);

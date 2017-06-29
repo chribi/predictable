@@ -54,12 +54,14 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/label_total_prediction_count"
             />
 
-        <TextView
+        <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/chart_state_distribution"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:background="#aaaaaa"
-            android:text="Placeholder for pie chart"
+            android:layout_height="@dimen/piechart_height"
+            app:predictionStateCounts="@{statistics.countStatistic}"
+            app:holeRadius="@{@dimen/piechart_hole_radius}"
+            app:transparentCircleRadius="@{@dimen/piechart_hole_radius}"
+            app:description="@{null}"
             app:layout_constraintTop_toBottomOf="@id/label_total_prediction_count"
             />
 
