@@ -39,24 +39,24 @@ public final class PredictionStateCountsPieChartBindings {
         if(counts.getCorrectCount() > 0) {
             dataPoints.add(new PieEntry(counts.getCorrectCount(),
                     ctx.getString(R.string.piechart_state_correct)));
-            colorList.add(R.color.piechart_correct_prediction);
+            colorList.add(R.color.chart_correct_prediction);
         }
 
         if(counts.getIncorrectCount() > 0) {
             dataPoints.add(new PieEntry(counts.getIncorrectCount(),
                     ctx.getString(R.string.piechart_state_incorrect)));
-            colorList.add(R.color.piechart_incorrect_prediction);
+            colorList.add(R.color.chart_incorrect_prediction);
         }
 
         if(counts.getInvalidCount() > 0) {
             dataPoints.add(new PieEntry(counts.getInvalidCount(),
                     ctx.getString(R.string.piechart_state_invalid)));
-            colorList.add(R.color.piechart_invalid_prediction);
+            colorList.add(R.color.chart_invalid_prediction);
         }
         if(counts.getOpenCount() > 0) {
             dataPoints.add(new PieEntry(counts.getOpenCount(),
                     ctx.getString(R.string.piechart_state_open)));
-            colorList.add(R.color.piechart_open_prediction);
+            colorList.add(R.color.chart_open_prediction);
         }
 
         int[] colors = new int[colorList.size()];

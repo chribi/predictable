@@ -20,6 +20,10 @@ public abstract class CalibrationHistogramGroup {
     public float getCorrectPercentage() {
         int total = getTotalCount();
         int correct = getCorrectCount();
-        return (100.f * correct) / total;
+        if(total == 0) {
+            return 0.f;
+        } else {
+            return (100.f * correct) / total;
+        }
     }
 }
