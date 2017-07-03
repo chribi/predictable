@@ -31,4 +31,13 @@
         <item name="android:gravity">bottom</item>
     </style>
 
+    <style name="statistic_label">
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="statistic_value">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
 </resources>

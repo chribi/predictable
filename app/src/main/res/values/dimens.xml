@@ -5,6 +5,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="list_header_height">60dp</dimen>
-    <dimen name="piechart_hole_radius">30dp</dimen>
+    <dimen name="piechart_hole_radius">20dp</dimen>
     <dimen name="piechart_height">240dp</dimen>
 </resources>

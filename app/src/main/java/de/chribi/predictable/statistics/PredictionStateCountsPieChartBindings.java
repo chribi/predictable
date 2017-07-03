@@ -74,5 +74,6 @@ public final class PredictionStateCountsPieChartBindings {
         pieChart.setData(data);
         pieChart.getLegend().setEnabled(false);
         pieChart.setHighlightPerTapEnabled(false);
+        pieChart.setRotationEnabled(false);
     }
 }

@@ -44,4 +44,5 @@
     <string name="piechart_state_correct">Correct</string>
     <string name="piechart_state_incorrect">Incorrect</string>
     <string name="piechart_state_invalid">Invalid</string>
+    <string name="header_confidence_calibration">Confidence Calibration</string>
 </resources>
