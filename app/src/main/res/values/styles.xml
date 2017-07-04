@@ -34,10 +34,20 @@
     <style name="statistic_label">
         <item name="android:textAllCaps">true</item>
     </style>
+
     <style name="statistic_value">
         <item name="android:textSize">28sp</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="statistic_table_header">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="statistic_table_content">
+        <item name="android:textColor">@color/normal_text</item>
     </style>
 
 </resources>

@@ -3,8 +3,10 @@ package de.chribi.predictable.statistics;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.graphics.Color;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.ColorInt;
+import android.view.LayoutInflater;
+import android.widget.TableLayout;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -14,16 +16,14 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.chribi.predictable.R;
+import de.chribi.predictable.databinding.TablerowConfidenceTableBinding;
 
 public final class CalibrationHistogramBindings {
     private CalibrationHistogramBindings() {
@@ -81,8 +81,21 @@ public final class CalibrationHistogramBindings {
 
         chart.setHighlightPerTapEnabled(false);
         chart.setHighlightPerDragEnabled(false);
+        chart.setScaleEnabled(false);
 
         chart.setData(data);
+    }
+
+    @BindingAdapter(value = "calibrationHistogramData")
+    public static void setCalibrationHistogramData(TableLayout table,
+                                                   List<CalibrationHistogramGroup> histogramGroups) {
+        Context ctx = table.getContext();
+        LayoutInflater inflater = LayoutInflater.from(ctx);
+        for (CalibrationHistogramGroup group : histogramGroups) {
+            TablerowConfidenceTableBinding binding =
+                    DataBindingUtil.inflate(inflater, R.layout.tablerow_confidence_table, table, true);
+            binding.setRowData(group);
+        }
     }
 
     private static @ColorInt int setAlpha(@ColorInt int color, int alpha) {

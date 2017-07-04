@@ -87,5 +87,44 @@
             app:description="@{null}"
             />
 
+        <TableLayout
+            android:id="@+id/table_calibration_histogram_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:paddingTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/chart_calibration_histogram"
+            app:calibrationHistogramData="@{statistics.calibrationHistogram}"
+            >
+            <TableRow
+                android:paddingBottom="4dp"
+                >
+
+                <TextView
+                    style="@style/statistic_table_header"
+                    android:text="@string/column_header_confidence"
+                    android:layout_gravity="center_horizontal"
+                    />
+                <TextView
+                    style="@style/statistic_table_header"
+                    android:text="@string/column_header_total_count"
+                    android:layout_gravity="right"
+                    />
+                <TextView
+                    style="@style/statistic_table_header"
+                    android:text="@string/column_header_correct_count"
+                    android:layout_gravity="right"
+                    />
+                <TextView
+                    style="@style/statistic_table_header"
+                    android:text="@string/column_header_correct_percentage"
+                    android:layout_gravity="right"
+                    />
+
+            </TableRow>
+
+            <!-- Content rows are added from databinding -->
+        </TableLayout>
+
     </android.support.constraint.ConstraintLayout>
 </layout>

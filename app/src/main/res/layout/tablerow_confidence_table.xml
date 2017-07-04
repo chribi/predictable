@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <data>
+        <variable
+            name="rowData"
+            type="de.chribi.predictable.statistics.CalibrationHistogramGroup" />
+    </data>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            style="@style/statistic_table_content"
+            android:text="@{@string/confidence_range_format(100f * rowData.lowerBound, 100f * rowData.upperBound)}"
+            android:layout_gravity="center_horizontal"
+            />
+        <TextView
+            style="@style/statistic_table_content"
+            android:text="@{String.valueOf(rowData.totalCount)}"
+            android:layout_gravity="right"
+            />
+
+        <TextView
+            style="@style/statistic_table_content"
+            android:text="@{String.valueOf(rowData.correctCount)}"
+            android:layout_gravity="right"
+            />
+        <TextView
+            style="@style/statistic_table_content"
+            android:text="@{@string/calibration_table_correct_percentage_format(rowData.correctPercentage)}"
+            android:layout_gravity="right"
+            />
+    </TableRow>
+</layout>

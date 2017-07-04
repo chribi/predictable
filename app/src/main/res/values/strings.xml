@@ -45,4 +45,10 @@
     <string name="piechart_state_incorrect">Incorrect</string>
     <string name="piechart_state_invalid">Invalid</string>
     <string name="header_confidence_calibration">Confidence Calibration</string>
+    <string name="column_header_confidence">Confidence</string>
+    <string name="column_header_total_count">Total</string>
+    <string name="column_header_correct_count">Correct</string>
+    <string name="column_header_correct_percentage">Percentage</string>
+    <string name="confidence_range_format">%1$.0f%%&#8211;%2$.0f%%</string> <!-- #8211 = en-dash -->
+    <string name="calibration_table_correct_percentage_format">%1$.1f%%</string>
 </resources>
