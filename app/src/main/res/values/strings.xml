@@ -51,4 +51,5 @@
     <string name="column_header_correct_percentage">Percentage</string>
     <string name="confidence_range_format">%1$.0f%%&#8211;%2$.0f%%</string> <!-- #8211 = en-dash -->
     <string name="calibration_table_correct_percentage_format">%1$.1f%%</string>
+    <string name="text_reduce_histogram">Invert predictions with confidence &#8804; 50%</string>
 </resources>

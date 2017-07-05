@@ -7,11 +7,13 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.android.ActivityKey;
 import dagger.android.AndroidInjector;
+import dagger.android.ContributesAndroidInjector;
 import dagger.multibindings.IntoMap;
 import de.chribi.predictable.newprediction.NewPredictionActivity;
 import de.chribi.predictable.predictiondetail.PredictionDetailActivity;
 import de.chribi.predictable.predictionlist.PredictionListActivity;
 import de.chribi.predictable.startscreen.StartScreenActivity;
+import de.chribi.predictable.statistics.StatisticsActivity;
 
 @SuppressWarnings("unused")
 @Module(subcomponents = {
@@ -44,4 +46,7 @@ abstract class ActivitySubcomponentBuildersModule {
     @ActivityKey(NewPredictionActivity.class)
     abstract AndroidInjector.Factory<? extends Activity>
     bindNewPredictionInjectorFactory(NewPredictionActivitySubcomponent.Builder builder);
+
+    @ContributesAndroidInjector()
+    abstract StatisticsActivity contributeStatisticsActivityInjector();
 }

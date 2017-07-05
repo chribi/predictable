@@ -6,9 +6,10 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
-import de.chribi.predictable.PredictableApp;
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 import de.chribi.predictable.R;
 import de.chribi.predictable.databinding.ActivityStatisticsBinding;
 
@@ -19,23 +20,23 @@ public class StatisticsActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
+    private StatisticsViewModel viewModel;
+
+    @Inject
+    void setDependencies(StatisticsViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         ActivityStatisticsBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_statistics);
 
-
-        long start = System.currentTimeMillis();
-        Statistics statistics =
-                Statistics.of(PredictableApp.get(this)
-                        .getPredictableComponent().getStorage().getPredictions());
-        long end = System.currentTimeMillis();
-        Log.d("STATS", "Calculating statistics took " + String.valueOf(end - start) + " ms");
-
         setSupportActionBar(binding.includedToolbar.toolbar);
         configureToolbar();
-        binding.setStatistics(statistics);
+        binding.setStatistics(viewModel);
     }
 
     private void configureToolbar() {

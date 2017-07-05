@@ -32,7 +32,6 @@ public final class CalibrationHistogramBindings {
     @BindingAdapter(value = "calibrationHistogramData")
     public static void setCalibrationHistogramData(BarChart chart,
                                                    List<CalibrationHistogramGroup> histogramGroups) {
-
         List<BarEntry> correctCounts = new ArrayList<>(histogramGroups.size());
         for (CalibrationHistogramGroup group : histogramGroups) {
             if(group.getTotalCount() == 0) {
@@ -52,9 +51,12 @@ public final class CalibrationHistogramBindings {
         @ColorInt int incorrectColor = setAlpha(ctx.getResources().getColor(R.color.chart_incorrect_prediction), 0xc0);
         dataSet.setColors(correctColor, incorrectColor);
 
+        float histogramLowerBound = 100.f * histogramGroups.get(0).getLowerBound();
+        float histogramUpperBound = 100.f * histogramGroups.get(histogramGroups.size() - 1).getUpperBound();
+        float histogramRange = histogramUpperBound - histogramLowerBound;
 
         BarData data = new BarData(dataSet);
-        data.setBarWidth(100.f / histogramGroups.size() - 4);
+        data.setBarWidth(histogramRange / histogramGroups.size() - 4);
         data.setDrawValues(false);
 
         chart.getLegend().setCustom(new LegendEntry[] {
@@ -65,8 +67,8 @@ public final class CalibrationHistogramBindings {
         });
 
         chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        chart.getXAxis().setAxisMinimum(0.f);
-        chart.getXAxis().setAxisMaximum(100.f);
+        chart.getXAxis().setAxisMinimum(histogramLowerBound);
+        chart.getXAxis().setAxisMaximum(histogramUpperBound);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
         final DecimalFormat format = new DecimalFormat("###");
@@ -84,6 +86,7 @@ public final class CalibrationHistogramBindings {
         chart.setScaleEnabled(false);
 
         chart.setData(data);
+        chart.invalidate();
     }
 
     @BindingAdapter(value = "calibrationHistogramData")
@@ -91,6 +94,7 @@ public final class CalibrationHistogramBindings {
                                                    List<CalibrationHistogramGroup> histogramGroups) {
         Context ctx = table.getContext();
         LayoutInflater inflater = LayoutInflater.from(ctx);
+        table.removeViews(1, table.getChildCount() - 1);
         for (CalibrationHistogramGroup group : histogramGroups) {
             TablerowConfidenceTableBinding binding =
                     DataBindingUtil.inflate(inflater, R.layout.tablerow_confidence_table, table, true);

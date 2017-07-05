@@ -6,7 +6,7 @@
     <data>
         <variable
             name="statistics"
-            type="de.chribi.predictable.statistics.Statistics" />
+            type="de.chribi.predictable.statistics.StatisticsViewModel" />
     </data>
 
         <android.support.design.widget.CoordinatorLayout

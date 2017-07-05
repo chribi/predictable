@@ -6,7 +6,7 @@
     <data>
         <variable
             name="statistics"
-            type="de.chribi.predictable.statistics.Statistics"
+            type="de.chribi.predictable.statistics.StatisticsViewModel"
             />
     </data>
 
@@ -53,7 +53,7 @@
             android:id="@+id/value_total_prediction_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(statistics.countStatistic.totalCount)}"
+            android:text="@{String.valueOf(statistics.stateCounts.totalCount)}"
             app:layout_constraintTop_toBottomOf="@id/label_total_prediction_count"
             />
 
@@ -61,7 +61,7 @@
             android:id="@+id/chart_state_distribution"
             android:layout_width="match_parent"
             android:layout_height="@dimen/piechart_height"
-            app:predictionStateCounts="@{statistics.countStatistic}"
+            app:predictionStateCounts="@{statistics.stateCounts}"
             app:holeRadius="@{@dimen/piechart_hole_radius}"
             app:transparentCircleRadius="@{@dimen/piechart_hole_radius}"
             app:description="@{null}"
@@ -78,12 +78,21 @@
             app:layout_constraintTop_toBottomOf="@id/chart_state_distribution"
             />
 
+        <CheckBox
+            android:id="@+id/checkbox_reduce_histogram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_reduce_histogram"
+            android:checked="@={statistics.invertLowConfidencePredictions}"
+            app:layout_constraintTop_toBottomOf="@id/header_calibration"
+            />
+
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart_calibration_histogram"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:calibrationHistogramData="@{statistics.calibrationHistogram}"
-            app:layout_constraintTop_toBottomOf="@id/header_calibration"
+            app:layout_constraintTop_toBottomOf="@id/checkbox_reduce_histogram"
             app:description="@{null}"
             />
 
