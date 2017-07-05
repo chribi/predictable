@@ -16,37 +16,20 @@ import de.chribi.predictable.startscreen.StartScreenActivity;
 import de.chribi.predictable.statistics.StatisticsActivity;
 
 @SuppressWarnings("unused")
-@Module(subcomponents = {
-        StartScreenActivitySubcomponent.class,
-        PredictionListActivitySubcomponent.class,
-        PredictionDetailActivitySubcomponent.class,
-        NewPredictionActivitySubcomponent.class,
-})
+@Module()
 abstract class ActivitySubcomponentBuildersModule {
-    @Binds
-    @IntoMap
-    @ActivityKey(StartScreenActivity.class)
-    abstract AndroidInjector.Factory<? extends Activity>
-    bindStartScreenInjectorFactory(StartScreenActivitySubcomponent.Builder builder);
+    @ContributesAndroidInjector(modules = StartScreenActivityModule.class)
+    abstract StartScreenActivity contributeStartScreenActivityInjector();
 
-    @Binds
-    @IntoMap
-    @ActivityKey(PredictionListActivity.class)
-    abstract AndroidInjector.Factory<? extends Activity>
-    bindPredictionListInjectorFactory(PredictionListActivitySubcomponent.Builder builder);
+    @ContributesAndroidInjector(modules = PredictionListActivityModule.class)
+    abstract PredictionListActivity contributePredictionListActivityInjector();
 
-    @Binds
-    @IntoMap
-    @ActivityKey(PredictionDetailActivity.class)
-    abstract AndroidInjector.Factory<? extends Activity>
-    bindPredictionDetailInjectorFactory(PredictionDetailActivitySubcomponent.Builder builder);
+    @ContributesAndroidInjector(modules = PredictionDetailActivityModule.class)
+    abstract PredictionDetailActivity contributePredictionDetailActivityInjector();
 
-    @Binds
-    @IntoMap
-    @ActivityKey(NewPredictionActivity.class)
-    abstract AndroidInjector.Factory<? extends Activity>
-    bindNewPredictionInjectorFactory(NewPredictionActivitySubcomponent.Builder builder);
+    @ContributesAndroidInjector(modules = NewPredictionActivityModule.class)
+    abstract NewPredictionActivity contributeNewPredictionActivityInjector();
 
-    @ContributesAndroidInjector()
+    @ContributesAndroidInjector
     abstract StatisticsActivity contributeStatisticsActivityInjector();
 }
