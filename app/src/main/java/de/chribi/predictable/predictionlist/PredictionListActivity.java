@@ -63,6 +63,11 @@ public class PredictionListActivity extends AppCompatActivity implements Predict
         configureToolbar(binding.includedToolbar.toolbar, viewModel.getTitle());
     }
 
+    @Override protected void onStart() {
+        super.onStart();
+        viewModel.loadPredictions();
+    }
+
     private void configureToolbar(Toolbar toolbar, String predictionSetTitle) {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

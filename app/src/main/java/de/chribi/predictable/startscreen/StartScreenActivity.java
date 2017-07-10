@@ -86,6 +86,10 @@ public class StartScreenActivity extends AppCompatActivity implements StartScree
         });
     }
 
+    @Override protected void onStart() {
+        super.onStart();
+        viewModel.loadPredictions();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
