@@ -4,11 +4,13 @@ package de.chribi.predictable.statistics;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.widget.TableLayout;
 
-import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -16,6 +18,10 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.DecimalFormat;
@@ -30,11 +36,43 @@ public final class CalibrationHistogramBindings {
     }
 
     @BindingAdapter(value = "calibrationHistogramData")
-    public static void setCalibrationHistogramData(BarChart chart,
+    public static void setCalibrationHistogramData(CombinedChart chart,
                                                    List<CalibrationHistogramGroup> histogramGroups) {
+
+        Context ctx = chart.getContext();
+        @ColorInt int correctColor = setAlpha(ctx.getResources().getColor(R.color.chart_correct_prediction), 0xc0);
+        @ColorInt int incorrectColor = setAlpha(ctx.getResources().getColor(R.color.chart_incorrect_prediction), 0xc0);
+        float lowerBound = 100.f * histogramGroups.get(0).getLowerBound();
+        float upperBound = 100.f * histogramGroups.get(histogramGroups.size() - 1).getUpperBound();
+
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(getCalibrationBarData(histogramGroups, correctColor, incorrectColor,
+                lowerBound, upperBound));
+        combinedData.setData(getPerfectCalibrationLineData(lowerBound, upperBound,
+                        Color.argb(180, 0, 0, 240)));
+        configureCalibrationChart(chart, correctColor, incorrectColor, lowerBound,
+                upperBound);
+        chart.setData(combinedData);
+        chart.invalidate();
+    }
+
+    @NonNull
+    private static BarData getCalibrationBarData(List<CalibrationHistogramGroup> histogramGroups,
+                                                 int correctColor, int incorrectColor,
+                                                 float lowerBound, float upperBound) {
+        BarDataSet dataSet = getCalibrationDataSet(histogramGroups);
+        dataSet.setColors(correctColor, incorrectColor);
+        BarData data = new BarData(dataSet);
+        data.setBarWidth((upperBound - lowerBound) / histogramGroups.size() - 4);
+        data.setDrawValues(false);
+        return data;
+    }
+
+    @NonNull
+    private static BarDataSet getCalibrationDataSet(List<CalibrationHistogramGroup> histogramGroups) {
         List<BarEntry> correctCounts = new ArrayList<>(histogramGroups.size());
         for (CalibrationHistogramGroup group : histogramGroups) {
-            if(group.getTotalCount() == 0) {
+            if (group.getTotalCount() == 0) {
                 continue;
             }
 
@@ -42,24 +80,30 @@ public final class CalibrationHistogramBindings {
             float correct = group.getCorrectPercentage();
             float incorrect = 100 - correct;
 
-            correctCounts.add(new BarEntry(groupMid, new float[] { correct, incorrect }));
+            correctCounts.add(new BarEntry(groupMid, new float[]{ correct, incorrect }));
         }
-        BarDataSet dataSet = new BarDataSet(correctCounts, null);
+        return new BarDataSet(correctCounts, null);
+    }
 
+    @NonNull
+    private static LineData getPerfectCalibrationLineData(float min, float max, @ColorInt int color) {
+        List<Entry> entries = new ArrayList<>(2);
+        entries.add(new Entry(min, min));
+        entries.add(new Entry(max, max));
+
+        LineDataSet dataSet = new LineDataSet(entries, null);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
+        dataSet.setColor(color);
+        dataSet.enableDashedLine(10f, 10f, 5f);
+        return new LineData(dataSet);
+    }
+
+    private static void configureCalibrationChart(CombinedChart chart, @ColorInt int correctColor,
+                                                  @ColorInt int incorrectColor, float lowerBound,
+                                                  float upperBound) {
         Context ctx = chart.getContext();
-        @ColorInt int correctColor = setAlpha(ctx.getResources().getColor(R.color.chart_correct_prediction), 0xc0);
-        @ColorInt int incorrectColor = setAlpha(ctx.getResources().getColor(R.color.chart_incorrect_prediction), 0xc0);
-        dataSet.setColors(correctColor, incorrectColor);
-
-        float histogramLowerBound = 100.f * histogramGroups.get(0).getLowerBound();
-        float histogramUpperBound = 100.f * histogramGroups.get(histogramGroups.size() - 1).getUpperBound();
-        float histogramRange = histogramUpperBound - histogramLowerBound;
-
-        BarData data = new BarData(dataSet);
-        data.setBarWidth(histogramRange / histogramGroups.size() - 4);
-        data.setDrawValues(false);
-
-        chart.getLegend().setCustom(new LegendEntry[] {
+        chart.getLegend().setCustom(new LegendEntry[]{
                 new LegendEntry(ctx.getString(R.string.piechart_state_correct),
                         Legend.LegendForm.SQUARE, 14f, 2f, null, correctColor),
                 new LegendEntry(ctx.getString(R.string.piechart_state_incorrect),
@@ -67,8 +111,8 @@ public final class CalibrationHistogramBindings {
         });
 
         chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        chart.getXAxis().setAxisMinimum(histogramLowerBound);
-        chart.getXAxis().setAxisMaximum(histogramUpperBound);
+        chart.getXAxis().setAxisMinimum(lowerBound);
+        chart.getXAxis().setAxisMaximum(upperBound);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
         final DecimalFormat format = new DecimalFormat("###");
@@ -84,9 +128,6 @@ public final class CalibrationHistogramBindings {
         chart.setHighlightPerTapEnabled(false);
         chart.setHighlightPerDragEnabled(false);
         chart.setScaleEnabled(false);
-
-        chart.setData(data);
-        chart.invalidate();
     }
 
     @BindingAdapter(value = "calibrationHistogramData")

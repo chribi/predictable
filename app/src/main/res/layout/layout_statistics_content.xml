@@ -87,7 +87,7 @@
             app:layout_constraintTop_toBottomOf="@id/header_calibration"
             />
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting.charts.CombinedChart
             android:id="@+id/chart_calibration_histogram"
             android:layout_width="match_parent"
             android:layout_height="200dp"
