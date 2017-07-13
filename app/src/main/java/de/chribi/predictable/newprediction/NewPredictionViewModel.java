@@ -6,6 +6,7 @@ import android.databinding.Bindable;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
@@ -94,10 +95,17 @@ public class NewPredictionViewModel extends BaseObservable {
         notifyPropertyChanged(BR.confidencePercentage);
     }
 
-    private Date getDueDateTime() {
+    public Date getDueDateTime() {
         DateTime dueDateTime = localDueDate.toDateTime(localDueTime,
                 dateTimeProvider.getCurrentTimeZone());
         return dueDateTime.toDate();
+    }
+
+    public void setDueDateTime(Date dueDate) {
+        LocalDateTime localDateTime = new LocalDateTime(dueDate,
+                dateTimeProvider.getCurrentTimeZone());
+        localDueDate = localDateTime.toLocalDate();
+        localDueTime = localDateTime.toLocalTime();
     }
 
     public void onSavePrediction() {

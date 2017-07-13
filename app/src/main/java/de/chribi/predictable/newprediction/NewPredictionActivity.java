@@ -12,6 +12,8 @@ import android.view.MenuItem;
 
 import org.joda.time.format.DateTimeFormat;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
@@ -20,6 +22,10 @@ import de.chribi.predictable.databinding.ActivityNewPredictionBinding;
 
 public class NewPredictionActivity extends AppCompatActivity
     implements NewPredictionView {
+
+    private static final String KEY_TITLE = "TITLE";
+    private static final String KEY_CONFIDENCE = "CONFIDENCE";
+    private static final String KEY_DUE_DATE_TIME = "DUE_DATE_TIME";
 
     public static void start(Context context) {
         Intent intent = new Intent(context, NewPredictionActivity.class);
@@ -47,6 +53,9 @@ public class NewPredictionActivity extends AppCompatActivity
         binding.textDueDate.setDateFormat(DateTimeFormat.mediumDate());
         binding.textDueTime.setTimeFormat(DateTimeFormat.shortTime());
 
+        if(savedInstanceState != null) {
+            restoreViewModelState(savedInstanceState, viewModel);
+        }
         binding.setViewModel(viewModel);
     }
 
@@ -57,6 +66,20 @@ public class NewPredictionActivity extends AppCompatActivity
             toolbar.setDisplayHomeAsUpEnabled(true);
             toolbar.setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
         }
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_TITLE, viewModel.getPredictionTitle());
+        outState.putDouble(KEY_CONFIDENCE, viewModel.getConfidencePercentage());
+        outState.putLong(KEY_DUE_DATE_TIME, viewModel.getDueDateTime().getTime());
+    }
+
+    private void restoreViewModelState(Bundle bundle, NewPredictionViewModel viewModel) {
+        viewModel.setPredictionTitle(bundle.getString(KEY_TITLE));
+        viewModel.setConfidencePercentage(bundle.getDouble(KEY_CONFIDENCE));
+        long dueDateLong = bundle.getLong(KEY_DUE_DATE_TIME);
+        Date dueDate = new Date(dueDateLong);
+        viewModel.setDueDateTime(dueDate);
     }
 
     @Override
